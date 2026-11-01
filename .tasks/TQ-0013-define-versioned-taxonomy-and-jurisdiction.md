@@ -1,8 +1,9 @@
 ---
 id: TQ-0013
 title: Define versioned taxonomy and jurisdiction applicability rules
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -10,7 +11,7 @@ labels:
 depends_on:
   - TQ-0011
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:21+01:00
+updated: 2026-11-02T00:30:51+01:00
 ---
 
 ## Outcome
@@ -85,3 +86,11 @@ A commit/push/confirmation failure restores `TQ-0013` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:30:51+01:00 — Quality gates:
+  - Gate 1 PASS — taxonomy-jurisdiction.md defines exactly the 21 ordered Spec topics with stable IDs/Spanish labels/English boundaries; all five states; cited competence evidence and scope profiles; national/autonomous worked pair; version/migration/comparison rules. Unknown/stale taxonomies and ambiguous jurisdiction cannot produce validated data.
+  - Gate 2 PASS — reviewed concrete proposal, mention, omission, entire-topic outside scope, shared powers, unclear evidence, regional advocacy, national/autonomous healthcare pair and explicit migration scenarios. Coverage and competence are separate; no inferred political opposition or blanket shared-power exclusions.
+  - Gate 3 PASS — make verify passed existing baseline/Go tests.
+  - Gate 4 PASS — git diff --check and design diagnostic passed links/anchors, UTF-8/whitespace and table structure. Python structural assertion verified exactly 21 unique IDs with integer order 1..21 and nonempty public/technical labels.
+  - Gate 5 PASS — compared with SPEC taxonomy/programme-model/tests plus source/artifact contracts; cited Constitution 148/149, Castilla y Leon Statute 70-74, Local Government Bases Act 25-27/36 and TFEU 2-6. No claim that these citations constitute a complete live legal matrix; dated profiles/evidence are mandatory. Technical English with explicit Spanish public-label vocabulary; no SPEC/product change.
+  - Gate 6 PASS — source assertions/models cannot grant legal authority or change taxonomy; incomplete pages/profiles remain unclear/non-publishable; duplicate/cross-topic content cannot inflate measures; secondary evidence does not replace canonical data. No private paths/secrets.
+  - Gate 7 PASS — design/current scenario artifact and complete gate record present; immutable taxonomy/version and explicit migration preserve deterministic ordering/historical classifications. Only this task record and design changed; no runtime/presentation assets authored.
