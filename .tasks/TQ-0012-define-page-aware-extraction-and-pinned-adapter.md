@@ -1,8 +1,9 @@
 ---
 id: TQ-0012
 title: Define page-aware extraction and pinned adapter reproducibility
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -13,7 +14,7 @@ depends_on:
   - TQ-0009
   - TQ-0011
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:21+01:00
+updated: 2026-11-02T00:29:04+01:00
 ---
 
 ## Outcome
@@ -88,3 +89,12 @@ A commit/push/confirmation failure restores `TQ-0012` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:29:04+01:00 — Design evidence: confirmed PyPI Docling 2.145.0 and selected library versions exist; inspected tagged upstream layout/table options; hf models info/list resolved immutable Heron and TableFormer revisions and published weight LFS SHA-256 values; hashed actual Poppler 26.10.0/poppler-data 0.4.12 source archive bytes; git ls-remote confirmed Tesseract/tessdata release refs. These establish design pins, not runtime compatibility or extraction approval. Full transitive package/component inventory, image digest, runtime qualification and golden rerun tests remain required in TQ-0030/0031. The missing original trial dependency lock is explicitly acknowledged, not reconstructed by guesswork.
+- 2026-11-02T00:29:04+01:00 — Quality gates:
+  - Gate 1 PASS — extraction-contract.md specifies stable page/block/table/list/column JSON, original-page coordinate/order/warning maps, native/textless/suspicious/OCR examples, exact initial converter/model/secondary/renderer/environment choices and resource/acquisition rules. Missing/unrenderable content blocks approval; every changed identity invalidates dependents.
+  - Gate 2 PASS — scenario table reviewed for native PDF, image-only/blank page, wrong page map, missing block, warning despite converter success, model upgrade and identical pinned rerun. Each has one consistent outcome; OCR lineage and independent noncanonical secondary evidence are explicit.
+  - Gate 3 PASS — make verify passed existing baseline/Go checks and tests.
+  - Gate 4 PASS — git diff --check; python3 /tmp/opencode/check-design.py docs/design/extraction-contract.md passed UTF-8, whitespace, relative-link/anchor, section and scenario/table checks. Version/hash identities match the upstream lookups recorded in the preceding note.
+  - Gate 5 PASS — checked SPEC extraction-artifacts/fidelity/tests and artifact/source/isolation contracts: original PDFs immutable, native OCR-off default, original-page evidence, retained warnings, JSON versus extracted Markdown distinction and empirically calibrated future weights preserved. No public/SPEC/presentation-code changes.
+  - Gate 6 PASS — design review covers bounded offline conversion, locked pre-acquisition, no automatic model/backend substitution, hostile source as data, pixel/output limits, warning/mapping failures and independent audit. No keys/secrets/private paths embedded; no claim of having run missing golden PDFs.
+  - Gate 7 PASS — design and upstream identity evidence current, deterministic payload versus run-log boundaries explicit, all gate evidence recorded; only this design/task record changed. Actual implementation and golden extraction tests remain mandatory in dependent tasks, not deferred gates of this design-only task.
