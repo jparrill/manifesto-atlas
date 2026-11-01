@@ -1,8 +1,9 @@
 ---
 id: TQ-0010
 title: Define party trust anchors and official-source evidence rules
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -11,7 +12,7 @@ depends_on:
   - TQ-0008
   - TQ-0009
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:21+01:00
+updated: 2026-11-02T00:23:48+01:00
 ---
 
 ## Outcome
@@ -85,3 +86,11 @@ A commit/push/confirmation failure restores `TQ-0010` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:23:48+01:00 — Quality gates:
+  - Gate 1 PASS — docs/design/provenance-trust.md defines all three admissible chains, independent canonical-byte retrieval and mandatory candidate checksum equality, independently reviewed scoped/expiring party anchors, deterministic decision rules, interfaces, versions and rejected alternatives.
+  - Gate 2 PASS — inspected scenario table and chain/network sections: direct PDF, exact referral, authorized/invalid publisher signatures, lookalikes, hostile redirects, missing anchors, removed referrals and silently changed canonical bytes each have explicit internally consistent outcomes. Positive incomplete evidence is probable, absent evidence unverified, contradictions rejected; none publishes.
+  - Gate 3 PASS — make verify completed successfully, retaining all baseline and Go gates.
+  - Gate 4 PASS — git diff --check and python3 /tmp/opencode/check-design.py docs/design/provenance-trust.md passed UTF-8, whitespace, section/table presence, relative links and heading-anchor checks.
+  - Gate 5 PASS — compared with SPEC provenance-trust-model/further-notes plus artifact/isolation designs: three permitted chains preserved, uploaded bytes never canonical by assertion, no fabricated golden URLs/anchors, no manual publication fallback. Signature format support explicitly versioned; unsupported formats fail closed. Technical English, no public/SPEC changes.
+  - Gate 6 PASS — trust-boundary design reviewed: contributor cannot self-approve grants, exact scoped hosts/keys, independent evidence, current expiry/revocation, no model network, safe TLS/DNS/dial pinning/redirects and bounded response handling. Archived evidence cannot bootstrap new official status. No secrets/private paths embedded.
+  - Gate 7 PASS — design and scenario artifacts current; immutable text and canonical identity rules deterministic; only design/task record changed. Actual transport/anchor/signature runtime checks are mandatory dependent implementation gates, not claimed executed by this design task.
