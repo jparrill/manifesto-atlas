@@ -1,0 +1,5 @@
+# Local agent state
+.serena/
+
+# macOS filesystem metadata
+.DS_Store
