@@ -1,8 +1,9 @@
 ---
 id: TQ-0016
 title: Define rendering, comparison, and site QA contracts
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -14,7 +15,7 @@ depends_on:
   - TQ-0013
   - TQ-0015
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T00:37:41+01:00
 ---
 
 ## Outcome
@@ -91,3 +92,11 @@ A commit/push/confirmation failure restores `TQ-0016` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:37:41+01:00 — Quality gates:
+  - Gate 1 PASS — site-quality.md defines all-topic Spanish content/state examples, deterministic Markdown/DOM parity, source/citation/rights/methodology content, compatible regional comparison evidence, strict non-LLM presentation authorship, and binary input-bound keyboard/a11y/reflow/screenshot/visual gates.
+  - Gate 2 PASS — scenarios reviewed: all topic states, long text, hostile quotes, keyboard navigation, narrow screens, missing citations, incompatible comparisons, stale screenshots and visual pass with deterministic failure have explicit consistent results. Unclear content is preview-only, never published.
+  - Gate 3 PASS — make verify passed all existing checks/tests.
+  - Gate 4 PASS — git diff --check; design diagnostic passed UTF-8/whitespace, links/anchors and scenario/alternative/table structure. Verified exact Chromium 141.0.7390.37/revision 1194 against upstream Playwright v1.56.1 browser manifest; actual tool-byte sealing is required in TQ-0047.
+  - Gate 5 PASS — reviewed SPEC deterministic-rendering/site-validation/site-quality-tests/taxonomy and canonical/semantic/artifact designs. No political inference, omitted topics, merged source identities, model-generated assets or human programme-approval fallback introduced. Design prose only, no HTML/CSS/JS/templates authored.
+  - Gate 6 PASS — design trust review covers contextual escaping, canonical-derived links, no arbitrary paths/network/credentials, isolated browser, hostile literal text, screenshot stale/hash checks, and independent composite approval. Missing supplied assets/isolation/baselines fail relevant runtime gates. No secrets/private paths.
+  - Gate 7 PASS — current contract, concrete viewport/tool/threshold/baseline rules and gate notes recorded; deterministic inputs/version invalidation explicit; only design/task record changed. Real browser screenshots/a11y/pixel fixtures remain mandatory implementation gates, not claimed executed by this design task.
