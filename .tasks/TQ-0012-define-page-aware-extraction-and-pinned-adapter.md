@@ -1,7 +1,7 @@
 ---
 id: TQ-0012
 title: Define page-aware extraction and pinned adapter reproducibility
-status: inbox
+status: todo
 priority: high
 labels:
   - type/docs
@@ -13,7 +13,7 @@ depends_on:
   - TQ-0009
   - TQ-0011
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T17:20:30+01:00
+updated: 2026-11-01T18:56:21+01:00
 ---
 
 ## Outcome
@@ -82,3 +82,9 @@ A commit/push/confirmation failure restores `TQ-0012` to `in-progress` with a bl
 - `docs/SPEC.md#extraction-fidelity`
 - `docs/SPEC.md#extraction-tests`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.

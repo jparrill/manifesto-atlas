@@ -42,18 +42,20 @@ Completed preparation:
 - `TQ-0005`: inspect the complete specification and create the dependency-aware backlog.
 - `TQ-0006`: implement and verify `.gitignore`.
 
-`TQ-0055` records this handoff refresh.
+`TQ-0055` records the original backlog handoff refresh. `TQ-0057` records the subsequent owner-delegated approval batch and this approval-state update.
 
 ## Backlog and approval state
 
 The planning session created **49 backlog tasks, `TQ-0006` through `TQ-0054`**:
 
 - `TQ-0006` is now `done` following the owner's implementation request.
-- **`TQ-0007` is the only `todo` task and the current developer execution frontier.** It establishes a truthful Makefile interface and real baseline checks.
-- The other **47 tasks remain in `inbox`** for Juan's review. They are proposals, not authorized work.
+- **46 backlog tasks are approved in `todo`: `TQ-0007` plus 45 tasks promoted under Juan's explicit delegation in `TQ-0057`.** Their native dependencies still control readiness.
+- **`TQ-0007` is currently the only ready developer task.** It establishes a truthful Makefile interface and real baseline checks. `TQ-0018` is approved but waits for it.
+- **`TQ-0008` and `TQ-0009` are ready architect tasks.** An approved architect can establish the artifact and sandbox contracts while developer work proceeds within its own scope.
+- Only **two tasks remain in `inbox`**: `TQ-0017` for CI/deployment design discussion with Juan, and `TQ-0042` for human/non-LLM presentation authorship. Downstream presentation dependencies remain blocked until the latter is supplied and completed.
 - The backlog has 11 architect tasks and 38 developer tasks. `TQ-0042` carries an additional human/non-LLM execution restriction.
 
-Every backlog task has acceptance criteria, seven quality gates, specification references, declared labels, and native blocking dependencies. The audit checked **140 dependency edges**, with no missing references or cycles.
+Every backlog task has acceptance criteria, seven quality gates, specification references, declared labels, and native blocking dependencies. The audit checked **140 dependency edges**, with no missing references or cycles. The approval batch preserved all existing contracts, priorities, assignees, execution roles, and dependencies; every promoted task has an owner-authorization note.
 
 `TQ-0005` notes contain the coverage matrix for all **40 user stories**, every implementation/testing subsection, all six planned skills, and all 12 specified Make stages:
 
@@ -86,12 +88,12 @@ Backlog map; these ranges group related work, not an instruction to execute nume
    ```
 
 2. Provide meaningful checks for the current documentation/queue checkout. All 12 planned stage names must be discoverable; unavailable stages fail non-zero rather than pretending to work. No Go module exists yet; `TQ-0018` owns that bootstrap and subsequent Go gates.
-3. For Juan's next review, `TQ-0008` and `TQ-0009` are unblocked architecture proposals; `TQ-0018` becomes implementable after `TQ-0007` and owner promotion. Follow native dependencies for the remaining work.
+3. Approved architects may claim `TQ-0008` or `TQ-0009` now. Developers may automatically continue to the already-approved `TQ-0018` after `TQ-0007` is delivered. Later work becomes ready as its native dependencies complete; no new promotion request is needed for the approved batch.
 4. Execute the [automatic closure and continuation loop](AGENTS.md#closing-tasks-and-continuing-work): all gates PASS, `done`, task-scoped commit, confirmed push, then the next approved ready task within the assignment and execution role. A delivery failure reopens the task and blocks continuation. Every task has an explicit final-phase section.
 
-`TQ-0056` establishes this automatic delivery policy. This session's scope is backlog planning and the explicitly requested ignore/handoff/policy updates; the next agent may implement `TQ-0007` when assigned implementation work.
+`TQ-0056` establishes this automatic delivery policy. This session's scope is backlog planning, owner-delegated approval, and the explicitly requested ignore/handoff/policy updates. Implementation agents can work through the approved backlog within their assigned scope and role.
 
-Only Juan promotes `inbox` proposals. Agents must not claim, execute, reject, or promote them. `agent/architect` requires the owner-approved `gpt-6.1-sol` model or an explicitly approved equivalent. Approved architects may also execute `agent/developer` work.
+The `TQ-0057` approval batch used Juan's explicit one-time delegation; it does not grant standing permission to promote future `inbox` proposals. The general owner-only inbox policy in `AGENTS.md` remains unchanged. `agent/architect` requires the owner-approved `gpt-6.1-sol` model or an explicitly approved equivalent. Approved architects may also execute `agent/developer` work.
 
 ## Important decisions
 

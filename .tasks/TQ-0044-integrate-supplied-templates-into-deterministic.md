@@ -1,7 +1,7 @@
 ---
 id: TQ-0044
 title: Integrate supplied templates into deterministic Go HTML rendering
-status: inbox
+status: todo
 priority: normal
 labels:
   - type/feature
@@ -14,7 +14,7 @@ depends_on:
   - TQ-0016
   - TQ-0043
 created: 2026-11-01T17:07:34+01:00
-updated: 2026-11-01T17:20:31+01:00
+updated: 2026-11-01T18:56:23+01:00
 ---
 
 ## Outcome
@@ -82,3 +82,9 @@ A commit/push/confirmation failure restores `TQ-0044` to `in-progress` with a bl
 - `docs/SPEC.md#rendering-tests`
 - `docs/SPEC.md#make-targets`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T18:56:23+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.

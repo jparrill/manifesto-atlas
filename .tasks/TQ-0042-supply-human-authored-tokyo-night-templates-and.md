@@ -11,7 +11,7 @@ labels:
 depends_on:
   - TQ-0016
 created: 2026-11-01T17:07:34+01:00
-updated: 2026-11-01T17:20:31+01:00
+updated: 2026-11-01T18:56:24+01:00
 ---
 
 ## Outcome
@@ -79,3 +79,9 @@ A commit/push/confirmation failure restores `TQ-0042` to `in-progress` with a bl
 - `docs/SPEC.md#site-validation`
 - `docs/SPEC.md#out-of-scope`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T18:56:24+01:00 — TQ-0057 review: retained in inbox because presentation assets require Juan or a non-LLM author. An LLM execution agent must not claim or author this work. Downstream HTML/site dependencies remain intact until approved human-authored assets are supplied.

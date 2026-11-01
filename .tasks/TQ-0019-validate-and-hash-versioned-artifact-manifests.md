@@ -1,7 +1,7 @@
 ---
 id: TQ-0019
 title: Validate and hash versioned artifact manifests and reports
-status: inbox
+status: todo
 priority: high
 labels:
   - type/feature
@@ -11,7 +11,7 @@ depends_on:
   - TQ-0018
   - TQ-0008
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T17:20:30+01:00
+updated: 2026-11-01T18:56:22+01:00
 ---
 
 ## Outcome
@@ -78,3 +78,9 @@ A commit/push/confirmation failure restores `TQ-0019` to `in-progress` with a bl
 - `docs/SPEC.md#llm-validation`
 - `docs/SPEC.md#publication-and-ci`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.

@@ -13,7 +13,7 @@ depends_on:
   - TQ-0009
   - TQ-0016
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T17:20:31+01:00
+updated: 2026-11-01T18:56:24+01:00
 ---
 
 ## Outcome
@@ -82,3 +82,9 @@ A commit/push/confirmation failure restores `TQ-0017` to `in-progress` with a bl
 - `docs/SPEC.md#untrusted-document-handling`
 - `docs/SPEC.md#end-to-end-tests`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T18:56:24+01:00 — TQ-0057 review: retained in inbox for Juan's CI/deployment design discussion, consistent with the original explicit request. This is design-only work, not CI implementation; prerequisites remain unchanged.
