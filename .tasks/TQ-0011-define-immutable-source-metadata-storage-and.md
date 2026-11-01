@@ -1,8 +1,9 @@
 ---
 id: TQ-0011
 title: Define immutable source metadata, storage, and revision identity
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -11,7 +12,7 @@ depends_on:
   - TQ-0008
   - TQ-0010
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:21+01:00
+updated: 2026-11-02T00:25:33+01:00
 ---
 
 ## Outcome
@@ -86,3 +87,11 @@ A commit/push/confirmation failure restores `TQ-0011` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:25:33+01:00 — Quality gates:
+  - Gate 1 PASS — source-identity.md defines complete versioned metadata/identity tuples, safe year-first storage, worked national/autonomous/municipal/European/non-electoral records, immutable linked revisions and atomic registration. Golden-source identification explicitly forbids invented election dates, URLs and hashes.
+  - Gate 2 PASS — scenario table reviewed for first source, exact/global duplicate, corrected revision, conflicting metadata, missing election, unsafe filenames and changed committed bytes; each has one explicit result consistent with the record/path/transaction rules.
+  - Gate 3 PASS — make verify passed all existing baseline and Go gates.
+  - Gate 4 PASS — git diff --check; python3 /tmp/opencode/check-design.py docs/design/source-identity.md passed whitespace/UTF-8, links/anchors and structure/scenario checks; example paths follow the declared grammar with clearly labelled synthetic revision segments.
+  - Gate 5 PASS — compared with SPEC immutable-source-storage, assessment-separation, source-registry-tests and existing artifact/provenance/isolation contracts. Source facts remain separate from future assessments, third-party rights retained, evidence required, no speculative real golden metadata. English technical document, SPEC/public files unchanged.
+  - Gate 6 PASS — reviewed current provenance authority, no-follow paths, portable slugs, lock/no-replace installation, interrupted writes, checksums and trusted-base committed-byte checks. Contributor filenames cannot control paths, stale reports cannot authorize registration. No private paths or secrets embedded.
+  - Gate 7 PASS — current design and task evidence recorded; same inputs yield the same identity/path and exact duplicates are no-ops. Only the design and this task record changed; implementation/race/real-source recovery tests remain explicit dependent-task gates.
