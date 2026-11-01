@@ -1,15 +1,16 @@
 ---
 id: TQ-0007
 title: Establish a truthful Makefile interface for current and planned stages
-status: todo
+status: in-progress
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/chore
   - agent/developer
   - area/project
   - area/cli
 created: 2026-11-01T17:07:32+01:00
-updated: 2026-11-01T17:20:32+01:00
+updated: 2026-11-01T19:38:19+01:00
 ---
 
 ## Outcome
@@ -79,3 +80,17 @@ A commit/push/confirmation failure restores `TQ-0007` to `in-progress` with a bl
 - `docs/SPEC.md#module-seams`
 - `docs/SPEC.md#publication-and-ci`
 - `docs/QUALITY_GATES.md`
+
+---
+
+## Notes
+
+- 2026-11-01T19:32:18+01:00 — Quality gates:
+  - Gate 1 PASS — acceptance criteria verified. 'make help' lists all 12 Spec pipeline targets plus the 3 implemented baseline targets, distinguishing implemented from planned. 'make check'/'make verify' exit 0 on the valid checkout using only git+tq (no Go module). Disposable-copy tests: injected trailing whitespace into README.md -> 'make check' failed non-zero (git diff --check: README.md:159 trailing whitespace); injected malformed task file (invalid YAML frontmatter 'id: [unclosed') -> 'make check' failed non-zero because 'tq list --json' exits 0 but emits 'warning: skipped TQ-9998-bad.md' on stderr (warning-only failure rejected); all 12 unavailable stages invoked -> each exited non-zero printing its owning TQ id; 'make' with no args ran default goal (help), exit 0, no fetch/publish. docs/MAKEFILE.md maps every planned target to its owning task and explains Go/model/browser integration.
+  - Gate 2 PASS — same focused commands as Gate 1: make help / make check / make verify exit 0 on valid checkout; whitespace fixture and malformed-task fixture each forced non-zero; all 12 unavailable stages non-zero with owning-task reference (12/12).
+  - Gate 3 PASS — 'make verify' exit 0; 'git diff --check' exit 0; 'tq list --json' exit 0 with empty stderr; 'tq show TQ-0007 --json' exit 0 with empty stderr. No malformed/skipped-queue warnings.
+  - Gate 4 PASS — 'git diff --check' exit 0; 'make check' exit 0; 'make -n help check verify submit serve' dry-run clean (no make-level warnings on stderr). No Go changes, so no gofmt/vet/test. checkmake not installed; make -n dry-run used as the structural static check.
+  - Gate 5 PASS — the 12 Makefile pipeline targets are byte-identical (as a set) to the 12 'docs/SPEC.md#make-targets' entries (diff of sorted lists empty). Changed files are technical (Makefile, docs/MAKEFILE.md) and written in English; no public/Spanish file changed; docs/SPEC.md, README.md, HANDOFF.md untouched, so no product decision changed.
+  - Gate 6 PASS — 'make check' and 'make verify' both exit 0 when the checkout path contains a space ('disposable with space'); failure propagation proven by the whitespace and malformed-task fixtures; baseline recipes invoke only git diff --check, tq list, grep, dirname, test, mktemp, cat, printf, echo, rm (no curl/wget/git fetch/push/model calls — the only http strings are the link-check 'case' that skips URLs); no secrets or private absolute paths in Makefile or docs/MAKEFILE.md.
+  - Gate 7 PASS — artifacts current (Makefile + docs/MAKEFILE.md); 'make verify' is deterministic (two identical-input runs produced byte-identical output, exit 0 both); task record complete (this note).
+- 2026-11-01T19:38:19+01:00 — BLOCKER (delivery): 'git commit' failed at GPG signing — 'gpg: signing failed: Timeout'. The configured signing key user.signingkey=DE30627E53AC3969 requires a passphrase; the curses pinentry launched and timed out in the automated context, and the key is not cached in the gpg-agent (loopback test without passphrase returned 'Bad passphrase'). All 7 gates already PASS and the 3 intended files (Makefile, docs/MAKEFILE.md, .tasks/TQ-0007-*.md) are staged. Per AGENTS.md I did NOT weaken the signature (no --no-gpg-sign, no commit.gpgsign change, hooks intact). Task restored to in-progress. Resolution needs owner input: unlock/cache the signing key passphrase in the gpg-agent (e.g. run an interactive 'gpg' sign or 'gpg-connect-agent' preset-passphrase), then re-run the commit+push. After a successful signed commit and confirmed push, mark done and continue.

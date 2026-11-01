@@ -1,0 +1,111 @@
+# Manifesto Atlas — Make orchestration interface.
+#
+# Baseline targets are implemented now (help, check, verify). The 12 pipeline
+# stages from docs/SPEC.md#make-targets are declared but fail until their owning
+# backlog task lands. Target-to-owner mapping and integration notes: docs/MAKEFILE.md
+#
+# Orchestration lives here. Deterministic work moves to Go once the module exists
+# (owned by TQ-0018); these baseline checks only use Git and Taskqueue.
+
+.DEFAULT_GOAL := help
+SHELL := /bin/sh
+
+# Baseline targets (implemented).
+.PHONY: help check verify
+
+# Pipeline stages (planned): fail until their owning task lands.
+.PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
+
+help:
+	@printf '%s\n' \
+	  "Manifesto Atlas — Make targets" \
+	  "" \
+	  "Baseline (implemented):" \
+	  "  make help                  Show this help." \
+	  "  make check                 Run current baseline checks (Git + Taskqueue)." \
+	  "  make verify                Run full verification (check + docs + links)." \
+	  "" \
+	  "Pipeline stages (planned — fail until their owning task lands):" \
+	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
+	  "  make verify-source         TQ-0022 TQ-0026  Provenance and canonical bytes." \
+	  "  make add                   TQ-0027  Register a verified immutable source." \
+	  "  make extract               TQ-0030  Docling page-aware extraction." \
+	  "  make validate-extraction   TQ-0035  Extraction fidelity approval." \
+	  "  make normalize             TQ-0038  Draft canonical programme JSON." \
+	  "  make validate-content      TQ-0041  Claim and coverage validation." \
+	  "  make build                 TQ-0043 TQ-0044  Deterministic Markdown and HTML." \
+	  "  make validate-site         TQ-0049  Site validation gate." \
+	  "  make publish-check         TQ-0050  Publishable artifact graph." \
+	  "  make process               TQ-0051  Orchestrate programme processing." \
+	  "  make serve                 TQ-0051  Local site preview." \
+	  "" \
+	  "Mapping and integration notes: docs/MAKEFILE.md"
+
+check:
+	@echo "check: git whitespace"
+	@git diff --check
+	@echo "check: taskqueue integrity"
+	@$(call tq-clean)
+	@echo "check: OK"
+
+verify: check
+	@echo "verify: documentation structure"
+	@$(call docs-check)
+	@echo "verify: relative links"
+	@$(call link-check)
+	@echo "verify: OK"
+
+# --- Planned pipeline stages (fail until their owning task lands) -------------
+
+submit:
+	$(call unavailable,submit,TQ-0021,quarantine candidate bytes and submission metadata)
+verify-source:
+	$(call unavailable,verify-source,TQ-0022 TQ-0026,establish provenance and retrieve canonical bytes)
+add:
+	$(call unavailable,add,TQ-0027,register a verified immutable source)
+extract:
+	$(call unavailable,extract,TQ-0030,produce structured page-aware extraction)
+validate-extraction:
+	$(call unavailable,validate-extraction,TQ-0035,audit extraction fidelity)
+normalize:
+	$(call unavailable,normalize,TQ-0038,produce draft canonical programme JSON)
+validate-content:
+	$(call unavailable,validate-content,TQ-0041,run claim and coverage validators)
+build:
+	$(call unavailable,build,TQ-0043 TQ-0044,render Spanish Markdown and HTML deterministically)
+validate-site:
+	$(call unavailable,validate-site,TQ-0049,run content parity, HTML, accessibility, responsive, and visual checks)
+publish-check:
+	$(call unavailable,publish-check,TQ-0050,verify the complete artifact graph is publishable)
+process:
+	$(call unavailable,process,TQ-0051,orchestrate the applicable processing stages)
+serve:
+	$(call unavailable,serve,TQ-0051,preview the generated static website locally)
+
+# --- Shared recipes (single-line shells; no multi-line expansion) -------------
+
+# Print a stage-not-available message and exit non-zero.
+# $(1)=target  $(2)=owning task id(s)  $(3)=purpose
+define unavailable
+@printf '%s\n' "make $(1): not available yet." "  Owning task: $(2)." "  Purpose: $(3)." "  This target fails until $(2) lands. Run: tq show $(2)"; exit 1
+endef
+
+# Taskqueue integrity: tq list --json must exit 0, print non-empty JSON, and emit
+# no warnings on stderr (tq names malformed or skipped task files on stderr while
+# still exiting 0, so a warning-only failure must be rejected).
+define tq-clean
+@errfile=$$(mktemp); tq list --json >/dev/null 2>"$$errfile"; code=$$?; if [ $$code -ne 0 ]; then echo "tq list exited $$code:" >&2; cat "$$errfile" >&2; rm -f "$$errfile"; exit 1; fi; if [ -s "$$errfile" ]; then echo "tq list emitted warnings (malformed or skipped task files):" >&2; cat "$$errfile" >&2; rm -f "$$errfile"; exit 1; fi; rm -f "$$errfile"; echo "  taskqueue OK"
+endef
+
+# Documentation structure: the required tracked files must exist.
+define docs-check
+@missing=0; for f in AGENTS.md README.md HANDOFF.md LICENSE .taskqueue.yaml docs/SPEC.md docs/QUALITY_GATES.md docs/MAKEFILE.md; do if [ ! -f "$$f" ]; then echo "missing required file: $$f" >&2; missing=1; fi; done; if [ $$missing -ne 0 ]; then echo "docs-check: FAIL" >&2; exit 1; fi; echo "  docs OK"
+endef
+
+# Relative links: every non-URL, non-anchor markdown link in the tracked docs must
+# resolve to an existing file or directory relative to the doc that holds it.
+# The ]( prefix and ) suffix are stripped with shell parameter expansion, and URL
+# and pure-anchor links are skipped, so no regex sed step is needed.
+define link-check
+@broken=0; for f in AGENTS.md README.md HANDOFF.md docs/SPEC.md docs/QUALITY_GATES.md docs/MAKEFILE.md; do [ -f "$$f" ] || continue; dir=$$(dirname "$$f"); for match in $$(grep -oE '\]\([^)]+\)' "$$f"); do link=$${match#']('}; link=$${link%')'}; [ -z "$$link" ] && continue; case "$$link" in http://*|https://*) continue ;; esac; target=$${link%%#*}; [ -z "$$target" ] && continue; if [ ! -e "$$dir/$$target" ]; then echo "broken link in $$f: $$link" >&2; broken=1; fi; done; done; if [ $$broken -ne 0 ]; then echo "link-check: FAIL" >&2; exit 1; fi; echo "  links OK"
+endef

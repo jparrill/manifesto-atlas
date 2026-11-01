@@ -1,0 +1,98 @@
+# Makefile Technical Usage
+
+This document is the technical reference for the `Makefile` orchestration
+interface. It is English by project policy (technical text). It maps every
+planned pipeline target to its owning backlog task and explains how the
+deterministic, model, and browser checks will be integrated as those tasks land.
+
+The product contract for the pipeline stages lives in
+[`docs/SPEC.md#make-targets`](SPEC.md#make-targets) and
+[`docs/SPEC.md#module-seams`](SPEC.md#module-seams). This document does not
+change that contract; it only documents the current Make surface and the
+expansion path.
+
+## Current surface
+
+The `Makefile` exposes three implemented baseline targets and twelve declared
+pipeline stages.
+
+### Baseline targets (implemented)
+
+| Target | What it does | Tools used |
+| --- | --- | --- |
+| `make help` | Print this target list. Distinguish implemented checks from planned stages. | none (print only) |
+| `make check` | Run current baseline checks: Git whitespace (`git diff --check`) and Taskqueue integrity. | `git`, `tq` |
+| `make verify` | Run `check`, plus documentation-structure and relative-link checks over the tracked docs. | `git`, `tq`, `grep`, `sed`, `dirname`, `test` |
+
+`make` with no arguments runs the default goal (`help`) and performs no
+network retrieval, model invocation, or publication.
+
+### Baseline check semantics
+
+- **Git whitespace** — `git diff --check` exits non-zero on a whitespace error
+  (trailing whitespace, conflict markers, or a missing trailing newline) in the
+  current diff. This is the whitespace gate that the disposable-copy failure test
+  exercises.
+- **Taskqueue integrity** — `tq list --json` must exit `0`, print non-empty JSON,
+  and emit **no warnings on stderr**. `tq` names a malformed or skipped task file
+  on stderr while still exiting `0`; a warning-only failure is therefore rejected
+  as non-zero here. This is the malformed-task gate.
+- **Documentation structure** — the required tracked files must exist:
+  `AGENTS.md`, `README.md`, `HANDOFF.md`, `LICENSE`, `.taskqueue.yaml`,
+  `docs/SPEC.md`, `docs/QUALITY_GATES.md`, and this file.
+- **Relative links** — every non-URL, non-anchor Markdown link in the tracked
+  docs must resolve to an existing file or directory relative to the doc that
+  holds it.
+
+## Planned pipeline stages
+
+Each stage is declared now so a fresh checkout can discover the full interface,
+but it fails non-zero with an actionable message that names its owning task.
+When the owning task lands, its implementation replaces the not-available recipe
+and the target becomes real. The mapping below is the source of truth for which
+task owns which target.
+
+| Target | Owning task(s) | Stage purpose (from `docs/SPEC.md#make-targets`) |
+| --- | --- | --- |
+| `make submit` | `TQ-0021` | Quarantine candidate bytes and submission metadata. |
+| `make verify-source` | `TQ-0022`, `TQ-0026` | Establish provenance and retrieve canonical bytes. |
+| `make add` | `TQ-0027` | Register a verified immutable source. |
+| `make extract` | `TQ-0030` | Produce structured page-aware extraction. |
+| `make validate-extraction` | `TQ-0035` | Audit extraction fidelity. |
+| `make normalize` | `TQ-0038` | Produce draft canonical programme JSON. |
+| `make validate-content` | `TQ-0041` | Run claim and coverage validators. |
+| `make build` | `TQ-0043`, `TQ-0044` | Render Spanish Markdown and HTML deterministically. |
+| `make validate-site` | `TQ-0049` | Run content parity, HTML, accessibility, responsive, and visual checks. |
+| `make publish-check` | `TQ-0050` | Verify the complete artifact graph is publishable. |
+| `make process` | `TQ-0051` | Orchestrate the applicable processing stages for one programme. |
+| `make serve` | `TQ-0051` | Preview the generated static website locally. |
+
+Invoking any of these today prints the stage name, its owning task, the purpose,
+and a `tq show <id>` pointer, then exits non-zero. It never returns a fake
+success.
+
+## Integration path
+
+The baseline checks deliberately use only tools that exist in this
+documentation/Taskqueue checkout. As the backlog lands, the same targets gain
+real behavior without changing their names or the caller's expectations:
+
+- **Go checks.** `TQ-0018` bootstraps the Go module and the real compiler/test
+  gates. After that, `make check`/`make verify` add `gofmt`, `go build`, `go
+  vet`, and `go test` for changed packages, and the stage targets call their
+  owning Go commands instead of the not-available recipe. Deterministic work
+  (conversion, checksums, schema validation, templates, HTML parsing,
+  screenshot capture, deployment) stays in Go, per
+  `docs/SPEC.md#module-seams`.
+- **Model checks.** The semantic stages (`normalize`, `validate-content`,
+  `validate-extraction`, `validate-site`) run schema-constrained agent jobs in
+  isolated contexts. These are explicit local work; their reports are committed
+  with exact input hashes. `make verify` and CI verify stored reports without
+  rerunning expensive models, per `docs/SPEC.md#publication-and-ci`.
+- **Browser checks.** `validate-site` and `serve` eventually capture desktop and
+  mobile screenshots and run responsive, keyboard-navigation, and visual
+  regression checks. These run after the deterministic checks pass and cannot
+  override a deterministic failure.
+
+Until those tasks land, the not-available recipes are the truthful state: the
+interface is discoverable and the absence is explicit rather than silent.
