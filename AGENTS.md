@@ -117,6 +117,10 @@ The observable result this task must produce.
 - Generated artifacts are current and deterministic.
 - Gate results are recorded with `tq note` before completion.
 
+## Final phase: delivery and continuation
+
+After every quality gate passes, follow `AGENTS.md#closing-tasks-and-continuing-work` for this task: mark it `done`, commit its intended changes and task record, push and confirm delivery, then select the next approved ready task within the assigned scope and execution role. A delivery failure blocks continuation and returns the task to `in-progress` with a note.
+
 ## Specification
 
 - `docs/SPEC.md#relevant-section`
@@ -124,14 +128,23 @@ The observable result this task must produce.
 
 Acceptance criteria must describe behavior rather than implementation steps. Quality gates must be binary and reproducible: each gate names the command or artifact and its expected result. A task is not complete merely because code was written.
 
-## Closing tasks
+## Closing tasks and continuing work
 
-Before moving any task to `done`:
+Juan authorizes automatic task-scoped commits and pushes as part of task execution. After successful delivery, continue automatically with eligible approved work within the current assignment; routine completion needs no additional approval prompt. Every task body must include a `## Final phase: delivery and continuation` section pointing to this procedure.
 
-1. Run every gate in its `## Quality Gates` section.
-2. Fix failures and rerun the affected gate plus the regression gate.
-3. Record every result as `PASS` with evidence using `tq note`.
-4. Leave the task open when a required gate is failed, flaky, skipped, or unavailable.
+Execute this sequence for each task:
+
+1. Run every gate in its `## Quality Gates` section. Fix failures and rerun affected gates plus regression. A failed, flaky, skipped, or unavailable required gate keeps the task open.
+2. Record every gate as `PASS` with commands or artifact evidence using `tq note`. Confirm required artifacts are current.
+3. Run `tq done <id>`. Treat this local `done` state as delivery-pending until the push is confirmed; do not claim the next task yet.
+4. Inspect `git status --short --branch`, `git diff`, `git diff --cached`, and `git log --oneline -10`. Stage only this task's intended files, including its final task record and gate notes. Preserve unrelated user work and exclude secrets. A planning or policy task may intentionally update multiple task records as one outcome.
+5. Commit with a concise English message matching repository style and identifying the task. Keep normal hooks and configured signing enabled. Run `git push` to the configured upstream without force.
+6. Confirm the remote branch contains the committed task changes and no task commit remains unpushed. Use the existing upstream and remote ref; missing upstream, credentials, or rejected delivery are blockers, not permission to weaken Git checks. Git history and the confirmed remote commit are delivery evidence; do not edit a task merely to embed its own commit hash after pushing.
+7. Query `tq ready --label agent/developer --json`; an approved architect may also query `tq ready --label agent/architect --json`. Automatically read, assign, and claim the next approved `todo` task whose dependencies, execution role, additional execution restrictions, and current assigned scope permit it. Re-read the full task before editing. Continue the same loop until no eligible in-scope work remains, the user stops execution, or a blocker prevents safe progress.
+
+If commit, hooks, push, or remote confirmation fails, stop the loop, restore the task to `in-progress`, and record the failure with `tq note`. Resolve it before claiming another task. After content changes, rerun affected gates plus regression, record the new results, mark `done`, and create a new commit; do not amend failed/rejected commits, bypass hooks, force-push, or rewrite history. If recovery requires owner input, leave the task open and report the blocker.
+
+Automatic continuation never promotes or executes `inbox` proposals, expands a planning-only assignment into implementation, or authorizes LLM presentation-code authorship. Historical completed tasks retain their original execution history; this procedure governs new work and reopened tasks without retroactive reimplementation.
 
 A follow-up task may capture optional improvement, but it cannot defer a gate required for the current task's outcome.
 

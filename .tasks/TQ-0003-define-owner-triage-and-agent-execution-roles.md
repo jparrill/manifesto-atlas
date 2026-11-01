@@ -9,7 +9,7 @@ labels:
   - area/project
   - agent/architect
 created: 2026-11-01T16:40:35+01:00
-updated: 2026-11-01T16:43:02+01:00
+updated: 2026-11-01T17:20:32+01:00
 ---
 
 ## Outcome
@@ -75,6 +75,17 @@ Both commands must exit zero with no malformed queue files.
 
 - Run `tq init` after changing `.taskqueue.yaml`.
 - Record all gate results with `tq note` before completion.
+
+
+## Final phase: delivery and continuation
+
+After every quality gate passes, follow [AGENTS.md: Closing tasks and continuing work](../AGENTS.md#closing-tasks-and-continuing-work) for `TQ-0003`:
+
+1. Record all gate results with `tq note`, then run `tq done TQ-0003`.
+2. Commit only this task's intended changes and final task record, push to the configured upstream, and confirm the remote contains the commit.
+3. Only after confirmed delivery, automatically read, assign, and claim the next approved ready `todo` task within the current assignment, execution role, and additional execution restrictions.
+
+A commit/push/confirmation failure restores `TQ-0003` to `in-progress` with a blocker note and stops continuation. The linked procedure defines recovery, Git checks, owner-only inbox triage, and scope restrictions. Historical completed execution is not retroactively repeated.
 
 ## Specification
 

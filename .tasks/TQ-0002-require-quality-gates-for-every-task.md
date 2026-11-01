@@ -9,7 +9,7 @@ labels:
   - area/project
   - agent/architect
 created: 2026-11-01T16:35:23+01:00
-updated: 2026-11-01T16:41:59+01:00
+updated: 2026-11-01T17:20:32+01:00
 ---
 
 ## Outcome
@@ -74,6 +74,17 @@ Passes when all commands exit zero, this task remains readable, and Taskqueue re
 
 - Confirm no generated Taskqueue guide content was edited manually.
 - Record all gate results with `tq note` before moving the task to `done`.
+
+
+## Final phase: delivery and continuation
+
+After every quality gate passes, follow [AGENTS.md: Closing tasks and continuing work](../AGENTS.md#closing-tasks-and-continuing-work) for `TQ-0002`:
+
+1. Record all gate results with `tq note`, then run `tq done TQ-0002`.
+2. Commit only this task's intended changes and final task record, push to the configured upstream, and confirm the remote contains the commit.
+3. Only after confirmed delivery, automatically read, assign, and claim the next approved ready `todo` task within the current assignment, execution role, and additional execution restrictions.
+
+A commit/push/confirmation failure restores `TQ-0002` to `in-progress` with a blocker note and stops continuation. The linked procedure defines recovery, Git checks, owner-only inbox triage, and scope restrictions. Historical completed execution is not retroactively repeated.
 
 ## Specification
 

@@ -4,6 +4,8 @@ Every Taskqueue task must prove its outcome before it moves to `done`. Quality g
 
 This document defines the project-wide policy. Each task body defines the concrete gates that apply to its outcome.
 
+After the gates pass, every task must execute its final delivery phase under [the automatic closure and continuation procedure](../AGENTS.md#closing-tasks-and-continuing-work). A local `done` status alone does not prove committed and pushed delivery.
+
 ## Readiness and ownership
 
 Inbox tasks are unapproved proposals in Juan's review queue. They may be incomplete and agents must not execute or promote them.
@@ -127,10 +129,6 @@ Documentation tasks still run structural diagnostics, link checks when available
 
 ## Closing workflow
 
-1. Run every task-specific gate.
-2. Fix failures and rerun the affected gate and regression gate.
-3. Record results with `tq note`.
-4. Confirm no required gate is skipped or unresolved.
-5. Move the task to `done`.
+Follow [AGENTS.md: Closing tasks and continuing work](../AGENTS.md#closing-tasks-and-continuing-work). It defines the ordered gate-recording, `done`, task-scoped commit, confirmed push, failure recovery, and automatic next-task selection procedure. Include a `## Final phase: delivery and continuation` reference in every task body; delivery runs after the seven gates rather than creating a circular gate that requires its own future commit hash.
 
 A follow-up task may track optional improvement. It cannot be used to defer a failed gate required for the current outcome.
