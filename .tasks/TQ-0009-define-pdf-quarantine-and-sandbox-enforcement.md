@@ -1,15 +1,16 @@
 ---
 id: TQ-0009
 title: Define PDF quarantine and sandbox enforcement policy
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
   - area/provenance
   - area/extraction
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:21+01:00
+updated: 2026-11-02T00:21:23+01:00
 ---
 
 ## Outcome
@@ -81,3 +82,12 @@ A commit/push/confirmation failure restores `TQ-0009` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:21:09+01:00 — Design decision: rootless Podman/crun on a narrowly supported SELinux-enforcing Linux/cgroup-v2 host, with mandatory effective-control probes before real PDFs. Concrete profile defaults/ceilings include 100 MiB, 512 pages, 900-second conversion, 12-GiB memory and bounded tmpfs. Export occurs after adapter exit but before container tmpfs teardown, into pending host storage; only successful teardown and validation permit installation. Runtime qualification and actual resource tests belong to TQ-0021; this design does not claim those have run.
+- 2026-11-02T00:21:23+01:00 — Quality gates:
+  - Gate 1 PASS — docs/design/submission-isolation.md defines the supported local runtime, concrete enforced defaults and hard ceilings, bounded override rules, Inspect/RunIsolated records, error states, output admission and cleanup, and implementation test strategy. No runtime/presentation implementation is included.
+  - Gate 2 PASS — reviewed scenario table: valid native PDF advances intake only; spoofed MIME/oversize/excess pages/encrypted/corrupt inputs reject; timeout/OOM/process/output exhaustion fail with whole-job teardown; repository writes/network access are denied; unsupported enforcement blocks rather than falling back. Interfaces and limit/cleanup outcomes agree.
+  - Gate 3 PASS — make verify passed (baseline integrity, gofmt, compilation, vet, links/docs, CLI tests).
+  - Gate 4 PASS — git diff --check and python3 /tmp/opencode/check-design.py docs/design/submission-isolation.md docs/design/artifact-contract.md: valid UTF-8/newline, no whitespace errors, all relative links and heading anchors resolve, scenario and alternatives sections present; 41 table rows in the new contract.
+  - Gate 5 PASS — compared with SPEC untrusted-document-handling and submission-and-provenance-tests and the artifact contract: untrusted PDF bytes are immutable, isolation/configuration identities recorded, converter success separate from fidelity and official provenance, no schema/publication rules weakened. Technical English; public files and SPEC unchanged.
+  - Gate 6 PASS — design review covers spoofed inputs, symlink/traversal/races, bombs, subprocess trees, no host/home/agent/socket mounts, no runtime downloads, actual-control qualification, strict limits, pending output export and cleanup failures. Unavailable enforcement fails closed. No secrets/private paths in committed design. Actual sandbox probes are mandatory implementation gates, not claimed executed here.
+  - Gate 7 PASS — current document SHA-256 a0320a58e60b94f8afbabfdbffe6194b3444527e8ff199ad2cb4cc2fd9beef74; static design is deterministic, gates recorded; only this design and task record changed after the preceding confirmed delivery.
