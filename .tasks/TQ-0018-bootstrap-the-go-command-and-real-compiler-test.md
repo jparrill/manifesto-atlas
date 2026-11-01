@@ -1,8 +1,9 @@
 ---
 id: TQ-0018
 title: Bootstrap the Go command and real compiler/test gates
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/chore
   - agent/developer
@@ -11,7 +12,7 @@ labels:
 depends_on:
   - TQ-0007
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-01T23:54:09+01:00
 ---
 
 ## Outcome
@@ -84,3 +85,11 @@ A commit/push/confirmation failure restores `TQ-0018` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-01T23:53:50+01:00 — Quality gates:
+  - Gate 1 PASS — 'make test-cli' runs the real Go suite (13 test cases, all PASS): TestHelp/TestNoArgsShowsHelp (help behavior), TestVersion (version + go runtime), TestUnknownCommand (exit 2), TestInvalidFlag (exit 2, 'flag provided but not defined'), TestMissingRequiredArgument (exit 2), TestPathWithSpaces (path with spaces echoed intact, exit 1), TestStageNotAvailable (exit 1 + owning task), TestProcessExitCodes (compiled binary: version=0, stage=1, unknown=2, missing-arg=2, invalid-flag=2 — propagated failure), TestProcessPathWithSpaces (binary echoes spaces path intact), TestHostilePathTreatedAsData ('; rm -rf /', '$(reboot)', backticks, glob '*' echoed as data), TestNoArtifactsOnFailure (no files created on stage/usage failures). Clean checkout builds (go build) and shows documented help. make check rejects unformatted Go (gofmt) and invalid Go (go build syntax error) — both verified by injection. Stage implementations register via the stages slice without changing user-facing names.
+  - Gate 2 PASS — same focused suite as Gate 1: 'make test-cli' (go test ./internal/cli/...) all PASS.
+  - Gate 3 PASS — 'make verify' exit 0; 'git diff --check' exit 0; 'tq list --json' exit 0 empty stderr; 'tq show TQ-0018 --json' exit 0 empty stderr.
+  - Gate 4 PASS — 'git diff --check' exit 0; 'make check' exit 0 (gofmt -l cmd internal empty; go build -o /dev/null ./cmd/manifesto-atlas compiles; go vet ./... clean). No warning-or-higher findings.
+  - Gate 5 PASS — the 12 stage names in internal/cli/cli.go are byte-identical (as a set) to the Makefile .PHONY pipeline targets and the 12 docs/SPEC.md#make-targets entries (diffs empty). Changed files: go.mod, cmd/manifesto-atlas/, internal/cli/, Makefile, docs/MAKEFILE.md, task record — all technical/English; no public/Spanish file changed; docs/SPEC.md untouched (no product decision changed).
+  - Gate 6 PASS — non-test Go (cli.go, main.go) imports only flag/fmt/io/os/runtime: no net/http, no os/exec, no filesystem writes, so help/default/stages cannot fetch, modify archive content, or publish. Hostile flag/path values treated as data (TestHostilePathTreatedAsData, TestInvalidFlag); no shell interpolation (CLI is pure Go; TestProcessPathWithSpaces proves a spaces path is echoed intact). No secrets or private absolute paths in Go, Makefile, or docs/MAKEFILE.md. (os/exec appears only in cli_test.go to build/run the binary for exit-code tests.)
+  - Gate 7 PASS — artifacts current (go.mod, cmd/, internal/, Makefile, docs/MAKEFILE.md); 'make verify' deterministic (two identical-input runs byte-identical, exit 0); go test cached result stable; no unrelated user work removed (git status shows only this task's files).

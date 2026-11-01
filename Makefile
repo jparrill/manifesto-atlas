@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify
+.PHONY: help check verify test-cli
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -22,8 +22,9 @@ help:
 	  "" \
 	  "Baseline (implemented):" \
 	  "  make help                  Show this help." \
-	  "  make check                 Run current baseline checks (Git + Taskqueue)." \
-	  "  make verify                Run full verification (check + docs + links)." \
+	  "  make check                 Run baseline checks (Git + Taskqueue + Go)." \
+	  "  make verify                Run full verification (check + docs + links + tests)." \
+	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -46,6 +47,12 @@ check:
 	@git diff --check
 	@echo "check: taskqueue integrity"
 	@$(call tq-clean)
+	@echo "check: go format"
+	@$(call go-fmt-check)
+	@echo "check: go build"
+	@go build -o /dev/null ./cmd/manifesto-atlas
+	@echo "check: go vet"
+	@go vet ./...
 	@echo "check: OK"
 
 verify: check
@@ -53,7 +60,14 @@ verify: check
 	@$(call docs-check)
 	@echo "verify: relative links"
 	@$(call link-check)
+	@echo "verify: go test (test-cli)"
+	@$(MAKE) test-cli
 	@echo "verify: OK"
+
+# Focused gate for the Go CLI test suite. Runs the real tests without invoking
+# live models or requiring live official websites.
+test-cli:
+	@go test ./internal/cli/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 
@@ -95,6 +109,12 @@ endef
 # still exiting 0, so a warning-only failure must be rejected).
 define tq-clean
 @errfile=$$(mktemp); tq list --json >/dev/null 2>"$$errfile"; code=$$?; if [ $$code -ne 0 ]; then echo "tq list exited $$code:" >&2; cat "$$errfile" >&2; rm -f "$$errfile"; exit 1; fi; if [ -s "$$errfile" ]; then echo "tq list emitted warnings (malformed or skipped task files):" >&2; cat "$$errfile" >&2; rm -f "$$errfile"; exit 1; fi; rm -f "$$errfile"; echo "  taskqueue OK"
+endef
+
+# Go formatting: gofmt -l lists unformatted files; an empty result means all
+# Go sources under cmd/ and internal/ are correctly formatted.
+define go-fmt-check
+@unformatted=$$(gofmt -l cmd internal); if [ -n "$$unformatted" ]; then echo "gofmt: unformatted files:"; echo "$$unformatted"; exit 1; fi; echo "  gofmt OK"
 endef
 
 # Documentation structure: the required tracked files must exist.

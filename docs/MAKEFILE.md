@@ -21,8 +21,9 @@ pipeline stages.
 | Target | What it does | Tools used |
 | --- | --- | --- |
 | `make help` | Print this target list. Distinguish implemented checks from planned stages. | none (print only) |
-| `make check` | Run current baseline checks: Git whitespace (`git diff --check`) and Taskqueue integrity. | `git`, `tq` |
-| `make verify` | Run `check`, plus documentation-structure and relative-link checks over the tracked docs. | `git`, `tq`, `grep`, `sed`, `dirname`, `test` |
+| `make check` | Run baseline checks: Git whitespace, Taskqueue integrity, and Go format/build/vet. | `git`, `tq`, `gofmt`, `go` |
+| `make verify` | Run `check`, plus documentation-structure, relative-link, and Go test checks. | `git`, `tq`, `grep`, `dirname`, `test`, `go` |
+| `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -43,6 +44,32 @@ network retrieval, model invocation, or publication.
 - **Relative links** — every non-URL, non-anchor Markdown link in the tracked
   docs must resolve to an existing file or directory relative to the doc that
   holds it.
+- **Go format** — `gofmt -l cmd internal` must list no files; any unformatted Go
+  source fails the check.
+- **Go build** — `go build -o /dev/null ./cmd/manifesto-atlas` must compile the
+  entry point (and its dependencies) without leaving a build artifact.
+- **Go vet** — `go vet ./...` must report no static-analysis findings.
+- **Go tests** — `make test-cli` runs `go test ./internal/cli/...`; the real CLI
+  test suite must pass. `make verify` includes it.
+
+## Go module
+
+The repository is a Go module rooted at the checkout:
+
+- Module path: `github.com/jparrill/manifesto-atlas`.
+- Supported Go version: `go >= 1.26` (pinned in `go.mod`). The `version`
+  command reports the exact runtime used to build.
+- No external dependencies: the CLI uses only the standard library.
+- Layout:
+  - `cmd/manifesto-atlas/` — the entry point; dispatches to `internal/cli` and
+    propagates its exit code.
+  - `internal/cli/` — the command dispatcher and its tests.
+
+The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
+stage requires exactly one target-path argument and reports not-available (exit
+code 1) until its owning task lands; unknown commands, invalid flags, and wrong
+argument counts exit with code 2. Argument values are treated as opaque data.
+These behaviors are covered by the `test-cli` suite.
 
 ## Planned pipeline stages
 
@@ -73,16 +100,16 @@ success.
 
 ## Integration path
 
-The baseline checks deliberately use only tools that exist in this
-documentation/Taskqueue checkout. As the backlog lands, the same targets gain
-real behavior without changing their names or the caller's expectations:
+The Go module and its compiler/test gates are in place. As the remaining
+backlog lands, the same targets gain real behavior without changing their names
+or the caller's expectations:
 
-- **Go checks.** `TQ-0018` bootstraps the Go module and the real compiler/test
-  gates. After that, `make check`/`make verify` add `gofmt`, `go build`, `go
-  vet`, and `go test` for changed packages, and the stage targets call their
-  owning Go commands instead of the not-available recipe. Deterministic work
-  (conversion, checksums, schema validation, templates, HTML parsing,
-  screenshot capture, deployment) stays in Go, per
+- **Go checks.** `make check` runs `gofmt`, `go build`, and `go vet`; `make
+  verify` runs the real `go test` suite via `make test-cli`. As stage
+  implementations land, their targets replace the not-available recipe with the
+  owning Go command, and `make check`/`make verify` extend to the new packages.
+  Deterministic work (conversion, checksums, schema validation, templates, HTML
+  parsing, screenshot capture, deployment) stays in Go, per
   `docs/SPEC.md#module-seams`.
 - **Model checks.** The semantic stages (`normalize`, `validate-content`,
   `validate-extraction`, `validate-site`) run schema-constrained agent jobs in
