@@ -1,8 +1,9 @@
 ---
 id: TQ-0014
 title: Define canonical programme schema and citation semantics
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -15,7 +16,7 @@ depends_on:
   - TQ-0013
   - TQ-0012
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T00:32:56+01:00
 ---
 
 ## Outcome
@@ -90,3 +91,11 @@ A commit/push/confirmation failure restores `TQ-0014` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:21+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:32:56+01:00 — Quality gates:
+  - Gate 1 PASS — canonical-programme.md defines strict top-level/topic/Statement/Measure/Citation/metadata fields, all five states, every public field evidence form, original-page excerpt/offset semantics, deterministic stable IDs/order/limits and rejection cases. Canonical JSON is the sole public-content contract.
+  - Gate 2 PASS — scenario table reviewed against fields: full valid draft, uncited summary/action/condition, invalid original page/block/offset, duplicate IDs, missing topic, unknown schema/taxonomy, unsafe markup and unsupported institution each has an explicit result. Five-state and public-field examples are labelled synthetic fixture recipes; they do not masquerade as real complete programme JSON.
+  - Gate 3 PASS — make verify passed all baseline/Go checks and tests.
+  - Gate 4 PASS — git diff --check; design structural diagnostic passed UTF-8/whitespace, links/anchors, scenarios and alternatives. Cross-checked citation IDs, original-page maps and taxonomy/state references against existing designs.
+  - Gate 5 PASS — compared with SPEC canonical-programme-model/llm-validation/deterministic-rendering and source/extraction/taxonomy/artifact contracts; metadata/provenance/lifecycle and future political assessments remain separate; no circular approvals in draft hashes; Spanish public text, English technical contract; no SPEC/presentation implementation changes.
+  - Gate 6 PASS — reviewed bounded strict parsing, no unknown fields, hostile source instructions as data, generated markup rejection, literal quote escaping, fixed source/citation link construction and independent semantic validation. No source text or self-asserted valid flag grants authority; no secrets/private paths embedded.
+  - Gate 7 PASS — current design/example/scenario artifacts and all gate results recorded; canonical ordering and immutable citation/measure identity boundaries specified, no unrelated work changed. Executable schemas/fixtures/runtime behavior remain required in TQ-0037/0038, not claimed executed here.
