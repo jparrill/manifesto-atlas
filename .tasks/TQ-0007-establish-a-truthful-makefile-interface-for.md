@@ -1,7 +1,7 @@
 ---
 id: TQ-0007
 title: Establish a truthful Makefile interface for current and planned stages
-status: in-progress
+status: done
 priority: high
 assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
@@ -10,7 +10,7 @@ labels:
   - area/project
   - area/cli
 created: 2026-11-01T17:07:32+01:00
-updated: 2026-11-01T19:38:19+01:00
+updated: 2026-11-01T23:07:20+01:00
 ---
 
 ## Outcome
@@ -94,3 +94,4 @@ A commit/push/confirmation failure restores `TQ-0007` to `in-progress` with a bl
   - Gate 6 PASS — 'make check' and 'make verify' both exit 0 when the checkout path contains a space ('disposable with space'); failure propagation proven by the whitespace and malformed-task fixtures; baseline recipes invoke only git diff --check, tq list, grep, dirname, test, mktemp, cat, printf, echo, rm (no curl/wget/git fetch/push/model calls — the only http strings are the link-check 'case' that skips URLs); no secrets or private absolute paths in Makefile or docs/MAKEFILE.md.
   - Gate 7 PASS — artifacts current (Makefile + docs/MAKEFILE.md); 'make verify' is deterministic (two identical-input runs produced byte-identical output, exit 0 both); task record complete (this note).
 - 2026-11-01T19:38:19+01:00 — BLOCKER (delivery): 'git commit' failed at GPG signing — 'gpg: signing failed: Timeout'. The configured signing key user.signingkey=DE30627E53AC3969 requires a passphrase; the curses pinentry launched and timed out in the automated context, and the key is not cached in the gpg-agent (loopback test without passphrase returned 'Bad passphrase'). All 7 gates already PASS and the 3 intended files (Makefile, docs/MAKEFILE.md, .tasks/TQ-0007-*.md) are staged. Per AGENTS.md I did NOT weaken the signature (no --no-gpg-sign, no commit.gpgsign change, hooks intact). Task restored to in-progress. Resolution needs owner input: unlock/cache the signing key passphrase in the gpg-agent (e.g. run an interactive 'gpg' sign or 'gpg-connect-agent' preset-passphrase), then re-run the commit+push. After a successful signed commit and confirmed push, mark done and continue.
+- 2026-11-01T23:07:20+01:00 — DELIVERED: signing key DE30627E53AC3969 was cached in the gpg-agent after owner unlock; signed commit cf157f8 'chore: establish truthful Makefile interface (TQ-0007)' (3 files: Makefile, docs/MAKEFILE.md, task record) pushed to origin/main and confirmed (local main == origin/main == cf157f8). No unpushed commits. Task marked done.
