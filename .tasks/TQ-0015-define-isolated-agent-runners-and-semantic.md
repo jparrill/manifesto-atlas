@@ -1,8 +1,9 @@
 ---
 id: TQ-0015
 title: Define isolated agent runners and semantic report contracts
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/docs
   - agent/architect
@@ -16,7 +17,7 @@ depends_on:
   - TQ-0014
   - TQ-0012
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T00:35:27+01:00
 ---
 
 ## Outcome
@@ -91,3 +92,11 @@ A commit/push/confirmation failure restores `TQ-0015` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T00:35:27+01:00 — Quality gates:
+  - Gate 1 PASS — semantic-validation.md defines Request/Response/common and per-role report shapes, all six skills with pass/fail/insufficient examples, provider/Auriga immutable identity, capability/size/time/retry limits, independent contexts and attestation integration. Malformed/unsupported/injected/incomplete jobs fail closed.
+  - Gate 2 PASS — reviewed two-model and one-model isolated cases, leaked contexts, prompt injection, timeout/cancellation, malformed JSON, contradictory current cohorts and missing original evidence. Exact checked statement/page/topic unions and bounded full-source reconciliation prevent partial approval; normalizer pass is draft only.
+  - Gate 3 PASS — make verify passed baseline integrity, Go checks and tests.
+  - Gate 4 PASS — git diff --check; structural diagnostic passed UTF-8, whitespace, links/anchors, scenario/alternative sections and tables. All six role names match SPEC and details fields/results agree with existing designs.
+  - Gate 5 PASS — compared SPEC agent-skills/llm-validation/untrusted-document-handling and artifact/isolation/canonical/extraction/provenance/taxonomy contracts; independent claim plus coverage required, original images available, local explicit model work distinct from offline regression, no human fallback or presentation-code authorship. No product/SPEC change.
+  - Gate 6 PASS — design review verifies no model shell/general network/repository/signing access, endpoint-restricted credential-isolated broker, evidence as data, clean sessions/hidden-state separation, no auto-repair/retry-until-pass/model swapping, bounded late-response/teardown behavior. Unknown identity/capability/evidence cannot gain authority. No secrets/private paths.
+  - Gate 7 PASS — current design/scenarios and gate record complete; identities/configurations/chunk plan and external timing boundaries deterministic. Only this design/task record changed; actual runner/skill qualification and real model gates remain mandatory dependent implementation work, not claimed executed in this design task.
