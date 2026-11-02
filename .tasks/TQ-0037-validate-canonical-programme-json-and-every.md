@@ -1,8 +1,9 @@
 ---
 id: TQ-0037
 title: Validate canonical programme JSON and every public citation
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -13,7 +14,7 @@ depends_on:
   - TQ-0036
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:23+01:00
+updated: 2026-11-02T13:25:28+01:00
 ---
 
 ## Outcome
@@ -86,3 +87,4 @@ A commit/push/confirmation failure restores `TQ-0037` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:23+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T13:25:21+01:00 — Quality gates — TQ-0037 (all PASS). Gate 1/2 (make test-canonical): ok internal/canonical, 18 PASS. TestValidProgramme proves a complete 21-topic atlas.programme/v1 draft round-trips deterministically and exercises all five states (proposals/mentioned/not-covered/not-applicable/unclear) with every public factual field cited; TestDeterministicBytes proves canonical idempotency, identical-structure byte equality, and key-order independence; TestUnknownVersion rejects atlas.programme/v2; TestSourceMismatch rejects a wrong archived checksum binding; TestMissingCitation rejects an uncited global summary (citations=[]); TestInvalidPage rejects page 99 beyond the 3-page extraction; TestExcerptMismatch rejects an excerpt that does not equal the exact block [start:end] slice; TestDuplicateMeasure and TestDuplicateStatement reject duplicate IDs; TestUnknownField rejects an injected extra top-level field (DisallowUnknownFields); TestStateConflict rejects proposals without primary measures; TestNotCoveredIncompleteBasis rejects not-covered without complete 1..N page coverage; TestNotApplicableMissingRule rejects not-applicable without an applicability rule; TestUnknownInstitution/TestUnknownRelation reject out-of-profile references; TestUnsafeText rejects a generated statement containing raw markup; TestNationalScope validates a national-scope variant alongside the autonomous fixture; TestMeasureCitationsUnion rejects a measure whose citations are not the deduped source-order union of its statement citations. Gate 3 (regression): make verify -> check OK (git whitespace, tq list --json no warnings, gofmt OK, go build OK, go vet OK, docs structure OK, relative links OK) and go test test-cli/test-artifacts/test-attestations/test-taxonomy/test-canonical all ok; git diff --check -> exit 0. Gate 4 (static/structural): gofmt -l cmd internal -> no files; go build ./... and go vet ./internal/canonical/ -> no findings; git diff --check -> 0 errors. Gate 5 (docs/spec consistency): docs/MAKEFILE.md updated (surface table, Go-tests bullet, module layout) for the new atlas.programme/v1 package and make test-canonical target; technical text English; no product decision changed. Gate 6 (trust-boundary): negative cases all fail closed (unknown version, source mismatch, uncited text, out-of-range page, excerpt mismatch, duplicate IDs, unknown fields, state conflicts, incomplete basis, missing rule, unknown institution/relation, unsafe generated markup); plain-data rule bounds length, rejects control chars except newline/tab, raw <> delimiters, markdown link syntax, and executable schemes; quoted excerpts preserved as data; no secrets or absolute private paths committed. Gate 7 (artifact/task record): fixtures deterministic (pure stdlib, no live models, no live official websites); repeated make verify identical; only TQ-0037 intended files staged (internal/canonical/{canonical.go,canonical_test.go}, Makefile, docs/MAKEFILE.md, .tasks/TQ-0037-*.md).

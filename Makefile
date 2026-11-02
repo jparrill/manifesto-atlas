@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy
+.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -28,6 +28,7 @@ help:
 	  "  make test-artifacts        Run the focused artifact envelope/graph test suite." \
 	  "  make test-attestations     Run the focused attestation signing/verification suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/jurisdiction validation suite." \
+	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -71,6 +72,8 @@ verify: check
 	@$(MAKE) test-attestations
 	@echo "verify: go test (test-taxonomy)"
 	@$(MAKE) test-taxonomy
+	@echo "verify: go test (test-canonical)"
+	@$(MAKE) test-canonical
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -95,6 +98,12 @@ test-attestations:
 # Deterministic and offline; no live models or official websites.
 test-taxonomy:
 	@go test ./internal/taxonomy/...
+
+# Focused gate for the atlas.programme/v1 canonical schema, topic/state rules,
+# citation/page/excerpt evidence, source binding, and deterministic bytes.
+# Deterministic and offline; no live models or official websites.
+test-canonical:
+	@go test ./internal/canonical/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 
