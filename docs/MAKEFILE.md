@@ -24,6 +24,7 @@ pipeline stages.
 | `make check` | Run baseline checks: Git whitespace, Taskqueue integrity, and Go format/build/vet. | `git`, `tq`, `gofmt`, `go` |
 | `make verify` | Run `check`, plus documentation-structure, relative-link, and Go test checks. | `git`, `tq`, `grep`, `dirname`, `test`, `go` |
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
+| `make test-artifacts` | Run the focused `atlas.artifact/v1` envelope/graph test suite (`go test ./internal/artifact/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -49,8 +50,9 @@ network retrieval, model invocation, or publication.
 - **Go build** — `go build -o /dev/null ./cmd/manifesto-atlas` must compile the
   entry point (and its dependencies) without leaving a build artifact.
 - **Go vet** — `go vet ./...` must report no static-analysis findings.
-- **Go tests** — `make test-cli` runs `go test ./internal/cli/...`; the real CLI
-  test suite must pass. `make verify` includes it.
+- **Go tests** — `make test-cli` runs `go test ./internal/cli/...` and `make
+  test-artifacts` runs `go test ./internal/artifact/...`; both suites must pass.
+  `make verify` includes them.
 
 ## Go module
 
@@ -64,6 +66,9 @@ The repository is a Go module rooted at the checkout:
   - `cmd/manifesto-atlas/` — the entry point; dispatches to `internal/cli` and
     propagates its exit code.
   - `internal/cli/` — the command dispatcher and its tests.
+  - `internal/artifact/` — the `atlas.artifact/v1` canonicalization, hashing,
+    manifest/graph validation, and invalidation logic, and its fixtures
+    (TQ-0019).
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit

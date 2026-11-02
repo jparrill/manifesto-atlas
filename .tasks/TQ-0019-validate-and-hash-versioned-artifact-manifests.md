@@ -1,8 +1,9 @@
 ---
 id: TQ-0019
 title: Validate and hash versioned artifact manifests and reports
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -11,7 +12,7 @@ depends_on:
   - TQ-0018
   - TQ-0008
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T10:35:28+01:00
 ---
 
 ## Outcome
@@ -84,3 +85,11 @@ A commit/push/confirmation failure restores `TQ-0019` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T10:35:16+01:00 — Quality gates:
+  - Gate 1 PASS — AC1 (identical logical inputs -> identical canonical bytes/hashes) proven by TestDeterminism and TestCanonicalReferenceVectors (key-order/whitespace variants hash to one ID). AC2 (each source/extraction/schema/taxonomy/prompt/model/tool/configuration mutation invalidates precisely its descendants) proven by TestStalenessPrecise across seven leaf kinds, each asserted equal to computed reverse-reachable descendants. AC3 (malformed/incomplete manifests cannot advance; secondary evidence never replaces canonical) proven by TestManifestStructure (unknown version/kind/slot/field and bad hash rejected), TestValidatePayload, TestReportResult (only pass advances), and graph validation (dangling/cycle/kind-mismatch rejected).
+  - Gate 2 PASS — make test-artifacts: automated cases prove determinism; each input mutation (staleness); unknown version; malformed report; dangling reference; graph cycle; plus duplicate-id, id-mismatch, payload integrity, and all 26 kinds.
+  - Gate 3 PASS — make verify: git whitespace, taskqueue integrity, gofmt, go build, go vet, docs structure, relative links, go test (test-cli + test-artifacts) all pass.
+  - Gate 4 PASS — gofmt -l clean; go build and go vet ./... clean via make check; git diff --check clean.
+  - Gate 5 PASS — docs/MAKEFILE.md updated (test-artifacts added to baseline surface, Go-tests bullet, and internal/artifact layout); Makefile help lists the target; interfaces match docs/design/artifact-contract.md; technical text English; no public (Spanish) content changed.
+  - Gate 6 PASS — bounded sizes (16MiB payload, 1MiB manifest, 64MiB graph, 10000 nodes, 1024 edges) and depth 64 (TestLimits, TestCanonicalDepthLimit); rejects BOM, trailing values, duplicate members, fractional/exponent/negative-zero numbers, out-of-range integers, invalid UTF-8, and unpaired/invalid surrogates. Package is purely in-memory: no filesystem, network, model, or path following, so a manifest cannot be followed into arbitrary files/network. No secrets or private absolute paths committed.
+  - Gate 7 PASS — fixtures are deterministic pure functions of inputs (no timestamps); make test-artifacts and make verify pass; all gate results recorded before done.

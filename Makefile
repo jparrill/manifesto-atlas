@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli
+.PHONY: help check verify test-cli test-artifacts
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -25,6 +25,7 @@ help:
 	  "  make check                 Run baseline checks (Git + Taskqueue + Go)." \
 	  "  make verify                Run full verification (check + docs + links + tests)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
+	  "  make test-artifacts        Run the focused artifact envelope/graph test suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -62,12 +63,20 @@ verify: check
 	@$(call link-check)
 	@echo "verify: go test (test-cli)"
 	@$(MAKE) test-cli
+	@echo "verify: go test (test-artifacts)"
+	@$(MAKE) test-artifacts
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
 # live models or requiring live official websites.
 test-cli:
 	@go test ./internal/cli/...
+
+# Focused gate for the atlas.artifact/v1 envelope and graph validator. Exercises
+# canonicalization, hashing, manifest/graph validation, and invalidation fixtures
+# offline; no live models or official websites.
+test-artifacts:
+	@go test ./internal/artifact/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 
