@@ -77,35 +77,18 @@ func TestStatesAndLabels(t *testing.T) {
 	}
 }
 
-func profileWith(relations map[string]Relation, sources []LegalSource) Profile {
-	return Profile{
-		Version:       Release,
-		Scope:         ScopeNational,
-		Geography:     "ES",
-		Institution:   "test",
-		EffectiveDate: "2026-01-01",
-		Sources:       sources,
-		Relations:     relations,
-	}
-}
-
-func src() LegalSource {
-	return LegalSource{Document: "BOE-A-1978-31229", Article: "149", Version: "1978", Hash: "sha256:ab"}
-}
-
 func TestClassifyStates(t *testing.T) {
-	base := profileWith(map[string]Relation{"healthcare": RelShared}, []LegalSource{src()})
 	cases := []struct {
 		name string
 		in   ClassifyInput
 		want State
 	}{
-		{"proposals", ClassifyInput{TopicID: "healthcare", HasAction: true, FullCoverage: true, EvidenceReadable: true, Profile: base}, StateProposals},
-		{"mentioned", ClassifyInput{TopicID: "healthcare", HasDiscussion: true, FullCoverage: true, EvidenceReadable: true, Profile: base}, StateMentioned},
-		{"not-covered", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Profile: base}, StateNotCovered},
-		{"unclear-unreadable", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: false, Profile: base}, StateUnclear},
-		{"unclear-no-coverage", ClassifyInput{TopicID: "healthcare", FullCoverage: false, EvidenceReadable: true, Profile: base}, StateUnclear},
-		{"unclear-unknown-relation", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Profile: profileWith(map[string]Relation{}, nil)}, StateUnclear},
+		{"proposals", ClassifyInput{TopicID: "healthcare", HasAction: true, FullCoverage: true, EvidenceReadable: true, Applicability: AppInScope}, StateProposals},
+		{"mentioned", ClassifyInput{TopicID: "healthcare", HasDiscussion: true, FullCoverage: true, EvidenceReadable: true, Applicability: AppInScope}, StateMentioned},
+		{"not-covered", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Applicability: AppInScope}, StateNotCovered},
+		{"unclear-unreadable", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: false, Applicability: AppInScope}, StateUnclear},
+		{"unclear-no-coverage", ClassifyInput{TopicID: "healthcare", FullCoverage: false, EvidenceReadable: true, Applicability: AppInScope}, StateUnclear},
+		{"unclear-unknown-applicability", ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Applicability: AppUnknown}, StateUnclear},
 	}
 	for _, tc := range cases {
 		got, err := Classify(tc.in)
@@ -119,143 +102,73 @@ func TestClassifyStates(t *testing.T) {
 }
 
 func TestClassifyNotApplicable(t *testing.T) {
-	// outside with positive versioned evidence and no content -> not-applicable.
-	p := profileWith(map[string]Relation{"defence-foreign-eu": RelOutside}, []LegalSource{src()})
-	got, err := Classify(ClassifyInput{TopicID: "defence-foreign-eu", FullCoverage: true, EvidenceReadable: true, Profile: p})
+	// Out-of-scope with retained scope evidence and no content -> not-applicable.
+	got, err := Classify(ClassifyInput{
+		TopicID: "defence-foreign-eu", FullCoverage: true, EvidenceReadable: true,
+		Applicability: AppOutOfScope,
+		ScopeEvidence: &ScopeEvidence{Path: "evidence/scope.html", SHA256: "sha256:" + "ab"},
+	})
 	if err != nil {
 		t.Fatalf("classify: %v", err)
 	}
 	if got != StateNotApplicable {
 		t.Fatalf("got %s, want not-applicable", got)
 	}
-	// outside without legal evidence must be rejected (no implicit all-outside rule).
-	pNoSrc := profileWith(map[string]Relation{"defence-foreign-eu": RelOutside}, nil)
-	if _, err := Classify(ClassifyInput{TopicID: "defence-foreign-eu", FullCoverage: true, EvidenceReadable: true, Profile: pNoSrc}); err == nil {
-		t.Fatal("outside without evidence accepted")
+	// Out-of-scope without scope evidence must be rejected (no implicit
+	// all-outside rule, no guessed exclusion).
+	if _, err := Classify(ClassifyInput{
+		TopicID: "defence-foreign-eu", FullCoverage: true, EvidenceReadable: true,
+		Applicability: AppOutOfScope,
+	}); err == nil {
+		t.Fatal("out-of-scope without evidence accepted")
+	}
+	// Out-of-scope with an empty evidence reference must be rejected.
+	if _, err := Classify(ClassifyInput{
+		TopicID: "defence-foreign-eu", FullCoverage: true, EvidenceReadable: true,
+		Applicability: AppOutOfScope,
+		ScopeEvidence: &ScopeEvidence{},
+	}); err == nil {
+		t.Fatal("out-of-scope with empty evidence accepted")
 	}
 }
 
-func TestSharedPowersNationalAutonomous(t *testing.T) {
-	// Shared healthcare competence: national and autonomous both applicable;
-	// absence is not-covered in each (not not-applicable, not opposition).
-	national := profileWith(map[string]Relation{"healthcare": RelShared}, []LegalSource{src()})
-	national.Scope = ScopeNational
-	autonomous := profileWith(map[string]Relation{"healthcare": RelShared}, []LegalSource{src()})
-	autonomous.Scope = ScopeAutonomous
-	for name, p := range map[string]Profile{"national": national, "autonomous": autonomous} {
-		got, err := Classify(ClassifyInput{TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Profile: p})
+func TestSharedAndGeneralScopeNotExcluded(t *testing.T) {
+	// Shared powers (healthcare) and broad general-political topics are in-scope:
+	// absence is not-covered, never a blanket not-applicable exclusion.
+	for _, tc := range []struct {
+		name    string
+		topicID string
+	}{
+		{"shared-healthcare", "healthcare"},
+		{"general-political-energy", "energy"},
+	} {
+		got, err := Classify(ClassifyInput{
+			TopicID: tc.topicID, FullCoverage: true, EvidenceReadable: true,
+			Applicability: AppInScope,
+		})
 		if err != nil {
-			t.Fatalf("%s: %v", name, err)
+			t.Fatalf("%s: %v", tc.name, err)
 		}
 		if got != StateNotCovered {
-			t.Fatalf("%s: got %s, want not-covered", name, got)
+			t.Fatalf("%s: got %s, want not-covered", tc.name, got)
 		}
 	}
 }
 
-func TestGeneralScopeApplicable(t *testing.T) {
-	// A broad general-political programme keeps all topics applicable; absence is
-	// not-covered.
-	p := profileWith(map[string]Relation{"energy": RelDirect}, []LegalSource{src()})
-	p.Scope = ScopeGeneral
-	got, err := Classify(ClassifyInput{TopicID: "energy", FullCoverage: true, EvidenceReadable: true, Profile: p})
-	if err != nil {
-		t.Fatalf("classify: %v", err)
-	}
-	if got != StateNotCovered {
-		t.Fatalf("got %s, want not-covered", got)
+func TestClassifyUnknownTopic(t *testing.T) {
+	if _, err := Classify(ClassifyInput{
+		TopicID: "bogus-topic", FullCoverage: true, EvidenceReadable: true,
+		Applicability: AppInScope,
+	}); err == nil {
+		t.Fatal("unknown topic accepted")
 	}
 }
 
-func TestValidateProfile(t *testing.T) {
-	valid := profileWith(map[string]Relation{"healthcare": RelDirect}, []LegalSource{src()})
-	if err := ValidateProfile(valid); err != nil {
-		t.Fatalf("valid profile rejected: %v", err)
-	}
-	// Missing version.
-	noVer := valid
-	noVer.Version = ""
-	if err := ValidateProfile(noVer); err == nil {
-		t.Error("missing version accepted")
-	}
-	// Bad scope.
-	badScope := valid
-	badScope.Scope = Scope("galactic")
-	if err := ValidateProfile(badScope); err == nil {
-		t.Error("bad scope accepted")
-	}
-	// Unknown topic in relations.
-	unknownTopic := valid
-	unknownTopic.Relations = map[string]Relation{"bogus": RelDirect}
-	if err := ValidateProfile(unknownTopic); err == nil {
-		t.Error("unknown topic in relations accepted")
-	}
-	// Unknown relation.
-	unknownRel := valid
-	unknownRel.Relations = map[string]Relation{"healthcare": Relation("maybe")}
-	if err := ValidateProfile(unknownRel); err == nil {
-		t.Error("unknown relation accepted")
-	}
-	// Unpinned source.
-	unpinned := valid
-	unpinned.Sources = []LegalSource{LegalSource{Document: "x", Article: "", Version: "1", Hash: "h"}}
-	if err := ValidateProfile(unpinned); err == nil {
-		t.Error("unpinned source accepted")
-	}
-}
-
-func TestCompatibleComparison(t *testing.T) {
-	a := profileWith(nil, nil)
-	b := profileWith(nil, nil)
-	if err := CompatibleComparison(a, b); err != nil {
-		t.Fatalf("same version+scope rejected: %v", err)
-	}
-	diffVer := b
-	diffVer.Version = "1.1.0"
-	if err := CompatibleComparison(a, diffVer); err == nil {
-		t.Error("different taxonomy version accepted")
-	}
-	diffScope := b
-	diffScope.Scope = ScopeAutonomous
-	if err := CompatibleComparison(a, diffScope); err == nil {
-		t.Error("national vs regional comparison accepted")
-	}
-}
-
-func sameMappings() []Mapping {
-	maps := make([]Mapping, 0, len(topics))
-	for _, t := range topics {
-		maps = append(maps, Mapping{OldTopicID: t.ID, NewTopicID: t.ID, Kind: "same"})
-	}
-	return maps
-}
-
-func TestMigration(t *testing.T) {
-	// Unchanged hash: not a real new release.
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: Release, OldHash: "sha256:a", NewHash: "sha256:a", Mappings: sameMappings()}); err == nil {
-		t.Error("unchanged hash accepted")
-	}
-	// Empty mappings.
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: "1.1.0", OldHash: "sha256:a", NewHash: "sha256:b", Mappings: nil}); err == nil {
-		t.Error("empty migration accepted")
-	}
-	// Incomplete mapping (drop one topic).
-	incomplete := sameMappings()[:20]
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: "1.1.0", OldHash: "sha256:a", NewHash: "sha256:b", Mappings: incomplete}); err == nil {
-		t.Error("incomplete migration accepted")
-	}
-	// ID reuse: two old topics (non-merge) map to the same new ID.
-	reuse := sameMappings()
-	reuse[1].NewTopicID = reuse[0].NewTopicID
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: "1.1.0", OldHash: "sha256:a", NewHash: "sha256:b", Mappings: reuse}); err == nil {
-		t.Error("id reuse accepted")
-	}
-	// Structurally complete but unknown target release: fails closed.
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: "1.1.0", OldHash: "sha256:a", NewHash: "sha256:b", Mappings: sameMappings()}); err == nil {
-		t.Error("unknown target release accepted")
-	}
-	// Identical release.
-	if err := ValidateMigration(Migration{FromRelease: Release, ToRelease: Release, OldHash: "sha256:a", NewHash: "sha256:b", Mappings: sameMappings()}); err == nil {
-		t.Error("identical release migration accepted")
+func TestClassifyBadApplicability(t *testing.T) {
+	if _, err := Classify(ClassifyInput{
+		TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true,
+		Applicability: Applicability("maybe"),
+	}); err == nil {
+		t.Fatal("unknown applicability value accepted")
 	}
 }

@@ -27,7 +27,7 @@ help:
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused artifact envelope/graph test suite." \
 	  "  make test-attestations     Run the focused attestation signing/verification suite." \
-	  "  make test-taxonomy         Run the focused taxonomy/jurisdiction validation suite." \
+	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
 	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
 	  "  make test-party-registry   Run the focused party trust-anchor/registry validation suite." \
 	  "  make test-fetch            Run the focused bounded safe HTTP transport (fetch) suite." \
@@ -105,9 +105,9 @@ test-artifacts:
 test-attestations:
 	@go test ./internal/attestation/...
 
-# Focused gate for the atlas.taxonomy/v1 registry, topic states, jurisdiction
-# profiles, classification, comparison compatibility, and migration validation.
-# Deterministic and offline; no live models or official websites.
+# Focused gate for the atlas.taxonomy/v1 registry, topic states, and
+# evidence-based document-scope classification. Deterministic and offline; no
+# live models or official websites.
 test-taxonomy:
 	@go test ./internal/taxonomy/...
 

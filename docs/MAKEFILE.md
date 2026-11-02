@@ -35,7 +35,7 @@ scope; their presence is not a requirement to finish the former platform.
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
 | `make test-artifacts` | Run the focused `atlas.artifact/v1` envelope/graph test suite (`go test ./internal/artifact/...`). | `go` |
 | `make test-attestations` | Run the focused `atlas.attestation/v1`/`atlas.trust/v1` signing/verification suite (`go test ./internal/attestation/...`). | `go` |
-| `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and jurisdiction-validation suite (`go test ./internal/taxonomy/...`). | `go` |
+| `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and evidence-based document-scope classification suite (`go test ./internal/taxonomy/...`). | `go` |
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
@@ -107,8 +107,8 @@ The repository is a Go module rooted at the checkout:
   - `internal/attestation/` — the `atlas.attestation/v1`/`atlas.trust/v1`
     Ed25519 signing and offline verification logic, and its fixtures (TQ-0020).
   - `internal/taxonomy/` — the `atlas.taxonomy/v1` topic registry, topic-state
-    classification, jurisdiction profiles, comparison compatibility, and
-    migration validation logic, and its fixtures (TQ-0036).
+    classification, and evidence-based document-scope validation logic, and its
+    fixtures (TQ-0036).
   - `internal/canonical/` — the `atlas.programme/v1` canonical schema, topic/
     state rules, citation/page/excerpt evidence, source binding, and
     deterministic-serialization validation logic, and its fixtures (TQ-0037).

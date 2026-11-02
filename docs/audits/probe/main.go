@@ -80,17 +80,25 @@ func registry() {
 }
 
 func jurisdiction() {
-	p := taxonomy.Profile{
-		Version: "unapproved", Scope: taxonomy.ScopeAutonomous,
-		Institution: "invented", EffectiveDate: "not-a-date",
-		Sources:   []taxonomy.LegalSource{{Document: "invented", Article: "x", Version: "x", Hash: "not-a-hash"}},
-		Relations: map[string]taxonomy.Relation{"healthcare": taxonomy.RelOutside},
-	}
-	s, err := taxonomy.Classify(taxonomy.ClassifyInput{
-		TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true, Profile: p,
+	// Out-of-scope without retained scope evidence must reject (no implicit
+	// all-outside rule, no guessed exclusion).
+	_, err := taxonomy.Classify(taxonomy.ClassifyInput{
+		TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true,
+		Applicability: taxonomy.AppOutOfScope,
 	})
-	check("taxonomy rejects forged competence profile", err != nil || s == taxonomy.StateUnclear)
-	check("comparison rejects matching unapproved versions", taxonomy.CompatibleComparison(p, p) != nil)
+	check("taxonomy rejects out-of-scope without scope evidence", err != nil)
+	// Ambiguous applicability is unclear, never a guessed exclusion.
+	s, err := taxonomy.Classify(taxonomy.ClassifyInput{
+		TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true,
+		Applicability: taxonomy.AppUnknown,
+	})
+	check("taxonomy keeps unknown applicability unclear", err == nil && s == taxonomy.StateUnclear)
+	// In-scope omission is not-covered (omission is never opposition).
+	s, err = taxonomy.Classify(taxonomy.ClassifyInput{
+		TopicID: "healthcare", FullCoverage: true, EvidenceReadable: true,
+		Applicability: taxonomy.AppInScope,
+	})
+	check("taxonomy treats in-scope omission as not-covered", err == nil && s == taxonomy.StateNotCovered)
 }
 
 func programme() {

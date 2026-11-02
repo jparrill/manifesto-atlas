@@ -1,33 +1,23 @@
 // Package taxonomy implements the atlas.taxonomy/v1 contract (release 1.0.0)
-// established by docs/design/taxonomy-jurisdiction.md (TQ-0013) for TQ-0036.
+// for TQ-0036 under the docs/design/MVP.md local-first scope.
 //
 // It provides the immutable ordered 21-topic registry, the five mutually
-// exclusive topic states with their Spanish public labels, versioned
-// jurisdiction/scope profiles with pinned legal evidence, deterministic
-// classification, comparison compatibility, and explicit migration validation.
-// All checks are offline and fail-closed; no model may add, remove, rename, or
-// reorder topics.
+// exclusive topic states with their Spanish public labels, release validation,
+// and deterministic evidence-based document-scope classification. It contains
+// no general legal-competence registry, comparison engine, or migration
+// framework: those are deferred. All checks are offline and fail-closed; no
+// model may add, remove, rename, or reorder topics.
 package taxonomy
-
-import (
-	"fmt"
-)
 
 // Release is the single approved v1 taxonomy release.
 const Release = "1.0.0"
 
 // Error codes. Stable and free of private data.
 const (
-	CodeUnknownTopic     = "unknown-topic"
-	CodeMissingField     = "missing-field"
-	CodeBadScope         = "bad-scope"
-	CodeBadRelation      = "bad-relation"
-	CodeUnknownVersion   = "unknown-version"
-	CodeVersionMismatch  = "version-mismatch"
-	CodeScopeMismatch    = "scope-mismatch"
-	CodeMigrationIncompl = "migration-incomplete"
-	CodeIDReuse          = "id-reuse"
-	CodeBadHash          = "bad-hash"
+	CodeUnknownTopic   = "unknown-topic"
+	CodeMissingField   = "missing-field"
+	CodeBadRelation    = "bad-relation"
+	CodeUnknownVersion = "unknown-version"
 )
 
 // Error is a stable taxonomy error.
@@ -148,109 +138,29 @@ func StateLabel(s State) (string, error) {
 	}
 }
 
-// Relation is a topic/subtopic competence relation in a scope profile.
-type Relation string
+// Applicability is a document's explicit scope for one topic. It is established
+// from the document itself, not from a general legal-competence registry.
+type Applicability string
 
-// Competence relations.
+// Document-scope applicabilities.
 const (
-	RelDirect    Relation = "direct"
-	RelShared    Relation = "shared"
-	RelDelegated Relation = "delegated"
-	RelAdvocacy  Relation = "advocacy-only"
-	RelOutside   Relation = "outside"
-	RelUnknown   Relation = "unknown"
+	// AppInScope: the document's domain addresses this topic's domain. Shared
+	// powers and advocacy topics are in-scope, so their absence is not-covered,
+	// never a blanket exclusion.
+	AppInScope Applicability = "in-scope"
+	// AppOutOfScope: the document is explicitly about a different domain; this
+	// requires retained scope evidence.
+	AppOutOfScope Applicability = "out-of-scope"
+	// AppUnknown: applicability is ambiguous or not established. It is never
+	// treated as a guessed exclusion.
+	AppUnknown Applicability = ""
 )
 
-// Relations returns the six competence relations.
-func Relations() []Relation {
-	return []Relation{RelDirect, RelShared, RelDelegated, RelAdvocacy, RelOutside, RelUnknown}
-}
-
-func knownRelation(r Relation) bool {
-	for _, k := range Relations() {
-		if k == r {
-			return true
-		}
-	}
-	return false
-}
-
-// Scope is a document scope category.
-type Scope string
-
-// Document scopes.
-const (
-	ScopeNational   Scope = "national"
-	ScopeAutonomous Scope = "autonomous"
-	ScopeProvincial Scope = "provincial"
-	ScopeMunicipal  Scope = "municipal"
-	ScopeEuropean   Scope = "european"
-	ScopeGeneral    Scope = "general-political"
-)
-
-func knownScope(s Scope) bool {
-	switch s {
-	case ScopeNational, ScopeAutonomous, ScopeProvincial, ScopeMunicipal, ScopeEuropean, ScopeGeneral:
-		return true
-	default:
-		return false
-	}
-}
-
-// LegalSource is a pinned legal evidence reference.
-type LegalSource struct {
-	Document string
-	Article  string
-	Version  string
-	Hash     string
-}
-
-// Profile is a versioned jurisdiction/scope configuration resource.
-type Profile struct {
-	Version       string
-	Scope         Scope
-	Geography     string
-	Institution   string
-	EffectiveDate string
-	Sources       []LegalSource
-	Relations     map[string]Relation
-}
-
-// ValidateProfile checks that a profile is versioned, has a known scope and
-// effective date, pinned legal sources, and only known topics/relations. It does
-// not accept a missing profile as an implicit all-outside rule.
-func ValidateProfile(p Profile) error {
-	if p.Version == "" {
-		return errf(CodeMissingField, "version")
-	}
-	if !knownScope(p.Scope) {
-		return errf(CodeBadScope, string(p.Scope))
-	}
-	if p.EffectiveDate == "" {
-		return errf(CodeMissingField, "effective_date")
-	}
-	for i, s := range p.Sources {
-		if s.Document == "" || s.Article == "" || s.Version == "" || s.Hash == "" {
-			return errf(CodeMissingField, fmt.Sprintf("sources[%d]", i))
-		}
-	}
-	// An outside decision requires positive, versioned legal evidence.
-	hasOutside := false
-	for id, r := range p.Relations {
-		if _, ok := TopicByID(id); !ok {
-			return errf(CodeUnknownTopic, id)
-		}
-		if !knownRelation(r) {
-			return errf(CodeBadRelation, string(r))
-		}
-		if r == RelOutside {
-			hasOutside = true
-		}
-	}
-	if hasOutside && len(p.Sources) == 0 {
-		return errf(CodeMissingField, "sources")
-	}
-	return nil
+// ScopeEvidence is a retained reference establishing an explicit whole-topic
+// document scope. It is required for a not-applicable decision.
+type ScopeEvidence struct {
+	Path   string
+	SHA256 string
 }
 
 // ClassifyInput is the evidence needed to classify one topic.
@@ -260,21 +170,26 @@ type ClassifyInput struct {
 	HasDiscussion    bool // cited topic discussion without an identifiable action
 	FullCoverage     bool // whole-source coverage was completed (required for absence)
 	EvidenceReadable bool // evidence is present and readable (not ambiguous/missing)
-	Profile          Profile
+	Applicability    Applicability
+	// ScopeEvidence is required when Applicability == AppOutOfScope.
+	ScopeEvidence *ScopeEvidence
 }
 
-// Classify deterministically maps evidence and the jurisdiction profile to one
-// of the five topic states. Priority: unresolved material evidence -> unclear;
-// otherwise concrete action -> proposals; otherwise discussion -> mentioned;
-// only then absence is evaluated against applicability. Omission is never
-// opposition: absence in an applicable topic is not-covered, and not-applicable
-// requires explicit whole-topic outside-scope evidence.
+// Classify deterministically maps evidence and the document's explicit scope to
+// one of the five topic states. Priority: unresolved material evidence ->
+// unclear; otherwise concrete action -> proposals; otherwise discussion ->
+// mentioned; only then is absence evaluated against applicability. Omission is
+// never opposition: absence in an in-scope topic is not-covered; not-applicable
+// requires explicit retained whole-topic scope evidence; ambiguous
+// applicability is unclear.
 func Classify(in ClassifyInput) (State, error) {
 	if _, ok := TopicByID(in.TopicID); !ok {
 		return "", errf(CodeUnknownTopic, in.TopicID)
 	}
-	if err := ValidateProfile(in.Profile); err != nil {
-		return "", err
+	switch in.Applicability {
+	case AppInScope, AppOutOfScope, AppUnknown:
+	default:
+		return "", errf(CodeBadRelation, string(in.Applicability))
 	}
 	if !in.EvidenceReadable {
 		return StateUnclear, nil
@@ -288,95 +203,15 @@ func Classify(in ClassifyInput) (State, error) {
 	if !in.FullCoverage {
 		return StateUnclear, nil
 	}
-	switch in.Profile.Relations[in.TopicID] {
-	case RelOutside:
+	switch in.Applicability {
+	case AppOutOfScope:
+		if in.ScopeEvidence == nil || in.ScopeEvidence.Path == "" || in.ScopeEvidence.SHA256 == "" {
+			return "", errf(CodeMissingField, "scope-evidence")
+		}
 		return StateNotApplicable, nil
-	case RelUnknown, "":
-		return StateUnclear, nil
-	default: // direct, shared, delegated, advocacy-only establish relevance
+	case AppInScope:
 		return StateNotCovered, nil
+	default: // AppUnknown
+		return StateUnclear, nil
 	}
-}
-
-// CompatibleComparison reports whether two programmes may be compared under the
-// same taxonomy. It requires the exact same taxonomy version and the same scope;
-// a national programme is never equated to its regional counterpart.
-func CompatibleComparison(a, b Profile) error {
-	if a.Version != b.Version {
-		return errf(CodeVersionMismatch, a.Version+"/"+b.Version)
-	}
-	if a.Scope != b.Scope {
-		return errf(CodeScopeMismatch, string(a.Scope)+"/"+string(b.Scope))
-	}
-	return nil
-}
-
-// Mapping is one old->new topic mapping in a migration.
-type Mapping struct {
-	OldTopicID string
-	NewTopicID string
-	Kind       string // "same", "split", or "merge"
-}
-
-// Migration records an explicit taxonomy release change with revalidation.
-type Migration struct {
-	FromRelease string
-	ToRelease   string
-	OldHash     string
-	NewHash     string
-	Mappings    []Mapping
-}
-
-// ValidateMigration checks that a migration is explicit and complete: distinct
-// approved releases, differing content hashes (a new immutable release), and a
-// mapping covering every old topic with no silent reuse of an old ID as a new
-// one. Historical classifications are never rewritten.
-func ValidateMigration(m Migration) error {
-	// 1. Content must actually change: a migration is a new immutable release.
-	if m.OldHash == m.NewHash {
-		return errf(CodeBadHash, "unchanged")
-	}
-	// 2. Structure: explicit, complete, and no silent reuse of an ID.
-	if len(m.Mappings) == 0 {
-		return errf(CodeMigrationIncompl, "empty")
-	}
-	seenOld := map[string]bool{}
-	seenNew := map[string]bool{}
-	for _, mp := range m.Mappings {
-		if _, ok := TopicByID(mp.OldTopicID); !ok {
-			return errf(CodeUnknownTopic, mp.OldTopicID)
-		}
-		if mp.NewTopicID == "" {
-			return errf(CodeMissingField, "new_topic_id")
-		}
-		if mp.OldTopicID == mp.NewTopicID && mp.Kind != "same" {
-			return errf(CodeIDReuse, mp.OldTopicID)
-		}
-		if mp.Kind != "merge" {
-			if seenNew[mp.NewTopicID] {
-				return errf(CodeIDReuse, mp.NewTopicID)
-			}
-			seenNew[mp.NewTopicID] = true
-		}
-		if seenOld[mp.OldTopicID] {
-			return errf(CodeIDReuse, mp.OldTopicID)
-		}
-		seenOld[mp.OldTopicID] = true
-	}
-	// Complete coverage: every v1 topic must be accounted for.
-	if len(seenOld) != len(topics) {
-		return errf(CodeMigrationIncompl, fmt.Sprintf("%d/%d", len(seenOld), len(topics)))
-	}
-	// 3. Both releases must be approved and distinct. In v1 only Release is
-	//    known, so any migration fails closed here until a successor is approved.
-	if err := ValidateRelease(m.FromRelease); err != nil {
-		return errf(CodeUnknownVersion, m.FromRelease)
-	}
-	if err := ValidateRelease(m.ToRelease); err != nil {
-		return errf(CodeUnknownVersion, m.ToRelease)
-	}
-	if m.FromRelease == m.ToRelease {
-		return errf(CodeVersionMismatch, m.FromRelease)
-	}
-	return nil
 }
