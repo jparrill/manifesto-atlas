@@ -109,6 +109,16 @@ func ManifestID(raw []byte) (string, error) {
 	return HashBytes(canon), nil
 }
 
+// ValidHash reports whether h is a full H identity: "sha256:" followed by 64
+// lowercase hexadecimal digits.
+func ValidHash(h string) bool { return validHash(h) }
+
+// CanonicalValue returns the canonical bytes for a Go value restricted to the
+// strict v1 profile (objects, arrays, strings, booleans, null, and integer
+// json.Number). It is a convenience for building canonical statements without
+// hand-serializing JSON.
+func CanonicalValue(v any) ([]byte, error) { return encodeCanonical(v) }
+
 // Canonicalize validates that data is exactly one strict JSON value under the
 // atlas.artifact/v1 serialization rules and returns its canonical bytes.
 //

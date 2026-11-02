@@ -1,8 +1,9 @@
 ---
 id: TQ-0020
 title: Sign reports and verify authorized offline attestations
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -11,7 +12,7 @@ labels:
 depends_on:
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T11:20:57+01:00
 ---
 
 ## Outcome
@@ -84,3 +85,11 @@ A commit/push/confirmation failure restores `TQ-0020` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T11:20:48+01:00 — Quality gates:
+  - Gate 1 PASS — AC1 (valid authorized signature verifies against exact report/artifact inputs) proven by TestSignVerifyRoundTrip: Sign -> ParseAttestation (raw envelope) -> VerifyAttestation succeeds, and the signed statement binds contract/subject/role/key_id/issued_at. AC2 (modified payloads, mismatched inputs, unauthorized/unknown/revoked keys, malformed signatures rejected) proven by TestTamperingRejected (subject/role/issued_at/key_id/signature flips), TestRoleMismatch, TestUnknownKey, TestRevokedKey, TestMalformedSignatureEncoding, and TestTimeBounds. AC3 (verification without secret keys or network; signing failure leaves no approval) proven by VerifyAttestation using only the public trust bundle (no private key referenced) and TestMissingCredential (nil/short key returns an error and no attestation).
+  - Gate 2 PASS — make test-attestations: automated cases prove valid signature; tampering; wrong/unknown/revoked signer; rotation overlap; missing credential; offline verification.
+  - Gate 3 PASS — make verify: git whitespace, taskqueue integrity, gofmt, go build, go vet, docs structure, relative links, go test (test-cli + test-artifacts + test-attestations) all pass.
+  - Gate 4 PASS — gofmt -l clean; go build and go vet ./... clean via make check; git diff --check clean.
+  - Gate 5 PASS — docs/MAKEFILE.md updated (test-attestations added to baseline surface, Go-tests bullet, internal/attestation layout); Makefile help lists the target; interfaces match the attestation/trust sections of docs/design/artifact-contract.md; technical text English; no public (Spanish) content changed.
+  - Gate 6 PASS — signature substitution and role confusion rejected (TestTamperingRejected, TestRoleMismatch); envelope/bundle/key-count limits enforced (16KiB, 1MiB, 256 keys); Sign accepts key bytes only and never reads key paths from a report; all errors carry stable codes and never echo key material; no network used. No secrets or private absolute paths committed.
+  - Gate 7 PASS — verification logic is deterministic over its public inputs; make test-attestations and make verify pass; all gate results recorded before done.
