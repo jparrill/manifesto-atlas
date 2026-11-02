@@ -31,7 +31,7 @@ pipeline stages.
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
 | `make test-artifacts` | Run the focused strict canonical-JSON and SHA-256 hash helper suite (`go test ./internal/artifact/...`). | `go` |
 | `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and evidence-based document-scope classification suite (`go test ./internal/taxonomy/...`). | `go` |
-| `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
+| `make test-canonical` | Run the focused `atlas.programme.local/v1` local draft schema, citation, and source/extraction binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
 | `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
 | `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
@@ -98,9 +98,10 @@ The repository is a Go module rooted at the checkout:
   - `internal/taxonomy/` — the `atlas.taxonomy/v1` topic registry, topic-state
     classification, and evidence-based document-scope validation logic, and its
     fixtures (TQ-0036).
-  - `internal/canonical/` — the `atlas.programme/v1` canonical schema, topic/
-    state rules, citation/page/excerpt evidence, source binding, and
-    deterministic-serialization validation logic, and its fixtures (TQ-0037).
+  - `internal/canonical/` — the `atlas.programme.local/v1` local draft schema,
+    source-record/extraction checksum binding, cited page/block/code-point
+    excerpt evidence, retained scope-evidence verification, and local ordinal
+    statement/measure/citation IDs, and its fixtures (TQ-0037).
   - `internal/semantic/` — common `atlas.semantic-job/v1` response verification,
     rejection limits, retry eligibility and terminal cancellation checks
     (TQ-0059), with offline fake fixtures; the full runner remains TQ-0024.

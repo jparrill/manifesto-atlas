@@ -2,8 +2,12 @@ package canonical_test
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -39,161 +43,164 @@ func runeIndex(hay, needle []rune) int {
 	return -1
 }
 
-func mkCite(src string, page int, block, excerpt string) canonical.Citation {
+func mkCite(page int, block, excerpt string) canonical.Citation {
 	s := runeIndex([]rune(blockTexts[block]), []rune(excerpt))
 	if s < 0 {
 		panic("excerpt not in block: " + excerpt)
 	}
-	e := s + len([]rune(excerpt))
-	return canonical.Citation{
-		ID:           canonical.CitationID(src, page, block, s, e, excerpt),
-		SourceRecord: src,
-		Page:         page,
-		BlockID:      block,
-		Start:        s,
-		End:          e,
-		Excerpt:      excerpt,
-	}
+	return canonical.Citation{Page: page, BlockID: block, Start: s, End: s + len([]rune(excerpt)), Excerpt: excerpt}
 }
+
+func sp(s string) *string { return &s }
 
 type builder struct {
-	p   canonical.Programme
-	src canonical.SourceRecord
-	ex  canonical.Extraction
-	jur canonical.Jurisdiction
-	tax canonical.Taxonomy
-	ord int
+	p             canonical.Programme
+	src           canonical.SourceRecord
+	ex            canonical.Extraction
+	root          string
+	scopeEvidence canonical.RetainedFile
+	ord           int
 }
 
+// stmt assigns the next sequential local statement ordinal in traversal order.
 func (b *builder) stmt(text string, cites ...string) canonical.Statement {
 	b.ord++
 	return canonical.Statement{ID: fmt.Sprintf("s-%d", b.ord), Text: text, Citations: cites}
 }
 
-func sp(s string) *string { return &s }
-
 func fullBasis() canonical.Basis {
 	return canonical.Basis{PageRanges: []canonical.PageRange{{Start: 1, End: 3}}}
 }
 
-func newBuilder() *builder {
+func newBuilder(t *testing.T) *builder {
+	t.Helper()
 	b := &builder{}
-	// Records.
-	manID := "src-manifest"
-	progID := "prog-1"
+
+	// Retained scope-evidence file for the not-applicable topic.
+	root := t.TempDir()
+	evPath := "evidence/scope-defence.txt"
+	evContent := []byte("Alcance: documento autonómico; la defensa es competencia estatal.")
+	if err := os.MkdirAll(filepath.Dir(filepath.Join(root, evPath)), 0o755); err != nil {
+		t.Fatalf("mkdir evidence: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(root, evPath), evContent, 0o644); err != nil {
+		t.Fatalf("write evidence: %v", err)
+	}
+	b.root = root
+	evSum := sha256.Sum256(evContent)
+	b.scopeEvidence = canonical.RetainedFile{Path: evPath, SHA256: "sha256:" + hex.EncodeToString(evSum[:])}
+
+	// Selected source + extraction records.
+	progID := "frente-obrero-programa-politico"
 	checksum := "sha256:" + strings.Repeat("0", 64)
+	metaChecksum := "sha256:" + strings.Repeat("1", 64)
+	exChecksum := "sha256:" + strings.Repeat("2", 64)
+	rightsStmt := "Todos los derechos reservados"
 	b.src = canonical.SourceRecord{
-		ManifestID: manID, ProgrammeID: progID, Checksum: checksum,
-		PartyID: "party-1", PartyName: "Partido de Prueba",
-		Scope: "autonomous", GeographyID: "es-cl", GeographyName: "Castilla y Leon",
-		DocumentType: "electoral-programme",
-		Election:     sp("fixture-regional"), PublicationDate: sp("2030-01-01"),
-		Rights: "Todos los derechos reservados",
+		ProgrammeID: progID, SourceChecksum: checksum, SourceMetadataChecksum: metaChecksum,
+		Party:        canonical.Party{ID: "party-1", Name: "Partido de Prueba"},
+		DocumentType: "electoral-programme", Scope: "autonomous",
+		Geography:       canonical.Geography{ID: "es-cl", Name: "Castilla y Leon"},
+		Election:        &canonical.Election{ID: "fixture-regional", Type: "autonomous", Date: "2030-05-01"},
+		PublicationDate: sp("2030-01-01"),
+		Rights:          canonical.Rights{Publisher: "Partido de Prueba", Statement: &rightsStmt},
 	}
 	b.ex = canonical.Extraction{
-		ManifestID: "ex-manifest", SourceChecksum: checksum, PageCount: 3,
+		ExtractionChecksum: exChecksum, SourceChecksum: checksum, PageCount: 3,
 		BlockText: blockTexts, BlockPage: blockPages,
 	}
-	b.jur = canonical.Jurisdiction{
-		ManifestID: "jur-manifest", Unspecified: "inst-unspecified",
-		Institutions: map[string]bool{"inst-health": true, "inst-transport": true},
-		Rules:        map[string]bool{"rule-health": true, "rule-defence": true},
-		Relations:    map[string]bool{"direct": true, "shared": true, "delegated": true, "advocacy": true, "unspecified": true},
+
+	// Citations, array order c-1..c-4.
+	b.p.Citations = []canonical.Citation{
+		{ID: "c-1", Page: 1, BlockID: "p1-b1", Start: 0, End: 0, Excerpt: "Reforzaremos la democracia"},
+		{ID: "c-2", Page: 1, BlockID: "p1-b1", Start: 0, End: 0, Excerpt: "construiremos un centro de salud"},
+		{ID: "c-3", Page: 2, BlockID: "p2-b1", Start: 0, End: 0, Excerpt: "El texto menciona las listas de espera"},
+		{ID: "c-4", Page: 3, BlockID: "p3-b1", Start: 0, End: 0, Excerpt: "Reorganizaremos el transporte publico"},
 	}
-	taxIDs := make([]string, 0, 21)
-	for _, t := range taxonomy.Topics() {
-		taxIDs = append(taxIDs, t.ID)
+	for i := range b.p.Citations {
+		c := mkCite(b.p.Citations[i].Page, b.p.Citations[i].BlockID, b.p.Citations[i].Excerpt)
+		b.p.Citations[i].Start = c.Start
+		b.p.Citations[i].End = c.End
 	}
-	b.tax = canonical.Taxonomy{Release: "1.0.0", ManifestID: "tax-manifest", TopicIDs: taxIDs}
 
-	// Citations.
-	c0 := mkCite(manID, 1, "p1-b1", "Reforzaremos la democracia")
-	c1 := mkCite(manID, 1, "p1-b1", "construiremos un centro de salud")
-	c2 := mkCite(manID, 2, "p2-b1", "El texto menciona las listas de espera")
-	c3 := mkCite(manID, 3, "p3-b1", "Reorganizaremos el transporte publico")
-	b.p.Citations = []canonical.Citation{c0, c1, c2, c3}
+	// Statements in canonical traversal order: document title, global summary,
+	// each topic summary in topic order, then each measure in array order.
+	sTitle := b.stmt("Programa politico de prueba", "c-1")
+	sGlobal := b.stmt("El programa propone reforzar instituciones y sanidad.", "c-1")
+	sInst := b.stmt("El texto aborda la democracia.", "c-1")
+	sHealth := b.stmt("Propone construir un centro de salud.", "c-2")
+	sTrans := b.stmt("Propone reorganizar el transporte publico.", "c-4")
+	m1Act := b.stmt("Construir un centro de salud.", "c-2")
+	m1Cond := b.stmt("Financiado con el presupuesto autonomico.", "c-2")
+	m1Inst := b.stmt("Gestionado por la sanidad publica.", "c-2")
+	m2Act := b.stmt("Reorganizar el transporte publico regional.", "c-4")
 
-	// Statements in deterministic traversal order.
-	sGlobal := b.stmt("El programa propone reforzar instituciones y sanidad.", c0.ID)
-	sInst := b.stmt("El texto aborda la democracia.", c0.ID)
-	sHealth := b.stmt("Propone construir un centro de salud.", c1.ID)
-	sTrans := b.stmt("Propone reorganizar el transporte publico.", c3.ID)
-	mAct1 := b.stmt("Construir un centro de salud.", c1.ID)
-	mCond1 := b.stmt("Financiado con el presupuesto autonomico.", c1.ID)
-	mAct2 := b.stmt("Reorganizar el transporte publico regional.", c3.ID)
-
-	// Metadata.
+	// Metadata equals the selected source record, plus a cited document title.
 	b.p.Metadata = canonical.Metadata{
-		PartyID: b.src.PartyID, PartyName: b.src.PartyName,
-		DocumentType: b.src.DocumentType, Scope: b.src.Scope,
-		GeographyID: b.src.GeographyID, GeographyName: b.src.GeographyName,
-		Election: b.src.Election, PublicationDate: b.src.PublicationDate,
-		Rights: b.src.Rights,
-		SourceEvidence: map[string]string{
-			"party_name": "reg:party", "scope": "src:scope",
-			"geography_id": "reg:geo", "rights": "src:rights",
-		},
+		Party: b.src.Party, DocumentType: b.src.DocumentType, Scope: b.src.Scope,
+		Geography: b.src.Geography, Election: b.src.Election,
+		PublicationDate: b.src.PublicationDate, Rights: b.src.Rights,
+		DocumentTitle: &sTitle,
 	}
 
-	// Measures.
-	m1ID := "m-" + strings.Repeat("a", 64)
-	m2ID := "m-" + strings.Repeat("b", 64)
+	// Measures, array order m-1, m-2.
 	b.p.Measures = []canonical.Measure{
-		{ID: m1ID, PrimaryTopic: "healthcare", Action: mAct1, Conditions: []canonical.Statement{mCond1},
-			InstitutionID: "inst-health", ActionRelation: "shared", JurisdictionRule: sp("rule-health"),
-			Citations: []string{c1.ID}},
-		{ID: m2ID, PrimaryTopic: "transport-infrastructure", Action: mAct2, Conditions: nil,
-			InstitutionID: "inst-transport", ActionRelation: "direct",
-			Citations: []string{c3.ID}},
+		{ID: "m-1", PrimaryTopic: "healthcare", Action: m1Act,
+			Conditions: []canonical.Statement{m1Cond}, Institution: &m1Inst, Citations: []string{"c-2"}},
+		{ID: "m-2", PrimaryTopic: "transport-infrastructure", Action: m2Act,
+			Conditions: []canonical.Statement{}, Institution: nil, Citations: []string{"c-4"}},
 	}
 
 	// Topics: exactly 21 in taxonomy order.
-	topicState := map[string]string{
-		"institutions-democracy":   "mentioned",
-		"healthcare":               "proposals",
-		"transport-infrastructure": "proposals",
-		"culture-language-sport":   "unclear",
-		"defence-foreign-eu":       "not-applicable",
-	}
 	topicSummary := map[string][]canonical.Statement{
 		"institutions-democracy":   {sInst},
 		"healthcare":               {sHealth},
 		"transport-infrastructure": {sTrans},
 	}
 	topicMeasures := map[string][]string{
-		"healthcare":               {m1ID},
-		"transport-infrastructure": {m2ID},
+		"healthcare":               {"m-1"},
+		"transport-infrastructure": {"m-2"},
 	}
-	for _, id := range taxIDs {
+	stateOverride := map[string]string{
+		"institutions-democracy":   "mentioned",
+		"healthcare":               "proposals",
+		"transport-infrastructure": "proposals",
+		"culture-language-sport":   "unclear",
+		"defence-foreign-eu":       "not-applicable",
+	}
+	for _, tp := range taxonomy.Topics() {
 		state := "not-covered"
-		if s, ok := topicState[id]; ok {
+		if s, ok := stateOverride[tp.ID]; ok {
 			state = s
 		}
-		t := canonical.Topic{ID: id, State: state, Basis: fullBasis()}
-		if st, ok := topicSummary[id]; ok {
-			t.Summary = st
+		basis := fullBasis()
+		if tp.ID == "culture-language-sport" {
+			basis.PageRanges = []canonical.PageRange{{Start: 3, End: 3}}
 		}
-		if mids, ok := topicMeasures[id]; ok {
-			t.MeasureIDs = mids
+		if tp.ID == "defence-foreign-eu" {
+			basis.ScopeEvidence = &b.scopeEvidence
 		}
-		if id == "culture-language-sport" {
-			t.Basis = canonical.Basis{PageRanges: []canonical.PageRange{{Start: 3, End: 3}}}
+		topic := canonical.Topic{
+			ID: tp.ID, State: state,
+			Summary: []canonical.Statement{}, MeasureIDs: []string{}, SecondaryMeasureIDs: []string{},
+			Basis: basis,
 		}
-		if id == "defence-foreign-eu" {
-			t.Basis.ApplicabilityRule = sp("rule-defence")
+		if st, ok := topicSummary[tp.ID]; ok {
+			topic.Summary = st
 		}
-		b.p.Topics = append(b.p.Topics, t)
+		if mids, ok := topicMeasures[tp.ID]; ok {
+			topic.MeasureIDs = mids
+		}
+		b.p.Topics = append(b.p.Topics, topic)
 	}
 
-	// Top-level identity.
+	// Top-level identity binding.
 	b.p.Version = canonical.Version
 	b.p.ProgrammeID = progID
-	b.p.SourceRecord = manID
 	b.p.SourceChecksum = checksum
-	b.p.Extraction = "ex-manifest"
-	b.p.TaxonomyVersion = "1.0.0"
-	b.p.Taxonomy = "tax-manifest"
-	b.p.Jurisdiction = "jur-manifest"
+	b.p.SourceMetadataChecksum = metaChecksum
+	b.p.ExtractionChecksum = exChecksum
+	b.p.TaxonomyVersion = taxonomy.Release
 	b.p.Summary = []canonical.Statement{sGlobal}
 	return b
 }
@@ -211,7 +218,7 @@ func (b *builder) bytes() []byte {
 }
 
 func (b *builder) validate() (*canonical.Programme, error) {
-	return canonical.ValidateProgramme(b.bytes(), b.src, b.ex, b.jur, b.tax)
+	return canonical.ValidateProgramme(b.bytes(), b.root, b.src, b.ex)
 }
 
 func mustValidate(t *testing.T, b *builder) *canonical.Programme {
@@ -224,14 +231,13 @@ func mustValidate(t *testing.T, b *builder) *canonical.Programme {
 }
 
 func TestValidProgramme(t *testing.T) {
-	p := mustValidate(t, newBuilder())
+	p := mustValidate(t, newBuilder(t))
 	if p.Version != canonical.Version {
 		t.Fatalf("version = %q", p.Version)
 	}
 	if len(p.Topics) != 21 {
 		t.Fatalf("topics = %d", len(p.Topics))
 	}
-	// Every public factual field is cited; states are all exercised.
 	seen := map[string]bool{}
 	for _, tp := range p.Topics {
 		seen[tp.State] = true
@@ -244,9 +250,8 @@ func TestValidProgramme(t *testing.T) {
 }
 
 func TestDeterministicBytes(t *testing.T) {
-	b := newBuilder()
-	first := b.bytes()
-	second := newBuilder().bytes()
+	first := newBuilder(t).bytes()
+	second := newBuilder(t).bytes()
 	if !bytes.Equal(first, second) {
 		t.Fatal("identical structures produced different bytes")
 	}
@@ -257,7 +262,6 @@ func TestDeterministicBytes(t *testing.T) {
 	if !bytes.Equal(canon, first) {
 		t.Fatal("canonicalization not idempotent")
 	}
-	// Key order independence: same object, different key order -> same bytes.
 	a, err := artifact.Canonicalize([]byte(`{"b":1,"a":2}`))
 	if err != nil {
 		t.Fatalf("canonicalize a: %v", err)
@@ -271,10 +275,9 @@ func TestDeterministicBytes(t *testing.T) {
 	}
 }
 
-// mutate runs a mutation on a fresh builder and asserts the given code is returned.
 func expectCode(t *testing.T, mutate func(*builder), want string) {
 	t.Helper()
-	b := newBuilder()
+	b := newBuilder(t)
 	mutate(b)
 	_, err := b.validate()
 	if err == nil {
@@ -290,51 +293,53 @@ func expectCode(t *testing.T, mutate func(*builder), want string) {
 }
 
 func TestUnknownVersion(t *testing.T) {
-	expectCode(t, func(b *builder) { b.p.Version = "atlas.programme/v2" }, canonical.CodeUnknownVersion)
+	expectCode(t, func(b *builder) { b.p.Version = "atlas.programme.local/v2" }, canonical.CodeUnknownVersion)
 }
 
 func TestSourceMismatch(t *testing.T) {
 	expectCode(t, func(b *builder) { b.p.SourceChecksum = "sha256:" + strings.Repeat("f", 64) }, canonical.CodeSourceMismatch)
 }
 
+func TestSourceMetadataChecksumMismatch(t *testing.T) {
+	expectCode(t, func(b *builder) { b.p.SourceMetadataChecksum = "sha256:" + strings.Repeat("f", 64) }, canonical.CodeSourceMismatch)
+}
+
+func TestExtractionChecksumMismatch(t *testing.T) {
+	expectCode(t, func(b *builder) { b.p.ExtractionChecksum = "sha256:" + strings.Repeat("f", 64) }, canonical.CodeSourceMismatch)
+}
+
+func TestMetadataMismatch(t *testing.T) {
+	expectCode(t, func(b *builder) { b.p.Metadata.Party.Name = "Otro partido" }, canonical.CodeSourceMismatch)
+}
+
 func TestMissingCitation(t *testing.T) {
-	expectCode(t, func(b *builder) {
-		b.p.Summary[0].Citations = nil // uncited global summary
-	}, canonical.CodeMissingField)
+	expectCode(t, func(b *builder) { b.p.Summary[0].Citations = nil }, canonical.CodeMissingField)
 }
 
 func TestInvalidPage(t *testing.T) {
-	expectCode(t, func(b *builder) {
-		c := b.p.Citations[0]
-		c.Page = 99
-		c.ID = canonical.CitationID(c.SourceRecord, c.Page, c.BlockID, c.Start, c.End, c.Excerpt)
-		b.p.Citations[0] = c
-	}, canonical.CodeBadPage)
+	expectCode(t, func(b *builder) { b.p.Citations[0].Page = 99 }, canonical.CodeBadPage)
 }
 
 func TestExcerptMismatch(t *testing.T) {
-	expectCode(t, func(b *builder) {
-		c := b.p.Citations[0]
-		c.Excerpt = "completely different text"
-		c.ID = canonical.CitationID(c.SourceRecord, c.Page, c.BlockID, c.Start, c.End, c.Excerpt)
-		b.p.Citations[0] = c
-	}, canonical.CodeExcerptMismatch)
+	expectCode(t, func(b *builder) { b.p.Citations[0].Excerpt = "completely different text" }, canonical.CodeExcerptMismatch)
+}
+
+func TestBadCitationOrdinal(t *testing.T) {
+	expectCode(t, func(b *builder) { b.p.Citations[1].ID = "c-1" }, canonical.CodeBadID)
 }
 
 func TestDuplicateMeasure(t *testing.T) {
-	expectCode(t, func(b *builder) {
-		b.p.Measures[1].ID = b.p.Measures[0].ID
-	}, canonical.CodeDuplicateID)
+	expectCode(t, func(b *builder) { b.p.Measures[1].ID = b.p.Measures[0].ID }, canonical.CodeBadID)
 }
 
 func TestUnknownField(t *testing.T) {
-	b := newBuilder()
+	b := newBuilder(t)
 	raw := b.bytes()
 	idx := bytes.LastIndexByte(raw, '}')
 	mut := append([]byte{}, raw[:idx]...)
 	mut = append(mut, []byte(`,"extra":1`)...)
 	mut = append(mut, raw[idx:]...)
-	_, err := canonical.ValidateProgramme(mut, b.src, b.ex, b.jur, b.tax)
+	_, err := canonical.ValidateProgramme(mut, b.root, b.src, b.ex)
 	if err == nil {
 		t.Fatal("unknown field accepted")
 	}
@@ -346,15 +351,13 @@ func TestUnknownField(t *testing.T) {
 
 func TestDuplicateStatement(t *testing.T) {
 	expectCode(t, func(b *builder) {
-		// Reuse a statement ID in a topic summary.
 		b.p.Topics[6].Summary = append(b.p.Topics[6].Summary, b.p.Topics[6].Summary[0])
-	}, canonical.CodeDuplicateID)
+	}, canonical.CodeBadID)
 }
 
 func TestStateConflict(t *testing.T) {
-	// proposals without primary measures.
 	expectCode(t, func(b *builder) {
-		b.p.Topics[6].MeasureIDs = nil
+		b.p.Topics[6].MeasureIDs = []string{}
 	}, canonical.CodeStateConflict)
 }
 
@@ -364,22 +367,29 @@ func TestNotCoveredIncompleteBasis(t *testing.T) {
 	}, canonical.CodeIncompleteBasis)
 }
 
-func TestNotApplicableMissingRule(t *testing.T) {
+func TestNotApplicableMissingScope(t *testing.T) {
 	expectCode(t, func(b *builder) {
-		b.p.Topics[20].Basis.ApplicabilityRule = nil
-	}, canonical.CodeMissingRule)
+		b.p.Topics[20].Basis.ScopeEvidence = nil
+	}, canonical.CodeMissingScope)
 }
 
-func TestUnknownInstitution(t *testing.T) {
+func TestScopeEvidenceHashMismatch(t *testing.T) {
 	expectCode(t, func(b *builder) {
-		b.p.Measures[0].InstitutionID = "inst-bogus"
-	}, canonical.CodeUnknownInstitution)
+		b.p.Topics[20].Basis.ScopeEvidence = &canonical.RetainedFile{Path: b.scopeEvidence.Path, SHA256: "sha256:" + strings.Repeat("f", 64)}
+	}, canonical.CodeHashMismatch)
 }
 
-func TestUnknownRelation(t *testing.T) {
+func TestScopeEvidenceTraversal(t *testing.T) {
 	expectCode(t, func(b *builder) {
-		b.p.Measures[0].ActionRelation = "dictatorial"
-	}, canonical.CodeUnknownRelation)
+		b.p.Topics[20].Basis.ScopeEvidence = &canonical.RetainedFile{Path: "../escape.txt", SHA256: b.scopeEvidence.SHA256}
+	}, canonical.CodeBadPath)
+}
+
+func TestInstitutionCitationUnion(t *testing.T) {
+	expectCode(t, func(b *builder) {
+		// Institution cites c-2; dropping it from the measure union must fail.
+		b.p.Measures[0].Citations = nil
+	}, canonical.CodeDanglingRef)
 }
 
 func TestUnsafeText(t *testing.T) {
@@ -389,21 +399,56 @@ func TestUnsafeText(t *testing.T) {
 }
 
 func TestNationalScope(t *testing.T) {
-	b := newBuilder()
+	b := newBuilder(t)
 	b.src.Scope = "national"
-	b.src.GeographyID = "es"
-	b.src.GeographyName = "España"
+	b.src.Geography = canonical.Geography{ID: "es", Name: "España"}
 	b.p.Metadata.Scope = "national"
-	b.p.Metadata.GeographyID = "es"
-	b.p.Metadata.GeographyName = "España"
+	b.p.Metadata.Geography = canonical.Geography{ID: "es", Name: "España"}
 	if _, err := b.validate(); err != nil {
 		t.Fatalf("national scope rejected: %v", err)
 	}
 }
 
+func TestGeneralPoliticalNullElection(t *testing.T) {
+	b := newBuilder(t)
+	b.src.Scope = "general-political"
+	b.src.DocumentType = "general-political"
+	b.src.Election = nil
+	b.p.Metadata.Scope = "general-political"
+	b.p.Metadata.DocumentType = "general-political"
+	b.p.Metadata.Election = nil
+	if _, err := b.validate(); err != nil {
+		t.Fatalf("general-political null election rejected: %v", err)
+	}
+}
+
 func TestMeasureCitationsUnion(t *testing.T) {
-	// Wrong measure.citations (missing a condition citation) must fail.
 	expectCode(t, func(b *builder) {
-		b.p.Measures[0].Citations = nil
+		b.p.Measures[1].Citations = nil
 	}, canonical.CodeDanglingRef)
+}
+
+func TestWrongTopicOrder(t *testing.T) {
+	// The 21-topic release is fixed and ordered; a topic ID outside the approved
+	// order rejects.
+	expectCode(t, func(b *builder) {
+		b.p.Topics[3].ID = "bogus-topic"
+	}, canonical.CodeBadCount)
+}
+
+func TestUnicodeCodePointOffsets(t *testing.T) {
+	// Excerpts are exact Unicode code-point slices, not byte slices.
+	b := newBuilder(t)
+	text := "añade émojis 😀 aquí"
+	b.ex.BlockText["p1-b2"] = text
+	b.ex.BlockPage["p1-b2"] = 1
+	excerpt := "émojis"
+	r := []rune(text)
+	s := runeIndex(r, []rune(excerpt))
+	b.p.Citations[0] = canonical.Citation{
+		ID: "c-1", Page: 1, BlockID: "p1-b2", Start: s, End: s + len([]rune(excerpt)), Excerpt: excerpt,
+	}
+	if _, err := b.validate(); err != nil {
+		t.Fatalf("multi-byte code-point citation rejected: %v", err)
+	}
 }

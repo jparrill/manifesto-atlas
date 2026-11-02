@@ -1,12 +1,13 @@
-// Package canonical implements the deterministic atlas.programme/v1 validator
-// for TQ-0037. It checks a canonical draft against its strict schema, the
-// approved taxonomy, the bound source/extraction/jurisdiction records, and the
-// citation/page/excerpt evidence contract.
+// Package canonical implements the deterministic atlas.programme.local/v1
+// validator for TQ-0037. It checks a local draft against its strict schema, the
+// approved 21-topic taxonomy, the bound source/extraction revisions, the cited
+// page/block/code-point excerpt evidence, and retained scope-evidence files.
 //
 // This is a structural/evidence check only: it can mark a draft structurally
-// valid, never semantically validated. Only independent claim/coverage passes
-// and exact input-bound approvals do that. All objects reject unknown fields;
-// the draft cannot assert its own validation state.
+// valid, never semantically validated. Only independent claim/coverage passes do
+// that. All objects reject unknown fields; the draft cannot assert its own
+// validation state. Identity is by local stable ordinals within the source
+// revision, not by a hashed-identity protocol per measure/citation.
 package canonical
 
 import (
@@ -14,14 +15,20 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path"
+	"path/filepath"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/jparrill/manifesto-atlas/internal/artifact"
+	"github.com/jparrill/manifesto-atlas/internal/taxonomy"
 )
 
-// Version is the exact atlas.programme/v1 contract.
-const Version = "atlas.programme/v1"
+// Version is the exact atlas.programme.local/v1 contract.
+const Version = "atlas.programme.local/v1"
 
 // Limits from the approved contract.
 const (
@@ -42,25 +49,26 @@ const (
 
 // Error codes for the canonical validator.
 const (
-	CodeUnknownVersion     = "unknown-version"
-	CodeSourceMismatch     = "source-mismatch"
-	CodeMissingField       = "missing-field"
-	CodeUnknownField       = "unknown-field"
-	CodeBadID              = "bad-id"
-	CodeDuplicateID        = "duplicate-id"
-	CodeDanglingRef        = "dangling-reference"
-	CodeBadPage            = "bad-page"
-	CodeExcerptMismatch    = "excerpt-mismatch"
-	CodeBadState           = "bad-state"
-	CodeStateConflict      = "state-conflict"
-	CodeIncompleteBasis    = "incomplete-basis"
-	CodeMissingRule        = "missing-rule"
-	CodeUnknownInstitution = "unknown-institution"
-	CodeUnknownRelation    = "unknown-relation"
-	CodeUnknownRule        = "unknown-rule"
-	CodeOverLimit          = "over-limit"
-	CodeUnsafeText         = "unsafe-text"
-	CodeBadCount           = "bad-count"
+	CodeUnknownVersion  = "unknown-version"
+	CodeSourceMismatch  = "source-mismatch"
+	CodeMissingField    = "missing-field"
+	CodeUnknownField    = "unknown-field"
+	CodeBadID           = "bad-id"
+	CodeDuplicateID     = "duplicate-id"
+	CodeDanglingRef     = "dangling-reference"
+	CodeBadPage         = "bad-page"
+	CodeExcerptMismatch = "excerpt-mismatch"
+	CodeBadState        = "bad-state"
+	CodeStateConflict   = "state-conflict"
+	CodeIncompleteBasis = "incomplete-basis"
+	CodeMissingScope    = "missing-scope"
+	CodeOverLimit       = "over-limit"
+	CodeUnsafeText      = "unsafe-text"
+	CodeBadCount        = "bad-count"
+	CodeBadPath         = "bad-path"
+	CodeMissingFile     = "missing-file"
+	CodeHashMismatch    = "hash-mismatch"
+	CodeSymlink         = "symlink"
 )
 
 // Error is a stable canonical error.
@@ -86,77 +94,43 @@ func (e *Error) Unwrap() error { return e.Err }
 
 func errf(code, subject string) error { return &Error{Code: code, Subject: subject} }
 
-// SourceRecord is the validated source identity the draft must bind to.
-type SourceRecord struct {
-	ManifestID      string
-	ProgrammeID     string
-	Checksum        string
-	PartyID         string
-	PartyName       string
-	Scope           string
-	GeographyID     string
-	GeographyName   string
-	DocumentType    string
-	Election        *string
-	PublicationDate *string
-	Rights          string
+// Party is the source-bound party identity.
+type Party struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
-// Extraction is the validated page-aware extraction the citations bind to.
-type Extraction struct {
-	ManifestID     string
-	SourceChecksum string
-	PageCount      int
-	BlockText      map[string]string
-	BlockPage      map[string]int
+// Geography is the source-bound territorial scope.
+type Geography struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
-// Jurisdiction is the validated competence profile the measures bind to.
-type Jurisdiction struct {
-	ManifestID   string
-	Unspecified  string
-	Institutions map[string]bool
-	Rules        map[string]bool
-	Relations    map[string]bool
+// Election is a source-bound election reference, or null for general-political.
+type Election struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
+	Date string `json:"date"`
 }
 
-// Taxonomy is the approved taxonomy release the topics follow.
-type Taxonomy struct {
-	Release    string
-	ManifestID string
-	TopicIDs   []string
+// Rights is the source-bound rights block. Statement is explicit null when the
+// source declares no rights statement.
+type Rights struct {
+	Publisher string  `json:"publisher"`
+	Statement *string `json:"statement"`
 }
 
-// Programme is the atlas.programme/v1 draft under validation.
-type Programme struct {
-	Version         string      `json:"version"`
-	ProgrammeID     string      `json:"programme_id"`
-	SourceRecord    string      `json:"source_record"`
-	SourceChecksum  string      `json:"source_checksum"`
-	Extraction      string      `json:"extraction"`
-	TaxonomyVersion string      `json:"taxonomy_version"`
-	Taxonomy        string      `json:"taxonomy"`
-	Jurisdiction    string      `json:"jurisdiction"`
-	Metadata        Metadata    `json:"metadata"`
-	Summary         []Statement `json:"summary"`
-	Topics          []Topic     `json:"topics"`
-	Measures        []Measure   `json:"measures"`
-	Citations       []Citation  `json:"citations"`
-}
-
-// Metadata is the source-derived party/election/scope/geography block.
+// Metadata is the source-derived block. Every field except DocumentTitle must
+// equal the selected source record; DocumentTitle is a cited Statement or null.
 type Metadata struct {
-	PartyID         string            `json:"party_id"`
-	PartyName       string            `json:"party_name"`
-	DocumentTitle   *Statement        `json:"document_title"`
-	DocumentType    string            `json:"document_type"`
-	Scope           string            `json:"scope"`
-	GeographyID     string            `json:"geography_id"`
-	GeographyName   string            `json:"geography_name"`
-	Election        *string           `json:"election"`
-	PublicationDate *string           `json:"publication_date"`
-	Rights          string            `json:"rights"`
-	SourceEvidence  map[string]string `json:"source_evidence"`
+	Party           Party      `json:"party"`
+	DocumentType    string     `json:"document_type"`
+	Scope           string     `json:"scope"`
+	Geography       Geography  `json:"geography"`
+	Election        *Election  `json:"election"`
+	PublicationDate *string    `json:"publication_date"`
+	Rights          Rights     `json:"rights"`
+	DocumentTitle   *Statement `json:"document_title"`
 }
 
 // Statement is a cited plain-text assertion.
@@ -176,10 +150,12 @@ type Topic struct {
 	Basis               Basis       `json:"basis"`
 }
 
-// Basis is the coverage/applicability evidence for a topic state.
+// Basis is the coverage/scope evidence for a topic state. PageRanges are sorted
+// disjoint inclusive PDF intervals; ScopeEvidence is null or a retained
+// source-evidence reference establishing explicit entire-topic document scope.
 type Basis struct {
-	PageRanges        []PageRange `json:"page_ranges"`
-	ApplicabilityRule *string     `json:"applicability_rule"`
+	PageRanges    []PageRange   `json:"page_ranges"`
+	ScopeEvidence *RetainedFile `json:"scope_evidence"`
 }
 
 // PageRange is a one-based inclusive PDF page interval.
@@ -188,33 +164,82 @@ type PageRange struct {
 	End   int `json:"end"`
 }
 
-// Measure is one atomic proposal.
+// RetainedFile is a retained source-evidence reference by safe relative path and
+// SHA-256.
+type RetainedFile struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+// Measure is one atomic proposal. Institution is null or a cited Statement
+// naming the source-supported responsible/target institution; legal authority is
+// never inferred. Citations is the ordered deduplicated union of the action,
+// conditions, and institution Statement references.
 type Measure struct {
-	ID               string      `json:"id"`
-	PrimaryTopic     string      `json:"primary_topic"`
-	Action           Statement   `json:"action"`
-	Conditions       []Statement `json:"conditions"`
-	InstitutionID    string      `json:"institution_id"`
-	ActionRelation   string      `json:"action_relation"`
-	JurisdictionRule *string     `json:"jurisdiction_rule"`
-	Citations        []string    `json:"citations"`
+	ID           string      `json:"id"`
+	PrimaryTopic string      `json:"primary_topic"`
+	Action       Statement   `json:"action"`
+	Conditions   []Statement `json:"conditions"`
+	Institution  *Statement  `json:"institution"`
+	Citations    []string    `json:"citations"`
 }
 
-// Citation is one exact page/block/offset excerpt.
+// Citation is one exact page/block/code-point excerpt, bound to the top-level
+// source/extraction revision.
 type Citation struct {
-	ID           string `json:"id"`
-	SourceRecord string `json:"source_record"`
-	Page         int    `json:"page"`
-	BlockID      string `json:"block_id"`
-	Start        int    `json:"start"`
-	End          int    `json:"end"`
-	Excerpt      string `json:"excerpt"`
+	ID      string `json:"id"`
+	Page    int    `json:"page"`
+	BlockID string `json:"block_id"`
+	Start   int    `json:"start"`
+	End     int    `json:"end"`
+	Excerpt string `json:"excerpt"`
 }
 
-// ValidateProgramme runs the deterministic structural/evidence check over a
-// canonical draft bound to its source, extraction, jurisdiction, and taxonomy.
-// It returns the validated draft on success or a typed failure.
-func ValidateProgramme(raw []byte, src SourceRecord, ex Extraction, jur Jurisdiction, tax Taxonomy) (*Programme, error) {
+// Programme is the atlas.programme.local/v1 draft under validation.
+type Programme struct {
+	Version                string      `json:"version"`
+	ProgrammeID            string      `json:"programme_id"`
+	SourceChecksum         string      `json:"source_checksum"`
+	SourceMetadataChecksum string      `json:"source_metadata_checksum"`
+	ExtractionChecksum     string      `json:"extraction_checksum"`
+	TaxonomyVersion        string      `json:"taxonomy_version"`
+	Metadata               Metadata    `json:"metadata"`
+	Summary                []Statement `json:"summary"`
+	Topics                 []Topic     `json:"topics"`
+	Measures               []Measure   `json:"measures"`
+	Citations              []Citation  `json:"citations"`
+}
+
+// SourceRecord is the selected local source the draft must bind to. The draft's
+// metadata (all except document_title) must equal these fields; the checksums
+// bind the draft to the exact selected source and its metadata bytes.
+type SourceRecord struct {
+	ProgrammeID            string
+	SourceChecksum         string
+	SourceMetadataChecksum string
+	Party                  Party
+	DocumentType           string
+	Scope                  string
+	Geography              Geography
+	Election               *Election
+	PublicationDate        *string
+	Rights                 Rights
+}
+
+// Extraction is the validated page-aware extraction the citations bind to.
+type Extraction struct {
+	ExtractionChecksum string
+	SourceChecksum     string
+	PageCount          int
+	BlockText          map[string]string
+	BlockPage          map[string]int
+}
+
+// ValidateProgramme runs the deterministic structural/evidence check over a local
+// draft bound to its selected source record and extraction. root is the directory
+// holding retained scope-evidence files ("" when none are referenced). It returns
+// the validated draft on success or a typed failure.
+func ValidateProgramme(raw []byte, root string, src SourceRecord, ex Extraction) (*Programme, error) {
 	canon, err := artifact.Canonicalize(raw)
 	if err != nil {
 		return nil, err
@@ -228,113 +253,118 @@ func ValidateProgramme(raw []byte, src SourceRecord, ex Extraction, jur Jurisdic
 	if err := dec.Decode(&p); err != nil {
 		return nil, errf(CodeUnknownField, err.Error())
 	}
-	if err := validateProgramme(&p, src, ex, jur, tax); err != nil {
+	if err := validateProgramme(&p, root, src, ex); err != nil {
 		return nil, err
 	}
 	return &p, nil
 }
 
-func validateProgramme(p *Programme, src SourceRecord, ex Extraction, jur Jurisdiction, tax Taxonomy) error {
+func validateProgramme(p *Programme, root string, src SourceRecord, ex Extraction) error {
 	if p.Version != Version {
 		return errf(CodeUnknownVersion, p.Version)
 	}
-	// Exact identity binding to the validated records.
+	if err := taxonomy.ValidateRelease(p.TaxonomyVersion); err != nil {
+		return errf(CodeUnknownVersion, p.TaxonomyVersion)
+	}
+	// Exact identity binding to the selected source and extraction revisions.
 	if p.ProgrammeID != src.ProgrammeID {
 		return errf(CodeSourceMismatch, "programme_id")
 	}
-	if p.SourceRecord != src.ManifestID {
-		return errf(CodeSourceMismatch, "source_record")
-	}
-	if p.SourceChecksum != src.Checksum {
+	if p.SourceChecksum != src.SourceChecksum {
 		return errf(CodeSourceMismatch, "source_checksum")
 	}
-	if p.Extraction != ex.ManifestID {
-		return errf(CodeSourceMismatch, "extraction")
+	if p.SourceMetadataChecksum != src.SourceMetadataChecksum {
+		return errf(CodeSourceMismatch, "source_metadata_checksum")
 	}
-	if p.Taxonomy != tax.ManifestID {
-		return errf(CodeSourceMismatch, "taxonomy")
+	if p.ExtractionChecksum != ex.ExtractionChecksum {
+		return errf(CodeSourceMismatch, "extraction_checksum")
 	}
-	if p.TaxonomyVersion != tax.Release || p.TaxonomyVersion != "1.0.0" {
-		return errf(CodeUnknownVersion, p.TaxonomyVersion)
+	// Required top-level arrays must be present (arrays, not missing/null).
+	if p.Citations == nil {
+		return errf(CodeMissingField, "citations")
 	}
-	if p.Jurisdiction != jur.ManifestID {
-		return errf(CodeSourceMismatch, "jurisdiction")
+	if p.Summary == nil {
+		return errf(CodeMissingField, "summary")
+	}
+	if p.Measures == nil {
+		return errf(CodeMissingField, "measures")
 	}
 	// Citations first: they are the evidence every statement references.
-	citeIDs, err := validateCitations(p.Citations, src, ex)
+	citeIDs, err := validateCitations(p.Citations, ex)
 	if err != nil {
 		return err
 	}
-	// Statement IDs are globally unique across the whole document.
-	usedStmt := make(map[string]bool)
-	if err := validateMetadata(p.Metadata, src, citeIDs, usedStmt); err != nil {
+	// Statements are numbered sequentially in canonical traversal order.
+	if err := checkStatementOrder(p); err != nil {
 		return err
 	}
-	// Measures: unique, evidenced, bound to jurisdiction.
-	measureTopic, err := validateMeasures(p.Measures, citeIDs, jur, usedStmt)
+	// Metadata must equal the selected source record (except document_title).
+	if err := validateMetadata(p.Metadata, src, citeIDs); err != nil {
+		return err
+	}
+	// Measures: unique ordinals, cited, bounded.
+	measureTopic, err := validateMeasures(p.Measures, citeIDs)
 	if err != nil {
 		return err
 	}
 	// Topics: exactly 21 in taxonomy order with per-state rules.
-	if err := validateTopics(p.Topics, p.Measures, measureTopic, tax, ex.PageCount, citeIDs, usedStmt); err != nil {
+	if err := validateTopics(p.Topics, root, p.Measures, measureTopic, ex.PageCount, citeIDs); err != nil {
 		return err
 	}
 	// Global summary: cited, bounded.
-	if err := validateStatementList(p.Summary, citeIDs, maxGlobalSummary, "summary", usedStmt); err != nil {
+	if err := validateStatementList(p.Summary, citeIDs, maxGlobalSummary, "summary"); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateMetadata(m Metadata, src SourceRecord, citeIDs map[string]bool, usedStmt map[string]bool) error {
-	if m.PartyID != src.PartyID {
-		return errf(CodeSourceMismatch, "party_id")
-	}
-	if m.PartyName != src.PartyName {
-		return errf(CodeSourceMismatch, "party_name")
-	}
-	if m.Scope != src.Scope {
-		return errf(CodeSourceMismatch, "scope")
-	}
-	if m.GeographyID != src.GeographyID {
-		return errf(CodeSourceMismatch, "geography_id")
-	}
-	if m.GeographyName != src.GeographyName {
-		return errf(CodeSourceMismatch, "geography_name")
+func validateMetadata(m Metadata, src SourceRecord, citeIDs map[string]bool) error {
+	if m.Party.ID != src.Party.ID || m.Party.Name != src.Party.Name {
+		return errf(CodeSourceMismatch, "party")
 	}
 	if m.DocumentType != src.DocumentType {
 		return errf(CodeSourceMismatch, "document_type")
 	}
-	if m.Rights != src.Rights {
-		return errf(CodeSourceMismatch, "rights")
+	if m.Scope != src.Scope {
+		return errf(CodeSourceMismatch, "scope")
 	}
-	if !sameNullable(m.Election, src.Election) {
+	if m.Geography.ID != src.Geography.ID || m.Geography.Name != src.Geography.Name {
+		return errf(CodeSourceMismatch, "geography")
+	}
+	if !sameElection(m.Election, src.Election) {
 		return errf(CodeSourceMismatch, "election")
 	}
 	if !sameNullable(m.PublicationDate, src.PublicationDate) {
 		return errf(CodeSourceMismatch, "publication_date")
 	}
-	if err := checkGeneratedText("party_name", m.PartyName, maxDisplayField); err != nil {
+	if m.Rights.Publisher != src.Rights.Publisher || !sameNullable(m.Rights.Statement, src.Rights.Statement) {
+		return errf(CodeSourceMismatch, "rights")
+	}
+	if err := checkGeneratedText("party_name", m.Party.Name, maxDisplayField); err != nil {
 		return err
 	}
-	if err := checkGeneratedText("geography_name", m.GeographyName, maxDisplayField); err != nil {
+	if err := checkGeneratedText("geography_name", m.Geography.Name, maxDisplayField); err != nil {
 		return err
 	}
-	if err := checkGeneratedText("rights", m.Rights, maxRights); err != nil {
+	if err := checkGeneratedText("rights_publisher", m.Rights.Publisher, maxDisplayField); err != nil {
 		return err
 	}
-	if len(m.SourceEvidence) == 0 {
-		return errf(CodeMissingField, "source_evidence")
-	}
-	for k, v := range m.SourceEvidence {
-		if k == "" || v == "" {
-			return errf(CodeMissingField, "source_evidence")
+	if m.Rights.Statement != nil {
+		if err := checkGeneratedText("rights_statement", *m.Rights.Statement, maxRights); err != nil {
+			return err
 		}
 	}
 	if m.DocumentTitle != nil {
-		return validateStatement(*m.DocumentTitle, citeIDs, usedStmt)
+		return validateStatement(*m.DocumentTitle, citeIDs)
 	}
 	return nil
+}
+
+func sameElection(a, b *Election) bool {
+	if a == nil || b == nil {
+		return a == nil && b == nil
+	}
+	return a.ID == b.ID && a.Type == b.Type && a.Date == b.Date
 }
 
 func sameNullable(a, b *string) bool {
@@ -344,15 +374,15 @@ func sameNullable(a, b *string) bool {
 	return *a == *b
 }
 
-func validateCitations(cs []Citation, src SourceRecord, ex Extraction) (map[string]bool, error) {
+func validateCitations(cs []Citation, ex Extraction) (map[string]bool, error) {
 	if len(cs) > maxCitations {
 		return nil, errf(CodeOverLimit, "citations")
 	}
 	ids := make(map[string]bool, len(cs))
 	for i := range cs {
 		c := &cs[i]
-		if c.SourceRecord != src.ManifestID {
-			return nil, errf(CodeSourceMismatch, "citations")
+		if c.ID != fmt.Sprintf("c-%d", i+1) {
+			return nil, errf(CodeBadID, c.ID)
 		}
 		if c.Page < 1 || c.Page > ex.PageCount {
 			return nil, errf(CodeBadPage, c.BlockID)
@@ -378,18 +408,12 @@ func validateCitations(cs []Citation, src SourceRecord, ex Extraction) (map[stri
 		if string(cp[c.Start:c.End]) != c.Excerpt {
 			return nil, errf(CodeExcerptMismatch, c.ID)
 		}
-		if want := CitationID(c.SourceRecord, c.Page, c.BlockID, c.Start, c.End, c.Excerpt); c.ID != want {
-			return nil, errf(CodeBadID, "citations")
-		}
-		if ids[c.ID] {
-			return nil, errf(CodeDuplicateID, c.ID)
-		}
 		ids[c.ID] = true
 	}
 	return ids, nil
 }
 
-func validateMeasures(ms []Measure, citeIDs map[string]bool, jur Jurisdiction, usedStmt map[string]bool) (map[string]string, error) {
+func validateMeasures(ms []Measure, citeIDs map[string]bool) (map[string]string, error) {
 	if len(ms) > maxMeasures {
 		return nil, errf(CodeOverLimit, "measures")
 	}
@@ -397,8 +421,8 @@ func validateMeasures(ms []Measure, citeIDs map[string]bool, jur Jurisdiction, u
 	seen := make(map[string]bool, len(ms))
 	for i := range ms {
 		m := &ms[i]
-		if err := checkMeasureID(m.ID); err != nil {
-			return nil, err
+		if m.ID != fmt.Sprintf("m-%d", i+1) {
+			return nil, errf(CodeBadID, m.ID)
 		}
 		if seen[m.ID] {
 			return nil, errf(CodeDuplicateID, m.ID)
@@ -407,26 +431,13 @@ func validateMeasures(ms []Measure, citeIDs map[string]bool, jur Jurisdiction, u
 		if m.PrimaryTopic == "" {
 			return nil, errf(CodeMissingField, "primary_topic")
 		}
-		if !jur.Relations[m.ActionRelation] {
-			return nil, errf(CodeUnknownRelation, m.ActionRelation)
-		}
-		if m.InstitutionID == "" {
-			return nil, errf(CodeMissingField, "institution_id")
-		}
-		if !jur.Institutions[m.InstitutionID] && m.InstitutionID != jur.Unspecified {
-			return nil, errf(CodeUnknownInstitution, m.InstitutionID)
-		}
-		if m.JurisdictionRule != nil && !jur.Rules[*m.JurisdictionRule] {
-			return nil, errf(CodeUnknownRule, *m.JurisdictionRule)
-		}
-		// Action statement is required and cited.
-		if err := validateStatement(m.Action, citeIDs, usedStmt); err != nil {
+		if err := validateStatement(m.Action, citeIDs); err != nil {
 			return nil, err
 		}
 		if len(m.Conditions) > maxConditions {
 			return nil, errf(CodeOverLimit, "conditions")
 		}
-		// measure.citations == dedup(source-order) union of action+conditions.
+		// measure.citations == dedup(source-order) union of action+conditions+institution.
 		var union []string
 		used := make(map[string]bool)
 		add := func(ids []string) {
@@ -438,11 +449,17 @@ func validateMeasures(ms []Measure, citeIDs map[string]bool, jur Jurisdiction, u
 			}
 		}
 		add(m.Action.Citations)
-		for _, c := range m.Conditions {
-			if err := validateStatement(c, citeIDs, usedStmt); err != nil {
+		for i := range m.Conditions {
+			if err := validateStatement(m.Conditions[i], citeIDs); err != nil {
 				return nil, err
 			}
-			add(c.Citations)
+			add(m.Conditions[i].Citations)
+		}
+		if m.Institution != nil {
+			if err := validateStatement(*m.Institution, citeIDs); err != nil {
+				return nil, err
+			}
+			add(m.Institution.Citations)
 		}
 		if !equalStrings(m.Citations, union) {
 			return nil, errf(CodeDanglingRef, "measure_citations")
@@ -452,9 +469,13 @@ func validateMeasures(ms []Measure, citeIDs map[string]bool, jur Jurisdiction, u
 	return primary, nil
 }
 
-func validateTopics(ts []Topic, ms []Measure, measureTopic map[string]string, tax Taxonomy, pageCount int, citeIDs map[string]bool, usedStmt map[string]bool) error {
+func validateTopics(ts []Topic, root string, ms []Measure, measureTopic map[string]string, pageCount int, citeIDs map[string]bool) error {
 	if len(ts) != topicCount {
 		return errf(CodeBadCount, "topics")
+	}
+	wantIDs := make([]string, 0, topicCount)
+	for _, t := range taxonomy.Topics() {
+		wantIDs = append(wantIDs, t.ID)
 	}
 	measureSet := make(map[string]bool, len(ms))
 	for i := range ms {
@@ -462,16 +483,24 @@ func validateTopics(ts []Topic, ms []Measure, measureTopic map[string]string, ta
 	}
 	claimed := make(map[string]bool) // primary measure claimed by a topic
 	for i, t := range ts {
-		if t.ID != tax.TopicIDs[i] {
+		if t.ID != wantIDs[i] {
 			return errf(CodeBadCount, "topics")
 		}
 		if !validState(t.State) {
 			return errf(CodeBadState, t.State)
 		}
+		if t.Summary == nil || t.MeasureIDs == nil || t.SecondaryMeasureIDs == nil || t.Basis.PageRanges == nil {
+			return errf(CodeMissingField, "topic_"+t.ID)
+		}
 		if err := validatePageRanges(t.Basis.PageRanges, pageCount); err != nil {
 			return err
 		}
-		if err := validateStatementList(t.Summary, citeIDs, maxTopicSummary, "topic_summary", usedStmt); err != nil {
+		if t.Basis.ScopeEvidence != nil {
+			if err := verifyRetainedFile(root, *t.Basis.ScopeEvidence); err != nil {
+				return err
+			}
+		}
+		if err := validateStatementList(t.Summary, citeIDs, maxTopicSummary, "topic_summary"); err != nil {
 			return err
 		}
 		// Primary measures: must exist and be owned by exactly this topic.
@@ -519,15 +548,10 @@ func validateStateRules(t Topic, pageCount int) error {
 			return errf(CodeStateConflict, t.ID)
 		}
 	default:
-		// not-covered, not-applicable, unclear: no asserted proposal or
-		// factual summary, and no secondary references (absence state).
+		// not-covered, not-applicable, unclear: no asserted proposal or factual
+		// summary, and no secondary references (absence state).
 		if hasPrimary || hasSecondary || hasSummary {
 			return errf(CodeStateConflict, t.ID)
-		}
-		if t.State == "not-applicable" {
-			if t.Basis.ApplicabilityRule == nil {
-				return errf(CodeMissingRule, t.ID)
-			}
 		}
 		// Absence states (not-covered, not-applicable) require complete source
 		// coverage; unclear retains affected references but need not cover all.
@@ -535,6 +559,10 @@ func validateStateRules(t Topic, pageCount int) error {
 			if !coversAll(t.Basis.PageRanges, pageCount) {
 				return errf(CodeIncompleteBasis, t.ID)
 			}
+		}
+		// not-applicable additionally requires explicit entire-topic scope evidence.
+		if t.State == "not-applicable" && t.Basis.ScopeEvidence == nil {
+			return errf(CodeMissingScope, t.ID)
 		}
 	}
 	return nil
@@ -569,26 +597,22 @@ func coversAll(ranges []PageRange, pageCount int) bool {
 	return true
 }
 
-func validateStatementList(ss []Statement, citeIDs map[string]bool, max int, field string, usedStmt map[string]bool) error {
+func validateStatementList(ss []Statement, citeIDs map[string]bool, max int, field string) error {
 	if len(ss) > max {
 		return errf(CodeOverLimit, field)
 	}
 	for i := range ss {
-		if err := validateStatement(ss[i], citeIDs, usedStmt); err != nil {
+		if err := validateStatement(ss[i], citeIDs); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func validateStatement(s Statement, citeIDs map[string]bool, usedStmt map[string]bool) error {
+func validateStatement(s Statement, citeIDs map[string]bool) error {
 	if err := checkStatementID(s.ID); err != nil {
 		return err
 	}
-	if usedStmt[s.ID] {
-		return errf(CodeDuplicateID, s.ID)
-	}
-	usedStmt[s.ID] = true
 	if err := checkGeneratedText("text", s.Text, maxStatement); err != nil {
 		return err
 	}
@@ -605,14 +629,87 @@ func validateStatement(s Statement, citeIDs map[string]bool, usedStmt map[string
 	return nil
 }
 
-// checkStatementID enforces the stable "s-<ordinal>" local ASCII identifier.
-func checkStatementID(id string) error {
-	if len(id) < 3 || len(id) > maxIDBytes || !strings.HasPrefix(id, "s-") {
-		return errf(CodeBadID, "statement")
+// checkStatementOrder enforces that every statement is numbered s-1, s-2, ... in
+// the canonical traversal order: document title, global summary, each topic
+// summary in topic order, then each measure in array order (its action,
+// conditions, institution). This yields a complete gap-free sequence and rejects
+// duplicate or out-of-order statement IDs.
+func checkStatementOrder(p *Programme) error {
+	n := 0
+	visit := func(s Statement) error {
+		n++
+		if s.ID != fmt.Sprintf("s-%d", n) {
+			return errf(CodeBadID, s.ID)
+		}
+		return nil
 	}
-	for i := 2; i < len(id); i++ {
+	if p.Metadata.DocumentTitle != nil {
+		if err := visit(*p.Metadata.DocumentTitle); err != nil {
+			return err
+		}
+	}
+	for i := range p.Summary {
+		if err := visit(p.Summary[i]); err != nil {
+			return err
+		}
+	}
+	for ti := range p.Topics {
+		for si := range p.Topics[ti].Summary {
+			if err := visit(p.Topics[ti].Summary[si]); err != nil {
+				return err
+			}
+		}
+	}
+	for mi := range p.Measures {
+		m := &p.Measures[mi]
+		if err := visit(m.Action); err != nil {
+			return err
+		}
+		for ci := range m.Conditions {
+			if err := visit(m.Conditions[ci]); err != nil {
+				return err
+			}
+		}
+		if m.Institution != nil {
+			if err := visit(*m.Institution); err != nil {
+				return err
+			}
+		}
+	}
+	if n != countStatements(p) {
+		return errf(CodeBadID, "statement-order")
+	}
+	return nil
+}
+
+func countStatements(p *Programme) int {
+	n := 0
+	if p.Metadata.DocumentTitle != nil {
+		n++
+	}
+	n += len(p.Summary)
+	for i := range p.Topics {
+		n += len(p.Topics[i].Summary)
+	}
+	for i := range p.Measures {
+		n++ // action
+		n += len(p.Measures[i].Conditions)
+		if p.Measures[i].Institution != nil {
+			n++
+		}
+	}
+	return n
+}
+
+// checkStatementID enforces the "s-<ordinal>" local ASCII identifier format.
+func checkStatementID(id string) error {
+	const prefix = "s-"
+	if len(id) <= len(prefix) || !strings.HasPrefix(id, prefix) || len(id) > len(prefix)+maxIDBytes {
+		return errf(CodeBadID, id)
+	}
+	for i := len(prefix); i < len(id); i++ {
 		if id[i] < '0' || id[i] > '9' {
-			return errf(CodeBadID, "statement")
+			return errf(CodeBadID, id)
 		}
 	}
 	return nil
@@ -647,24 +744,6 @@ func checkGeneratedText(field, s string, max int) error {
 	return nil
 }
 
-func checkMeasureID(id string) error {
-	const prefix = "m-"
-	if len(id) != len(prefix)+64 || !strings.HasPrefix(id, prefix) {
-		return errf(CodeBadID, "measures")
-	}
-	return isHex64(id[len(prefix):])
-}
-
-func isHex64(s string) error {
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if (c < '0' || c > '9') && (c < 'a' || c > 'f') {
-			return errf(CodeBadID, "measures")
-		}
-	}
-	return nil
-}
-
 func equalStrings(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
@@ -685,21 +764,75 @@ func validState(s string) bool {
 	return false
 }
 
-// CitationID is the stable content identity of an exact citation: "c-" plus the
-// full SHA-256 hex of the canonical {source_record, page, block_id, start, end,
-// excerpt} object. It never hashes prose alone.
-func CitationID(sourceRecord string, page int, blockID string, start, end int, excerpt string) string {
-	cv, err := artifact.CanonicalValue(map[string]any{
-		"block_id":      blockID,
-		"end":           end,
-		"excerpt":       excerpt,
-		"page":          page,
-		"source_record": sourceRecord,
-		"start":         start,
-	})
+// verifyRetainedFile checks that a retained scope-evidence reference resolves to a
+// regular, non-symlink file under root whose bytes hash to the recorded SHA-256.
+func verifyRetainedFile(root string, f RetainedFile) error {
+	p, err := safeChild(root, f.Path)
 	if err != nil {
-		return ""
+		return errf(CodeBadPath, f.Path)
 	}
-	sum := sha256.Sum256(cv)
-	return "c-" + hex.EncodeToString(sum[:])
+	fi, err := os.Lstat(p)
+	if err != nil {
+		return errf(CodeMissingFile, f.Path)
+	}
+	if fi.Mode()&os.ModeSymlink != 0 {
+		return errf(CodeSymlink, f.Path)
+	}
+	if !fi.Mode().IsRegular() {
+		return errf(CodeMissingFile, f.Path)
+	}
+	id, err := hashFile(p)
+	if err != nil {
+		return errf(CodeMissingFile, f.Path)
+	}
+	if id != f.SHA256 {
+		return errf(CodeHashMismatch, f.Path)
+	}
+	return nil
+}
+
+func hashFile(p string) (string, error) {
+	f, err := os.Open(p)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+	return "sha256:" + hex.EncodeToString(h.Sum(nil)), nil
+}
+
+func checkSafeRelPath(p string) error {
+	if p == "" {
+		return errf(CodeBadPath, "empty")
+	}
+	if filepath.IsAbs(p) || path.IsAbs(p) {
+		return errf(CodeBadPath, "absolute")
+	}
+	clean := path.Clean(filepath.ToSlash(p))
+	if clean == ".." || len(clean) > 3 && clean[:3] == "../" {
+		return errf(CodeBadPath, "traversal")
+	}
+	return nil
+}
+
+func safeChild(root, rel string) (string, error) {
+	if err := checkSafeRelPath(rel); err != nil {
+		return "", err
+	}
+	rootAbs, err := filepath.Abs(root)
+	if err != nil {
+		return "", errf(CodeBadPath, "root")
+	}
+	full := filepath.Join(rootAbs, filepath.FromSlash(path.Clean(filepath.ToSlash(rel))))
+	fullAbs, err := filepath.Abs(full)
+	if err != nil {
+		return "", errf(CodeBadPath, "resolve")
+	}
+	if fullAbs != rootAbs && !strings.HasPrefix(fullAbs, rootAbs+string(os.PathSeparator)) {
+		return "", errf(CodeBadPath, "escape")
+	}
+	return fullAbs, nil
 }

@@ -63,27 +63,25 @@ func jurisdiction() {
 
 func programme() {
 	src := canonical.SourceRecord{
-		ManifestID: hash(), ProgrammeID: hash(), Checksum: hash(),
-		PartyID: "fixture-party", PartyName: "Partido sintético",
-		Scope: "general-political", GeographyID: "es", GeographyName: "España",
-		DocumentType: "general-political", Rights: "Derechos desconocidos",
+		ProgrammeID: "fixture-prog", SourceChecksum: hash(), SourceMetadataChecksum: hash(),
+		Party:        canonical.Party{ID: "fixture-party", Name: "Partido sintético"},
+		Scope:        "general-political",
+		Geography:    canonical.Geography{ID: "es", Name: "España"},
+		DocumentType: "general-political",
+		Rights:       canonical.Rights{Publisher: "fixture-publisher"},
 	}
-	ex := canonical.Extraction{ManifestID: hash(), SourceChecksum: hash(), PageCount: 1}
-	jur := canonical.Jurisdiction{ManifestID: hash()}
-	tax := canonical.Taxonomy{Release: taxonomy.Release, ManifestID: hash()}
+	ex := canonical.Extraction{ExtractionChecksum: hash(), SourceChecksum: src.SourceChecksum, PageCount: 1}
 	p := canonical.Programme{
 		Version: canonical.Version, ProgrammeID: src.ProgrammeID,
-		SourceRecord: src.ManifestID, SourceChecksum: src.Checksum, Extraction: ex.ManifestID,
-		TaxonomyVersion: tax.Release, Taxonomy: tax.ManifestID, Jurisdiction: jur.ManifestID,
+		SourceChecksum: src.SourceChecksum, SourceMetadataChecksum: src.SourceMetadataChecksum,
+		ExtractionChecksum: ex.ExtractionChecksum, TaxonomyVersion: taxonomy.Release,
 		Metadata: canonical.Metadata{
-			PartyID: src.PartyID, PartyName: src.PartyName, DocumentType: src.DocumentType,
-			Scope: src.Scope, GeographyID: src.GeographyID, GeographyName: src.GeographyName,
-			Rights: src.Rights, SourceEvidence: map[string]string{"rights": "source:publisher_rights"},
+			Party: src.Party, DocumentType: src.DocumentType, Scope: src.Scope,
+			Geography: src.Geography, Rights: src.Rights,
 		},
 		Summary: []canonical.Statement{}, Measures: []canonical.Measure{}, Citations: []canonical.Citation{},
 	}
 	for _, topic := range taxonomy.Topics() {
-		tax.TopicIDs = append(tax.TopicIDs, topic.ID)
 		p.Topics = append(p.Topics, canonical.Topic{
 			ID: topic.ID, State: "not-covered", Summary: []canonical.Statement{},
 			MeasureIDs: []string{}, SecondaryMeasureIDs: []string{},
@@ -95,35 +93,35 @@ func programme() {
 		if err != nil {
 			panic(err)
 		}
-		_, err = canonical.ValidateProgramme(raw, src, ex, jur, tax)
+		_, err = canonical.ValidateProgramme(raw, "", src, ex)
 		return err
 	}
 	if err := validate(); err != nil {
 		panic(fmt.Sprintf("canonical baseline rejected: %v", err))
 	}
-	fake := "invented-rule"
+	// Entire-topic exclusion without retained scope evidence must reject.
 	p.Topics[0].State = "not-applicable"
-	p.Topics[0].Basis.ApplicabilityRule = &fake
-	check("canonical rejects nonexistent applicability rule", validate() != nil)
+	check("canonical rejects not-applicable without scope evidence", validate() != nil)
 	p.Topics[0].State = "not-covered"
-	p.Topics[0].Basis.ApplicabilityRule = nil
-	ex.SourceChecksum = "sha256:" + strings.Repeat("b", 64)
-	check("canonical rejects wrong extraction source checksum", validate() != nil)
-	ex.SourceChecksum = src.Checksum
+	// Wrong extraction checksum binding.
+	ex.ExtractionChecksum = "sha256:" + strings.Repeat("b", 64)
+	check("canonical rejects wrong extraction checksum", validate() != nil)
+	ex.ExtractionChecksum = p.ExtractionChecksum
 	raw, _ := json.Marshal(p)
 	var object map[string]json.RawMessage
 	_ = json.Unmarshal(raw, &object)
 	delete(object, "summary")
 	raw, _ = json.Marshal(object)
-	_, err := canonical.ValidateProgramme(raw, src, ex, jur, tax)
+	_, err := canonical.ValidateProgramme(raw, "", src, ex)
 	check("canonical rejects missing required summary field", err != nil)
-	tax.TopicIDs = nil
+	// A draft with fewer than 21 topics rejects without panic.
+	p.Topics = p.Topics[:5]
 	panicked := false
 	func() {
 		defer func() { panicked = recover() != nil }()
 		err = validate()
 	}()
-	check("canonical rejects short taxonomy without panic", !panicked && err != nil)
+	check("canonical rejects short topic list without panic", !panicked && err != nil)
 }
 
 type adapter struct {
