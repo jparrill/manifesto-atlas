@@ -1,8 +1,9 @@
 ---
 id: TQ-0036
 title: Validate taxonomy versions and jurisdiction-aware topic states
-status: todo
+status: done
 priority: normal
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -11,7 +12,7 @@ depends_on:
   - TQ-0013
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:23+01:00
+updated: 2026-11-02T12:22:46+01:00
 ---
 
 ## Outcome
@@ -83,3 +84,4 @@ A commit/push/confirmation failure restores `TQ-0036` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:23+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T12:22:41+01:00 — Quality gates — TQ-0036 (all PASS). Gate 1/2 (make test-taxonomy): ok github.com/jparrill/manifesto-atlas/internal/taxonomy — TestTopicsRegistry proves exactly 21 uniquely-ID'd topics in stable order 1..21 with Spanish labels + English boundaries and TopicByID round-trip/reject; TestValidateRelease rejects ''/1.1.0/0.9.0/v1 and accepts 1.0.0 (unknown/stale versions fail closed); TestStatesAndLabels proves the 5 states + exact Spanish labels; TestClassifyStates proves proposals/mentioned/not-covered and unclear (unreadable evidence, no full coverage, unknown relation); TestClassifyNotApplicable proves outside+versioned-evidence -> not-applicable and outside-without-evidence rejected (no implicit all-outside rule); TestSharedPowersNationalAutonomous proves shared healthcare -> not-covered in both national and autonomous scopes (omission never becomes opposition); TestGeneralScopeApplicable proves general-political scope keeps topics applicable -> not-covered; TestValidateProfile rejects missing version, bad scope, unknown topic, unknown relation, unpinned source; TestCompatibleComparison rejects different taxonomy version and national-vs-regional; TestMigration rejects unchanged hash, empty, incomplete mapping, ID reuse, unknown target release, and identical release (explicit migration only). Gate 3 (regression): make verify -> check OK (git whitespace, tq list --json no warnings, gofmt OK, go build OK, go vet OK, docs structure OK, relative links OK) and go test test-cli/test-artifacts/test-attestations/test-taxonomy all ok; git diff --check -> exit 0. Gate 4 (static/structural): gofmt -l cmd internal -> no files; go build ./... and go vet ./internal/taxonomy/ -> no findings; git diff --check -> 0 errors. Gate 5 (docs/spec consistency): docs/MAKEFILE.md updated (surface table, Go-tests bullet, module layout) for the new atlas.taxonomy/v1 package and make test-taxonomy target; technical text English; no product decision changed. Gate 6 (trust-boundary): negative cases all fail closed (unknown/stale release, unknown topic, unknown relation, bad scope, unpinned source, incomplete/ID-reuse migration, incompatible comparison); no secrets or absolute private paths committed. Gate 7 (artifact/task record): fixtures deterministic (pure stdlib, no live models, no live official websites); repeated make verify identical; only TQ-0036 intended files staged (internal/taxonomy/{taxonomy.go,taxonomy_test.go}, Makefile, docs/MAKEFILE.md, .tasks/TQ-0036-*.md).

@@ -13,7 +13,7 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes three implemented baseline targets and twelve declared
+The `Makefile` exposes seven implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
@@ -26,6 +26,7 @@ pipeline stages.
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
 | `make test-artifacts` | Run the focused `atlas.artifact/v1` envelope/graph test suite (`go test ./internal/artifact/...`). | `go` |
 | `make test-attestations` | Run the focused `atlas.attestation/v1`/`atlas.trust/v1` signing/verification suite (`go test ./internal/attestation/...`). | `go` |
+| `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and jurisdiction-validation suite (`go test ./internal/taxonomy/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -52,8 +53,9 @@ network retrieval, model invocation, or publication.
   entry point (and its dependencies) without leaving a build artifact.
 - **Go vet** — `go vet ./...` must report no static-analysis findings.
 - **Go tests** — `make test-cli` runs `go test ./internal/cli/...`, `make
-  test-artifacts` runs `go test ./internal/artifact/...`, and `make
-  test-attestations` runs `go test ./internal/attestation/...`; all suites must
+  test-artifacts` runs `go test ./internal/artifact/...`, `make
+  test-attestations` runs `go test ./internal/attestation/...`, and `make
+  test-taxonomy` runs `go test ./internal/taxonomy/...`; all suites must
   pass. `make verify` includes them.
 
 ## Go module
@@ -73,6 +75,9 @@ The repository is a Go module rooted at the checkout:
     (TQ-0019).
   - `internal/attestation/` — the `atlas.attestation/v1`/`atlas.trust/v1`
     Ed25519 signing and offline verification logic, and its fixtures (TQ-0020).
+  - `internal/taxonomy/` — the `atlas.taxonomy/v1` topic registry, topic-state
+    classification, jurisdiction profiles, comparison compatibility, and
+    migration validation logic, and its fixtures (TQ-0036).
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit
