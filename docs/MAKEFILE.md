@@ -13,7 +13,7 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes ten implemented baseline targets and twelve declared
+The `Makefile` exposes eleven implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
@@ -30,6 +30,7 @@ pipeline stages.
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
+| `make test-semantic-runner` | Run the focused `atlas.semantic-job/v1` runner (clean-context/provider/verification) suite (`go test ./internal/semantic/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -59,10 +60,11 @@ network retrieval, model invocation, or publication.
   test-artifacts` runs `go test ./internal/artifact/...`, `make
   test-attestations` runs `go test ./internal/attestation/...`, `make
   test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
-  test-canonical` runs `go test ./internal/canonical/...`, and `make
+  test-canonical` runs `go test ./internal/canonical/...`, `make
   test-party-registry` and `make test-fetch` both run
   `go test ./internal/provenance/...` (the party registry and the bounded
-  transport share the package); all suites must pass. `make verify`
+  transport share the package), and `make test-semantic-runner` runs
+  `go test ./internal/semantic/...`; all suites must pass. `make verify`
   includes them.
 
 ## Go module
@@ -93,6 +95,9 @@ The repository is a Go module rooted at the checkout:
     invalidation (TQ-0023), and the bounded safe HTTP transport with URL/SSRF/
     redirect/size policy (TQ-0022), and their fixture anchors and local TLS
     fixtures.
+  - `internal/semantic/` — the `atlas.semantic-job/v1` provider-independent
+    runner with clean-context isolation, response verification, limits, retry,
+    and capability denial, and its offline fake adapter fixtures (TQ-0024).
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit

@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch
+.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch test-semantic-runner
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -31,6 +31,7 @@ help:
 	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
 	  "  make test-party-registry   Run the focused party trust-anchor/registry validation suite." \
 	  "  make test-fetch            Run the focused bounded safe HTTP transport (fetch) suite." \
+	  "  make test-semantic-runner  Run the focused semantic job runner (isolation/provider) suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -80,6 +81,8 @@ verify: check
 	@$(MAKE) test-party-registry
 	@echo "verify: go test (test-fetch)"
 	@$(MAKE) test-fetch
+	@echo "verify: go test (test-semantic-runner)"
+	@$(MAKE) test-semantic-runner
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -123,6 +126,13 @@ test-party-registry:
 # injected resolver/dialer, no live official websites.
 test-fetch:
 	@go test ./internal/provenance/...
+
+# Focused gate for the atlas.semantic-job/v1 runner: clean-context isolation,
+# provider substitution, response verification, limits, retry, cancellation,
+# and capability denial. Deterministic and offline; an injected fake provider
+# adapter, no live models or committed credentials.
+test-semantic-runner:
+	@go test ./internal/semantic/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 
