@@ -13,7 +13,7 @@ depends_on:
   - TQ-0019
   - TQ-0009
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T17:27:01+01:00
 ---
 
 ## Outcome
@@ -86,3 +86,5 @@ A commit/push/confirmation failure restores `TQ-0021` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T15:39:02+01:00 — BLOCKER (2026-11-02): cannot pass the required sandbox gate in this environment. The approved isolation contract (submission-isolation.md) mandates a rootless Podman sandbox with a pinned OCI image (SHA-256, --pull=never), crun, seccomp, SELinux enforcing, delegated cgroup v2 limits, AND a pinned qpdf adapter for sandbox page-tree inspection, plus a disposable qualification job that proves REAL OS enforcement (memory.max, pids.max, write/network denial, timeout/fork/memory probes). Host check: kernel 7.1.13 (>=6.1 OK), podman present, crun present, SELinux Enforcing, user namespaces enabled, cgroup v2 present — but qpdf is MISSING and no pinned OCI image is present locally. The design states: 'Unavailability of required sandbox enforcement is a failed required gate, not a skipped pass.' Implementing the Go Inspect/RunIsolated code is feasible, but make test-submission cannot honestly pass without qpdf + the pinned image + a conforming host to run the qualification probes. Left in todo, not claimed. Unblocked by: installing/building the pinned qpdf adapter and OCI image, then running the sandbox qualification on a conforming host.
+- 2026-11-02T17:27:01+01:00 — Correction under TQ-0058: qpdf is now installed from Fedora (qpdf 12.3.2 verified by qpdf --version), so missing host qpdf is not a current blocker. A missing host binary never proved a container image could not be built. Juan requested avoiding unnecessary rootless setup; review the isolation design against that direction and retain demonstrable resource, process cleanup and repository/network protections. Do not equate installing qpdf with satisfying those gates or execute untrusted PDFs using an undocumented fallback. Earlier notes are preserved as history, not current verified blockers.

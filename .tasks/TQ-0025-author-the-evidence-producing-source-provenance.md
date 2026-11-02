@@ -14,7 +14,7 @@ depends_on:
   - TQ-0022
   - TQ-0010
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T17:27:01+01:00
 ---
 
 ## Outcome
@@ -86,3 +86,5 @@ A commit/push/confirmation failure restores `TQ-0025` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T15:39:45+01:00 — BLOCKER (2026-11-02): the offline portion (author the project-scoped skill against the approved request/report schemas + trust-anchor rules, and offline pass/fail/probable/unverified + prompt-injection fixtures) is feasible, but acceptance criterion 3 requires 'a recorded configured-model evaluation proves actual prompt behavior with exact model/prompt/input identities' and the make test-provenance-skill gate lists 'pinned recorded evaluation' as a required passing case. Per semantic-validation.md, skill tasks must 'actually run' a local model and 'retain their reports' (real pass/fail/insufficient evaluation evidence); a fake adapter does not satisfy this. The golden sources are absent (TQ-0028/TQ-0029 not done), so there is no real provenance evidence to evaluate, and fabricating a recorded model evaluation would violate the contract's 'no fake pin / do not claim a model ran' rule. Left in todo, not claimed. Unblocked by: an owner-run recorded local-provider evaluation against recovered golden-source evidence (or explicit owner direction on how the pinned recorded evaluation is to be produced in this environment).
+- 2026-11-02T17:27:01+01:00 — Correction under TQ-0058: no task/design requirement makes Frente Obrero or VOX golden PDFs mandatory for this skill evaluation. A genuine configured-model execution over labelled synthetic direct/referral/signature/missing-link/injection evidence can provide prompt-behavior evidence; the agent may run it, and Juan need not run it personally. First inspect configured provider availability and immutable identity; neither absence nor availability has been established. The current concrete blocker is the reopened native prerequisites TQ-0022, TQ-0023 and TQ-0024. Offline skill authoring remains authorized but must not treat these incomplete implementations as qualified or fabricate model execution.
