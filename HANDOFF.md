@@ -1,5 +1,22 @@
 # Manifesto Atlas Handoff
 
+## Execution mission: continue autonomously until the approved queue is exhausted
+
+**Juan has explicitly authorized the resuming implementation agent to execute
+the approved local-first MVP backlog. Start implementing after reading the
+current contracts; do not stop at a summary, an audit or another proposed plan.**
+
+**Do not ask questions or request permission to start, choose the next approved
+task, run its checks, commit, push or continue. Do not ask whether to continue
+after completing a task. Continue automatically with all eligible approved tasks
+until none remain for your execution role.** Routine delivery and continuation
+are already authorized in [AGENTS.md](AGENTS.md#closing-tasks-and-continuing-work).
+
+Use the specification, task criteria and existing patterns to resolve ordinary
+implementation choices. Choose the smallest conforming solution, record relevant
+assumptions with `tq note`, and proceed. Do not invent a new approval checkpoint,
+expand the MVP, or restart planning because a historical contract was larger.
+
 ## Read first
 
 - [SPEC](docs/SPEC.md) and [current MVP contract](docs/design/MVP.md) define the
@@ -32,14 +49,20 @@ qpdf 12.3.2 is installed from Fedora. This neither qualifies PDF isolation nor
 means the pipeline works. TQ-0062 selects one supported bounded deployment with
 actual basic enforcement evidence; TQ-0021 implements intake against it.
 
-## Execution frontier after this planning delivery
+## Start here and keep going
 
 ```bash
-tq ready --label agent/developer --json
-tq ready --label agent/architect --json
 git status --short --branch
 git log --oneline -10
+tq list --status in-progress --json
+tq ready --label agent/developer --json
+tq ready --label agent/architect --json
 ```
+
+The live queue wins over this snapshot. Inspect any in-progress task's ownership
+and notes before resuming it; preserve other agents' work. A developer selects
+only developer tasks. An explicitly approved architect can also execute eligible
+architect tasks, including TQ-0062, without requesting routine owner confirmation.
 
 Ready first slices: TQ-0028 (first exact source recovery), TQ-0062 (minimal Fedora
 runtime choice), TQ-0063 (retire platform prerequisites/local run records), and
@@ -52,6 +75,63 @@ source is the approved Frente Obrero **general political** document; the second
 is the approved VOX Castilla y León document with evidenced electoral/territorial
 identity. If the exact source is unavailable, record a concrete blocker. Candidate
 recovery precedes registration, but does not grant content publication authority.
+
+### Mandatory execution loop
+
+1. Select approved ready work in priority/dependency order for your role. Read
+   the **complete** record with `tq show <id> --json`; record the actual executing
+   model with `tq update <id> --assignee "<actual-model-id>"`, then claim it with
+   `tq move <id> in-progress` before editing.
+2. Implement the task, including its real callers, fixtures, documentation and
+   failure behavior. Record decisions and concrete evidence using `tq note`.
+   A plan, stub, fake evaluation or passing unrelated test suite is not delivery.
+3. Run **every required gate**. Fix failures and rerun affected checks plus
+   regression. Keep expensive real-source/model evaluations explicit and retain
+   their genuine outputs; never replace them with invented records or skipped passes.
+4. Record all gate results with `tq note`, then `tq done <id>`. Inspect Git status,
+   diffs and recent history; commit only intended task changes and its record.
+   Push through the configured upstream and confirm the committed changes are
+   present remotely, following the exact delivery procedure in AGENTS.md.
+5. **Immediately re-query the live ready queue after confirmed delivery.** Newly
+   unblocked tasks are part of the assignment. Read, assign and claim the next
+   eligible task without asking Juan. Repeat the loop; do not stop after one
+   task, the first source, the first summary or an arbitrary batch size.
+
+### Blockers are records, not routine questions
+
+- Verify a suspected blocker with the actual relevant command or evidence.
+  Do not assume a package, provider or exact source is unavailable without
+  checking, and do not assume every task requires both golden PDFs.
+- For a task-local blocker that cannot be resolved within approved scope, leave
+  the task open with a precise `tq note`: what was attempted, observed failure,
+  affected gate and concrete unblock condition. Use native dependencies for
+  known prerequisite tasks. Do not mark it done or repeatedly claim the same
+  blocked task without new evidence.
+- **Continue with eligible independent work instead of stopping to ask a
+  question.** For example, inability to recover the exact Frente Obrero PDF
+  leaves TQ-0028 open; it does not block TQ-0036 or TQ-0063. A developer waiting
+  for architect TQ-0062 still executes other eligible developer work.
+- Record an unresolved new architectural requirement as an inbox proposal under
+  the role rules, rather than guessing its implementation or promoting it.
+  Missing owner-supplied assets likewise remain a recorded dependency. Continue
+  other approved work; no reply or routine approval prompt is required.
+- Delivery failures are different: a failed commit, hook, signature, push or
+  remote confirmation blocks further task claims. Restore the affected task to
+  in-progress, record the failure, and resolve delivery using the existing
+  configuration before continuing. Never disable signing/hooks, force-push,
+  weaken a gate or modify somebody else's work to keep the loop moving.
+
+### When to finish the execution session
+
+Finish only when the live queue has **no eligible approved work remaining for
+your role**, Juan explicitly stops execution, or a genuine environment/delivery
+blocker prevents further safe progress. A blocker on one task is not grounds to
+stop while independent eligible tasks remain.
+
+At that point provide a concise factual report of delivered tasks, open blocked
+tasks and their unblock conditions, and deferred/owner-only work. Do not claim
+the entire project is complete merely because remaining tasks are blocked or in
+inbox, and do not end with a question requesting permission to continue.
 
 ## Milestones
 
@@ -95,5 +175,6 @@ author HTML/CSS/JavaScript/templates, fixtures or embedded presentation code.
 - Original source bytes and historical reports are preserved; changed input
   invalidates the affected programme, without a generic artifact graph.
 - Private fixture/draft preview is explicitly separate from the public catalogue.
-- Follow task-scoped gate/commit/push/confirmed-delivery rules. A planning-only
-  assignment does not automatically expand into implementation.
+- Follow task-scoped gate/commit/push/confirmed-delivery rules. The previous
+  planning task is complete; the resuming implementation agent now has Juan's
+  explicit authorization to work through the approved MVP queue autonomously.
