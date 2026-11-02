@@ -48,12 +48,15 @@ func validReply(req semantic.Request, identity semantic.ModelIdentity, result st
 		JobID:         req.JobID,
 		ModelIdentity: identity,
 		Report: semantic.Report{
-			Version: semantic.ReportVersion,
-			Role:    req.Role,
-			Subject: req.Subject,
-			Inputs:  req.Inputs,
-			Result:  result,
-			Checked: semantic.Checked{},
+			Version:  semantic.ReportVersion,
+			Role:     req.Role,
+			Subject:  req.Subject,
+			Inputs:   req.Inputs,
+			Result:   result,
+			Findings: []semantic.Finding{},
+			Checked: semantic.Checked{
+				Statements: []string{}, Measures: []string{}, Pages: []int{}, Topics: []string{},
+			},
 			Details: []byte(`{}`),
 		},
 	}

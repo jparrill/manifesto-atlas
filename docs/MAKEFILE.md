@@ -30,7 +30,7 @@ pipeline stages.
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
-| `make test-semantic-runner` | Run the focused `atlas.semantic-job/v1` runner (clean-context/provider/verification) suite (`go test ./internal/semantic/...`). | `go` |
+| `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -67,6 +67,17 @@ network retrieval, model invocation, or publication.
   `go test ./internal/semantic/...`; all suites must pass. `make verify`
   includes them.
 
+Passing these suites does not qualify every planned contract. The
+[trust-boundary audit](audits/2026-11-02-trust-boundaries.md) records reopened
+implementation tasks. TQ-0059 repairs strict common semantic envelopes, decision
+consistency, tightened response-byte limits and late-response rejection. Empty
+arrays must be explicit arrays, not null. Zero request limits select bounded
+defaults (600 seconds, 8,192 tokens and 1 MiB raw reply); negative limits reject.
+Stage-specific output schemas, evidence/coverage resolution, configured-provider
+transport, streaming allocation limits and actual runtime/session isolation
+remain required in TQ-0024. Adapters must honor cancellation; the common runner
+rejects a late return but cannot terminate an arbitrary non-cooperative Go adapter.
+
 ## Go module
 
 The repository is a Go module rooted at the checkout:
@@ -95,9 +106,9 @@ The repository is a Go module rooted at the checkout:
     invalidation (TQ-0023), and the bounded safe HTTP transport with URL/SSRF/
     redirect/size policy (TQ-0022), and their fixture anchors and local TLS
     fixtures.
-  - `internal/semantic/` — the `atlas.semantic-job/v1` provider-independent
-    runner with clean-context isolation, response verification, limits, retry,
-    and capability denial, and its offline fake adapter fixtures (TQ-0024).
+  - `internal/semantic/` — common `atlas.semantic-job/v1` response verification,
+    rejection limits, retry eligibility and terminal cancellation checks
+    (TQ-0059), with offline fake fixtures; the full runner remains TQ-0024.
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit

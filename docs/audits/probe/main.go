@@ -175,7 +175,9 @@ func (a adapter) Run(ctx context.Context, req semantic.Request, _ semantic.Evide
 	r := semantic.Response{
 		Version: semantic.JobVersion, JobID: req.JobID, ModelIdentity: a.Identity(),
 		Report: semantic.Report{Version: semantic.ReportVersion, Role: req.Role, Subject: req.Subject,
-			Inputs: req.Inputs, Result: semantic.ResultPass, Details: json.RawMessage(`{}`)},
+			Inputs: req.Inputs, Result: semantic.ResultPass, Details: json.RawMessage(`{}`),
+			Findings: []semantic.Finding{},
+			Checked:  semantic.Checked{Statements: []string{}, Measures: []string{}, Pages: []int{}, Topics: []string{}}},
 	}
 	if a.mutate != nil {
 		a.mutate(&r)
@@ -194,6 +196,9 @@ func jobs() {
 	run := func(a adapter) error {
 		_, err := semantic.NewRunner(a).Run(context.Background(), req, nil)
 		return err
+	}
+	if err := run(adapter{}); err != nil {
+		panic(fmt.Sprintf("semantic baseline rejected: %v", err))
 	}
 	check("runner rejects trailing JSON response", run(adapter{suffix: `{}`}) != nil)
 	check("runner rejects pass with blocker", run(adapter{mutate: func(r *semantic.Response) {

@@ -1,14 +1,8 @@
-// Package semantic implements the atlas.semantic-job/v1 runner for TQ-0024: a
-// provider-independent, host-verified runner for the six schema-constrained
-// skill jobs. It owns the bounded invocation, clean-context enforcement,
-// response verification, limits, retry, and cancellation. It never grants a
-// model job shell, filesystem write, network, repository edit, or signing
-// capability; document text that says otherwise is quoted data.
-//
-// The runner is host authority: it verifies job binding, expected model
-// identity, and the report schema against trusted inputs. A provider reply is
-// untrusted until it passes every check; a malformed reply is quarantined
-// diagnostic data, never an approval.
+// Package semantic provides common host-side response validation for
+// atlas.semantic-job/v1. It checks job/model binding, strict common envelopes,
+// decision consistency, response limits and terminal cancellation. Stage-specific
+// schemas, evidence inventories, configured providers and runtime/session
+// isolation remain required work in TQ-0024; common validation is not approval.
 package semantic
 
 import (
@@ -55,6 +49,7 @@ const (
 	maxOutputTokens  = 8192
 	maxFindings      = 2000
 	maxEvidence      = 32
+	maxRequestTime   = 600 * time.Second
 )
 
 // Error codes.
@@ -115,7 +110,9 @@ type Evidence struct {
 	MediaType  string
 }
 
-// Limits are request bounds that may only tighten the runner ceilings.
+// Limits are request bounds that may only tighten the runner ceilings. Zero
+// selects the approved default (600 seconds, 8192 tokens, 1 MiB); negative values
+// are invalid. A provider adapter must enforce generation token/stream limits.
 type Limits struct {
 	Deadline         time.Duration
 	MaxOutputTokens  int
@@ -190,9 +187,10 @@ type EvidenceReader interface {
 	Read(artifactID string, page *int) ([]byte, error)
 }
 
-// ProviderAdapter is a trusted provider implementation of the job contract. It
-// has no shell, filesystem-write, network, repository-edit, or signing
-// capability; it returns the raw provider reply bytes for host verification.
+// ProviderAdapter returns untrusted provider reply bytes for host verification.
+// No model tool API is exposed here; implementations must separately establish
+// the approved broker capabilities and provider/session isolation. Implementations
+// must honor context cancellation and bound response allocation while streaming.
 type ProviderAdapter interface {
 	Identity() ModelIdentity
 	Run(ctx context.Context, req Request, ev EvidenceReader) ([]byte, error)
@@ -216,8 +214,20 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 	if err := validateRequest(req); err != nil {
 		return nil, err
 	}
-	// Clean context: a reused job id within an evaluation set would leak prior
-	// conversation state (the canary). Reject it.
+	if ctx.Err() != nil {
+		return nil, mapErr(ctx, ctx.Err())
+	}
+	if req.Limits.Deadline == 0 {
+		req.Limits.Deadline = maxRequestTime
+	}
+	if req.Limits.MaxResponseBytes == 0 {
+		req.Limits.MaxResponseBytes = maxResponseBytes
+	}
+	if req.Limits.MaxOutputTokens == 0 {
+		req.Limits.MaxOutputTokens = maxOutputTokens
+	}
+	// Reject job reuse within this runner/evaluation set. This bookkeeping does
+	// not establish provider conversation or KV-cache isolation.
 	set := r.usedJobs[req.EvaluationSet]
 	if set == nil {
 		set = map[string]bool{}
@@ -228,19 +238,28 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 	}
 	set[req.JobID] = true
 
-	if req.Limits.Deadline > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, req.Limits.Deadline)
-		defer cancel()
+	ctx, cancel := context.WithTimeout(ctx, req.Limits.Deadline)
+	defer cancel()
+	if ctx.Err() != nil {
+		return nil, mapErr(ctx, ctx.Err())
 	}
 
 	raw, err := r.adapter.Run(ctx, req, ev)
+	if ctx.Err() != nil {
+		return nil, mapErr(ctx, ctx.Err())
+	}
 	if err != nil {
-		if isTransient(err) {
+		if isTransient(err) && len(raw) == 0 {
 			retryReq := req
 			retryReq.JobID = req.JobID + "-retry1"
+			if set[retryReq.JobID] {
+				return nil, errf(CodeCleanContext, retryReq.JobID)
+			}
 			set[retryReq.JobID] = true
 			raw, err = r.adapter.Run(ctx, retryReq, ev)
+			if ctx.Err() != nil {
+				return nil, mapErr(ctx, ctx.Err())
+			}
 			if err != nil {
 				return nil, mapErr(ctx, err)
 			}
@@ -249,14 +268,25 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 			return nil, mapErr(ctx, err)
 		}
 	}
-	return r.verify(req, raw)
+	resp, err := r.verify(req, raw)
+	if ctx.Err() != nil {
+		return nil, mapErr(ctx, ctx.Err())
+	}
+	return resp, err
 }
 
 func (r *Runner) verify(req Request, raw []byte) (*Response, error) {
-	if len(raw) > maxResponseBytes {
+	if len(raw) > req.Limits.MaxResponseBytes {
 		return nil, errf(CodeOverLimit, "response")
 	}
-	dec := json.NewDecoder(bytes.NewReader(raw))
+	canon, err := artifact.Canonicalize(raw)
+	if err != nil {
+		return nil, &Error{Code: CodeBadReport, Subject: "strict-json", Err: err}
+	}
+	if err := validateEnvelope(canon); err != nil {
+		return nil, err
+	}
+	dec := json.NewDecoder(bytes.NewReader(canon))
 	dec.DisallowUnknownFields()
 	var resp Response
 	if err := dec.Decode(&resp); err != nil {
@@ -298,17 +328,69 @@ func (r *Runner) verify(req Request, raw []byte) (*Response, error) {
 		if !validSeverity(f.Severity) {
 			return nil, errf(CodeBadReport, f.Severity)
 		}
+		if rep.Result == ResultPass && f.Severity != SeverityInfo {
+			return nil, errf(CodeBadReport, "pass-with-unresolved-finding")
+		}
 		if seen[f.ID] {
 			return nil, errf(CodeBadReport, "duplicate-finding")
 		}
 		seen[f.ID] = true
 	}
-	if len(rep.Details) > 0 {
-		if _, err := artifact.Canonicalize(rep.Details); err != nil {
-			return nil, errf(CodeBadReport, "details")
+	return &resp, nil
+}
+
+// validateEnvelope checks exact common field names/presence before the standard
+// decoder (which otherwise accepts case aliases and missing/null fields).
+// Details must be an object, but its skill-specific schema remains the caller's
+// responsibility until the output-schema resolver is implemented in TQ-0024.
+func validateEnvelope(raw []byte) error {
+	root, err := objectFields(raw, "version", "job_id", "model_identity", "report")
+	if err != nil {
+		return err
+	}
+	if _, err := objectFields(root["model_identity"], "provider", "model", "revision"); err != nil {
+		return err
+	}
+	report, err := objectFields(root["report"], "version", "role", "subject", "inputs", "result", "findings", "checked", "details")
+	if err != nil {
+		return err
+	}
+	if _, err := objectFields(report["checked"], "statements", "measures", "pages", "topics"); err != nil {
+		return err
+	}
+	if _, err := objectFields(report["details"]); err != nil {
+		return err
+	}
+	var findings []json.RawMessage
+	if err := json.Unmarshal(report["findings"], &findings); err != nil {
+		return errf(CodeBadReport, "findings")
+	}
+	if len(findings) > maxFindings {
+		return errf(CodeOverLimit, "findings")
+	}
+	for _, finding := range findings {
+		if _, err := objectFields(finding, "id", "code", "severity", "target", "evidence", "message"); err != nil {
+			return err
 		}
 	}
-	return &resp, nil
+	return nil
+}
+
+func objectFields(raw []byte, fields ...string) (map[string]json.RawMessage, error) {
+	var object map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &object); err != nil || object == nil {
+		return nil, errf(CodeBadReport, "expected-object")
+	}
+	if len(fields) != 0 && len(object) != len(fields) {
+		return nil, errf(CodeBadReport, "object-fields")
+	}
+	for _, field := range fields {
+		value, ok := object[field]
+		if !ok || bytes.Equal(value, []byte("null")) {
+			return nil, errf(CodeBadReport, field)
+		}
+	}
+	return object, nil
 }
 
 func validateRequest(req Request) error {
@@ -333,10 +415,13 @@ func validateRequest(req Request) error {
 	if len(req.Inputs) == 0 {
 		return errf(CodeMissingField, "inputs")
 	}
-	if req.Limits.MaxOutputTokens > maxOutputTokens {
+	if req.Limits.Deadline < 0 || req.Limits.Deadline > maxRequestTime {
+		return errf(CodeOverLimit, "deadline")
+	}
+	if req.Limits.MaxOutputTokens < 0 || req.Limits.MaxOutputTokens > maxOutputTokens {
 		return errf(CodeOverLimit, "tokens")
 	}
-	if req.Limits.MaxResponseBytes > maxResponseBytes {
+	if req.Limits.MaxResponseBytes < 0 || req.Limits.MaxResponseBytes > maxResponseBytes {
 		return errf(CodeOverLimit, "response")
 	}
 	if len(req.Evidence) > maxEvidence {

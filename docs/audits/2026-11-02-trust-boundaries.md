@@ -169,3 +169,22 @@ outputs; fake-adapter replies cannot substitute for it.
 The probe is an audit aid, not an exhaustive qualification suite. An individual
 repair may fix a listed rejection invariant without making the owning task
 complete. All seven original gates still apply.
+
+## Response-boundary repair: TQ-0059
+
+The four semantic rejection probes now print `PASS`; the ten unrelated probes
+still print `FAIL`, so the aggregate audit command still exits one. Its synthetic
+positive semantic baseline must succeed before these rejection checks run.
+
+The runner now uses the existing strict artifact parser for the entire raw
+response and checks exact required common fields before typed decoding. It
+rejects contradictory passing findings, honors tightened byte limits, supplies
+bounded defaults, rejects invalid limits, and checks cancellation/deadline after
+adapter returns and before returning a report. Cancelled transient failures and
+transient errors accompanied by partial bytes do not retry. No stage-specific
+schema, provider capability or coverage completeness is implied by these checks.
+
+Regression evidence lives in `internal/semantic/response_boundary_test.go`, run
+by `make test-semantic-runner`. TQ-0024 remains open for the other deficiencies
+above. An adapter that never returns must be terminated by its actual transport
+or isolated process implementation; late-return rejection alone is not teardown.

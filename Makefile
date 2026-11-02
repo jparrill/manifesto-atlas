@@ -127,10 +127,9 @@ test-party-registry:
 test-fetch:
 	@go test ./internal/provenance/...
 
-# Focused gate for the atlas.semantic-job/v1 runner: clean-context isolation,
-# provider substitution, response verification, limits, retry, cancellation,
-# and capability denial. Deterministic and offline; an injected fake provider
-# adapter, no live models or committed credentials.
+# Common semantic response rejection and fake-adapter regression gate.
+# Actual configured-provider, evidence/schema and runtime/session isolation
+# qualification remains TQ-0024. No live models or committed credentials.
 test-semantic-runner:
 	@go test ./internal/semantic/...
 
