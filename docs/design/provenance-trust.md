@@ -1,5 +1,9 @@
 # Official-source provenance trust
 
+> Historical future-platform contract. [MVP.md](MVP.md) and
+> [SPEC.md](../SPEC.md) use explicit maintainer-selected local sources instead.
+> Automatic network admission/domain/key grants are deferred, not certified by the MVP.
+
 Contract: `atlas.provenance/v1`, TQ-0010. Implementation owners: TQ-0022,
 TQ-0023, TQ-0025 and TQ-0026. This contract refines the
 [provenance trust model](../SPEC.md#provenance-trust-model) and

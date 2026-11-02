@@ -1,5 +1,9 @@
 # Page-aware extraction and reproducibility
 
+> Historical contract. [MVP.md](MVP.md) and [SPEC.md](../SPEC.md) govern the
+> one-source adapter, original evidence and actual tool/configuration records.
+> Full binary/image locking, a second-extractor platform and calibrated scores are deferred.
+
 Contract: `atlas.extraction/v1`, TQ-0012. Implements the design boundary for
 TQ-0030 through TQ-0035, following [extraction artifacts](../SPEC.md#extraction-artifacts),
 [fidelity](../SPEC.md#extraction-fidelity) and [tests](../SPEC.md#extraction-tests).

@@ -17,7 +17,7 @@ depends_on:
   - TQ-0014
   - TQ-0012
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:35:27+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -100,3 +100,4 @@ A commit/push/confirmation failure restores `TQ-0015` to `in-progress` with a bl
   - Gate 5 PASS — compared SPEC agent-skills/llm-validation/untrusted-document-handling and artifact/isolation/canonical/extraction/provenance/taxonomy contracts; independent claim plus coverage required, original images available, local explicit model work distinct from offline regression, no human fallback or presentation-code authorship. No product/SPEC change.
   - Gate 6 PASS — design review verifies no model shell/general network/repository/signing access, endpoint-restricted credential-isolated broker, evidence as data, clean sessions/hidden-state separation, no auto-repair/retry-until-pass/model swapping, bounded late-response/teardown behavior. Unknown identity/capability/evidence cannot gain authority. No secrets/private paths.
   - Gate 7 PASS — current design/scenarios and gate record complete; identities/configurations/chunk plan and external timing boundaries deterministic. Only this design/task record changed; actual runner/skill qualification and real model gates remain mandatory dependent implementation work, not claimed executed in this design task.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

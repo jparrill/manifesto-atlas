@@ -12,7 +12,7 @@ depends_on:
   - TQ-0008
   - TQ-0009
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:23:48+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -94,3 +94,4 @@ A commit/push/confirmation failure restores `TQ-0010` to `in-progress` with a bl
   - Gate 5 PASS — compared with SPEC provenance-trust-model/further-notes plus artifact/isolation designs: three permitted chains preserved, uploaded bytes never canonical by assertion, no fabricated golden URLs/anchors, no manual publication fallback. Signature format support explicitly versioned; unsupported formats fail closed. Technical English, no public/SPEC changes.
   - Gate 6 PASS — trust-boundary design reviewed: contributor cannot self-approve grants, exact scoped hosts/keys, independent evidence, current expiry/revocation, no model network, safe TLS/DNS/dial pinning/redirects and bounded response handling. Archived evidence cannot bootstrap new official status. No secrets/private paths embedded.
   - Gate 7 PASS — design and scenario artifacts current; immutable text and canonical identity rules deterministic; only design/task record changed. Actual transport/anchor/signature runtime checks are mandatory dependent implementation gates, not claimed executed by this design task.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

@@ -12,7 +12,7 @@ labels:
 depends_on:
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T11:20:57+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -93,3 +93,4 @@ A commit/push/confirmation failure restores `TQ-0020` to `in-progress` with a bl
   - Gate 5 PASS — docs/MAKEFILE.md updated (test-attestations added to baseline surface, Go-tests bullet, internal/attestation layout); Makefile help lists the target; interfaces match the attestation/trust sections of docs/design/artifact-contract.md; technical text English; no public (Spanish) content changed.
   - Gate 6 PASS — signature substitution and role confusion rejected (TestTamperingRejected, TestRoleMismatch); envelope/bundle/key-count limits enforced (16KiB, 1MiB, 256 keys); Sign accepts key bytes only and never reads key paths from a report; all errors carry stable codes and never echo key material; no network used. No secrets or private absolute paths committed.
   - Gate 7 PASS — verification logic is deterministic over its public inputs; make test-attestations and make verify pass; all gate results recorded before done.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

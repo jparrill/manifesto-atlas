@@ -1,5 +1,9 @@
 # Taxonomy and jurisdiction applicability
 
+> Historical contract. Active scope is [MVP.md](MVP.md) and
+> [SPEC.md](../SPEC.md): retain the 21 IDs/labels and five evidence-based states;
+> general legal registries, comparisons and migration engines are deferred.
+
 Contract: `atlas.taxonomy/v1`, taxonomy release `1.0.0`, TQ-0013. Implementation
 TQ-0036; consumers TQ-0014 and normalization/coverage validators. Implements the
 [21-topic taxonomy](../SPEC.md#topic-taxonomy),

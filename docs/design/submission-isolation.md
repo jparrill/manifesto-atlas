@@ -1,5 +1,9 @@
 # PDF submission and conversion isolation
 
+> Historical contract. [MVP.md](MVP.md) and [SPEC.md](../SPEC.md) govern active
+> work. TQ-0062 chooses one minimal bounded Fedora deployment; rootless Podman,
+> custom OCI sealing and the full qualification apparatus below are not MVP prerequisites.
+
 Contract: `atlas.isolation/v1`, established by TQ-0009 for TQ-0021 and the
 extraction adapters. This is an implementation contract, not a claim that the
 runtime has already been implemented or qualified on this host.

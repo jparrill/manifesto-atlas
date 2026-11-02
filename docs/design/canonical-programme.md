@@ -1,5 +1,9 @@
 # Canonical programme and citation contract
 
+> Historical contract. The smaller `atlas.programme.local/v1` contract in
+> [MVP.md](MVP.md) and [SPEC.md](../SPEC.md) governs active work. Retain cited
+> factual content; graph bindings, per-citation hash identities and legal registries are superseded.
+
 Version: `atlas.programme/v1`, TQ-0014; implementation TQ-0037/TQ-0038.
 Implements [canonical data](../SPEC.md#canonical-programme-model),
 [independent validation](../SPEC.md#llm-validation) and

@@ -1,5 +1,9 @@
 # Rendering, comparisons and site quality
 
+> Historical contract. [MVP.md](MVP.md) and [SPEC.md](../SPEC.md) govern the
+> supplied static-site extension and private previews. Comparisons, exact browser/font
+> binary locks, pixel thresholds and visual-model approval are not MVP gates.
+
 Contract `atlas.site/v1`, TQ-0016. Implements
 [rendering](../SPEC.md#deterministic-rendering),
 [site validation](../SPEC.md#site-validation),

@@ -11,7 +11,7 @@ labels:
 depends_on:
   - TQ-0011
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:30:51+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -94,3 +94,4 @@ A commit/push/confirmation failure restores `TQ-0013` to `in-progress` with a bl
   - Gate 5 PASS — compared with SPEC taxonomy/programme-model/tests plus source/artifact contracts; cited Constitution 148/149, Castilla y Leon Statute 70-74, Local Government Bases Act 25-27/36 and TFEU 2-6. No claim that these citations constitute a complete live legal matrix; dated profiles/evidence are mandatory. Technical English with explicit Spanish public-label vocabulary; no SPEC/product change.
   - Gate 6 PASS — source assertions/models cannot grant legal authority or change taxonomy; incomplete pages/profiles remain unclear/non-publishable; duplicate/cross-topic content cannot inflate measures; secondary evidence does not replace canonical data. No private paths/secrets.
   - Gate 7 PASS — design/current scenario artifact and complete gate record present; immutable taxonomy/version and explicit migration preserve deterministic ordering/historical classifications. Only this task record and design changed; no runtime/presentation assets authored.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

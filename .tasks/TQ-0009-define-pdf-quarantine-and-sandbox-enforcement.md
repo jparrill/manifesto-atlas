@@ -10,7 +10,7 @@ labels:
   - area/provenance
   - area/extraction
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:21:23+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -91,3 +91,4 @@ A commit/push/confirmation failure restores `TQ-0009` to `in-progress` with a bl
   - Gate 5 PASS — compared with SPEC untrusted-document-handling and submission-and-provenance-tests and the artifact contract: untrusted PDF bytes are immutable, isolation/configuration identities recorded, converter success separate from fidelity and official provenance, no schema/publication rules weakened. Technical English; public files and SPEC unchanged.
   - Gate 6 PASS — design review covers spoofed inputs, symlink/traversal/races, bombs, subprocess trees, no host/home/agent/socket mounts, no runtime downloads, actual-control qualification, strict limits, pending output export and cleanup failures. Unavailable enforcement fails closed. No secrets/private paths in committed design. Actual sandbox probes are mandatory implementation gates, not claimed executed here.
   - Gate 7 PASS — current document SHA-256 a0320a58e60b94f8afbabfdbffe6194b3444527e8ff199ad2cb4cc2fd9beef74; static design is deterministic, gates recorded; only this design and task record changed after the preceding confirmed delivery.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

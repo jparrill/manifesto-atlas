@@ -12,7 +12,7 @@ depends_on:
   - TQ-0018
   - TQ-0008
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T10:35:28+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -93,3 +93,4 @@ A commit/push/confirmation failure restores `TQ-0019` to `in-progress` with a bl
   - Gate 5 PASS — docs/MAKEFILE.md updated (test-artifacts added to baseline surface, Go-tests bullet, and internal/artifact layout); Makefile help lists the target; interfaces match docs/design/artifact-contract.md; technical text English; no public (Spanish) content changed.
   - Gate 6 PASS — bounded sizes (16MiB payload, 1MiB manifest, 64MiB graph, 10000 nodes, 1024 edges) and depth 64 (TestLimits, TestCanonicalDepthLimit); rejects BOM, trailing values, duplicate members, fractional/exponent/negative-zero numbers, out-of-range integers, invalid UTF-8, and unpaired/invalid surrogates. Package is purely in-memory: no filesystem, network, model, or path following, so a manifest cannot be followed into arbitrary files/network. No secrets or private absolute paths committed.
   - Gate 7 PASS — fixtures are deterministic pure functions of inputs (no timestamps); make test-artifacts and make verify pass; all gate results recorded before done.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

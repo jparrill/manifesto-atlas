@@ -5,6 +5,11 @@ interface. It is English by project policy (technical text). It maps every
 planned pipeline target to its owning backlog task and explains how the
 deterministic, model, and browser checks will be integrated as those tasks land.
 
+The current reduced product contract is [SPEC](SPEC.md) and
+[MVP](design/MVP.md), established by TQ-0061. Existing code and targets are not
+rewritten by the planning change; TQ-0063 owns retiring old platform code and
+updating obsolete CLI/Make unavailable-stage ownership messages.
+
 The product contract for the pipeline stages lives in
 [`docs/SPEC.md#make-targets`](SPEC.md#make-targets) and
 [`docs/SPEC.md#module-seams`](SPEC.md#module-seams). This document does not
@@ -17,6 +22,10 @@ The `Makefile` exposes eleven implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
+
+Some currently installed targets exercise historical graph/attestation/network
+libraries. They remain truthful library checks until TQ-0063 removes that inactive
+scope; their presence is not a requirement to finish the former platform.
 
 | Target | What it does | Tools used |
 | --- | --- | --- |
@@ -118,6 +127,10 @@ These behaviors are covered by the `test-cli` suite.
 
 ## Planned pipeline stages
 
+The following is the **new MVP ownership map**, not a claim that the current
+unavailable recipes/CLI strings have already been migrated. Those still name
+legacy owners until TQ-0063. No target gains fake success during replanning.
+
 Each stage is declared now so a fresh checkout can discover the full interface,
 but it fails non-zero with an actionable message that names its owning task.
 When the owning task lands, its implementation replaces the not-available recipe
@@ -127,21 +140,22 @@ task owns which target.
 | Target | Owning task(s) | Stage purpose (from `docs/SPEC.md#make-targets`) |
 | --- | --- | --- |
 | `make submit` | `TQ-0021` | Quarantine candidate bytes and submission metadata. |
-| `make verify-source` | `TQ-0022`, `TQ-0026` | Establish provenance and retrieve canonical bytes. |
+| `make verify-source` | `TQ-0027` | Check owner-selected local source/evidence hashes; no automatic network certification. |
 | `make add` | `TQ-0027` | Register a verified immutable source. |
 | `make extract` | `TQ-0030` | Produce structured page-aware extraction. |
-| `make validate-extraction` | `TQ-0035` | Audit extraction fidelity. |
+| `make validate-extraction` | `TQ-0030` | Reject deterministic page/warning blockers without a numeric score. |
 | `make normalize` | `TQ-0038` | Produce draft canonical programme JSON. |
 | `make validate-content` | `TQ-0041` | Run claim and coverage validators. |
-| `make build` | `TQ-0043`, `TQ-0044` | Render Spanish Markdown and HTML deterministically. |
-| `make validate-site` | `TQ-0049` | Run content parity, HTML, accessibility, responsive, and visual checks. |
-| `make publish-check` | `TQ-0050` | Verify the complete artifact graph is publishable. |
+| `make build` | `TQ-0043`, `TQ-0044`, `TQ-0049` | Markdown first; supplied-asset private HTML previews; public HTML only after basic checks. |
+| `make validate-site` | `TQ-0049` | Combine basic single-programme parity, keyboard/accessibility and mobile checks. |
+| `make publish-check` | `TQ-0050`, `TQ-0049` | Check local current Markdown evidence first, then independently add HTML eligibility. |
 | `make process` | `TQ-0051` | Orchestrate the applicable processing stages for one programme. |
-| `make serve` | `TQ-0051` | Preview the generated static website locally. |
+| `make serve` | `TQ-0065` | Preview an explicit private generated root on loopback without publication approval. |
 
-Invoking any of these today prints the stage name, its owning task, the purpose,
-and a `tq show <id>` pointer, then exits non-zero. It never returns a fake
-success.
+Invoking any of these today prints the stage name, a historical owning task,
+the purpose and a `tq show <id>` pointer, then exits non-zero. After TQ-0063,
+unavailable messages must identify the current owner above. Stages become real
+only in their implementation tasks.
 
 ## Integration path
 
@@ -156,15 +170,14 @@ or the caller's expectations:
   Deterministic work (conversion, checksums, schema validation, templates, HTML
   parsing, screenshot capture, deployment) stays in Go, per
   `docs/SPEC.md#module-seams`.
-- **Model checks.** The semantic stages (`normalize`, `validate-content`,
-  `validate-extraction`, `validate-site`) run schema-constrained agent jobs in
-  isolated contexts. These are explicit local work; their reports are committed
-  with exact input hashes. `make verify` and CI verify stored reports without
-  rerunning expensive models, per `docs/SPEC.md#publication-and-ci`.
-- **Browser checks.** `validate-site` and `serve` eventually capture desktop and
-  mobile screenshots and run responsive, keyboard-navigation, and visual
-  regression checks. These run after the deterministic checks pass and cannot
-  override a deterministic failure.
+- **Model checks.** One actual provider serves normalizer, claim and complete-
+  source coverage roles in separate clean requests. Explicit real evaluations
+  retain genuine bounded replies; `make verify` replays stored evidence. No
+  semantic provenance/extraction-score/visual-site approval role is an MVP gate.
+- **Browser checks.** The supplied static-site extension checks parity, links,
+  keyboard/accessibility and mobile reflow with existing tooling. Screenshots
+  may be diagnostics, not a pixel-identical or model-approved publication gate.
+  `serve` is separate read-only local preview and does not generate/approve data.
 
 Until those tasks land, the not-available recipes are the truthful state: the
 interface is discoverable and the absence is explicit rather than silent.

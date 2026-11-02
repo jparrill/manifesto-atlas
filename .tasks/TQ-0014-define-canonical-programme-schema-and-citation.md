@@ -16,7 +16,7 @@ depends_on:
   - TQ-0013
   - TQ-0012
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:32:56+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -99,3 +99,4 @@ A commit/push/confirmation failure restores `TQ-0014` to `in-progress` with a bl
   - Gate 5 PASS — compared with SPEC canonical-programme-model/llm-validation/deterministic-rendering and source/extraction/taxonomy/artifact contracts; metadata/provenance/lifecycle and future political assessments remain separate; no circular approvals in draft hashes; Spanish public text, English technical contract; no SPEC/presentation implementation changes.
   - Gate 6 PASS — reviewed bounded strict parsing, no unknown fields, hostile source instructions as data, generated markup rejection, literal quote escaping, fixed source/citation link construction and independent semantic validation. No source text or self-asserted valid flag grants authority; no secrets/private paths embedded.
   - Gate 7 PASS — current design/example/scenario artifacts and all gate results recorded; canonical ordering and immutable citation/measure identity boundaries specified, no unrelated work changed. Executable schemas/fixtures/runtime behavior remain required in TQ-0037/0038, not claimed executed here.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

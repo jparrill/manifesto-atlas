@@ -14,7 +14,7 @@ depends_on:
   - TQ-0009
   - TQ-0011
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:29:04+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -98,3 +98,4 @@ A commit/push/confirmation failure restores `TQ-0012` to `in-progress` with a bl
   - Gate 5 PASS — checked SPEC extraction-artifacts/fidelity/tests and artifact/source/isolation contracts: original PDFs immutable, native OCR-off default, original-page evidence, retained warnings, JSON versus extracted Markdown distinction and empirically calibrated future weights preserved. No public/SPEC/presentation-code changes.
   - Gate 6 PASS — design review covers bounded offline conversion, locked pre-acquisition, no automatic model/backend substitution, hostile source as data, pixel/output limits, warning/mapping failures and independent audit. No keys/secrets/private paths embedded; no claim of having run missing golden PDFs.
   - Gate 7 PASS — design and upstream identity evidence current, deterministic payload versus run-log boundaries explicit, all gate evidence recorded; only this design/task record changed. Actual implementation and golden extraction tests remain mandatory in dependent tasks, not deferred gates of this design-only task.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

@@ -10,7 +10,7 @@ labels:
   - area/validation
   - area/source-registry
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:18:16+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -94,3 +94,4 @@ A commit/push/confirmation failure restores `TQ-0008` to `in-progress` with a bl
   - Gate 5 PASS — compared with SPEC make-targets, llm-validation and publication-and-ci: exact input invalidation, separate claim/coverage contexts, retained failures, immutable PDFs, JSON source of truth, offline CI, no presentation-code authorship and no human fallback preserved. No existing design contract conflicts; technical text is English; SPEC/public text unchanged.
   - Gate 6 PASS — reviewed trust and negative scenarios: submitted evidence cannot supply report authority; signatures bind subject/role/time, verify against explicit trusted public roots, and never turn a failed/insufficient report into approval. Bounds, strict parsing, derived safe local paths, no-follow opens, no network fallback, atomic writes and credential isolation are specified. No private keys, secrets or private absolute paths are included.
   - Gate 7 PASS — design artifact and task evidence current; static document SHA-256 a2b74e5bc6bb92f6def13c8b10cbdc471f147ef12476687f6eb1f285d78f283f; repeated make verify passed. Initial checkout clean; only the design artifact and this task record changed. No runtime implementation or unrelated user work modified.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

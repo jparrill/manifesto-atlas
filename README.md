@@ -25,7 +25,9 @@ Manifesto Atlas pretende que esos documentos sean:
 
 Cada resumen debe basarse en un programa electoral, programa político o documento equivalente publicado oficialmente por el partido u organización electoral.
 
-Cada programa registra su fichero original, ámbito geográfico, elección, fecha de publicación y huella digital. Siempre que sea posible, las medidas resumidas incluyen referencias a las páginas de origen.
+Cada programa registra su fichero original, ámbito geográfico, elección, fecha de publicación y huella digital. Las medidas y demás afirmaciones factuales generadas incluyen referencias a las páginas de origen.
+
+La primera versión trabaja con documentos oficiales seleccionados por el mantenedor y conserva la evidencia de su procedencia. No ofrece admisión automática de cualquier URL o fichero aportado por terceros. Cada afirmación factual generada debe tener citas verificables; un origen seleccionado no sustituye la validación independiente del contenido.
 
 ### Resumen factual y análisis separados
 
@@ -44,7 +46,7 @@ Un programa nacional y otro autonómico del mismo partido no son intercambiables
 - Municipal.
 - Político general, cuando no se trate de un programa electoral.
 
-Cuando existan varios programas territoriales del mismo partido y ciclo electoral, el sitio mostrará las medidas comunes y las diferencias regionales, en lugar de mezclarlas en un único resumen.
+Las comparaciones de medidas comunes y diferencias regionales quedan para una ampliación posterior, cuando existan programas compatibles ya validados. La primera versión conserva sus identidades territoriales sin mezclarlas.
 
 ### Git como memoria histórica
 
@@ -62,20 +64,22 @@ El objetivo es conservar la evidencia cuando desaparezcan las páginas de campa�
 
 El flujo previsto es:
 
-1. Incorporar un PDF u otro documento oficial.
-2. Registrar partido, elección, ámbito, territorio y procedencia.
-3. Extraer el texto conservando las referencias de página.
-4. Utilizar un LLM para producir medidas estructuradas y vinculadas a la fuente.
-5. Validar el resultado mediante pases LLM independientes contra las páginas originales.
-6. Generar el resumen Markdown y la vista HTML pública en español.
-7. Comparar programas regionales cuando exista más de uno.
-8. Registrar el resultado validado en Git y publicarlo mediante GitHub Pages.
+1. Recuperar un PDF oficial concreto y conservar sus bytes, metadatos, procedencia y checksum.
+2. Inspeccionarlo y extraer el texto por páginas con límites de recursos y aislamiento.
+3. Utilizar un modelo configurado para generar un JSON de temas, medidas y citas en español.
+4. Comprobar las afirmaciones y la cobertura completa mediante dos pases independientes contra la evidencia original.
+5. Generar un resumen Markdown legible y verificar que todos sus resultados corresponden a las entradas actuales.
+6. Repetir el proceso con el segundo documento real; añadir después HTML estático con assets suministrados y comprobaciones básicas de accesibilidad.
+
+El objetivo inmediato es demostrar este recorrido con **un documento real**, antes de construir una plataforma de contribuciones, firmas, comparaciones o certificación de sitios web. La publicación en GitHub Pages conserva su objetivo, pero su despliegue se diseñará por separado.
 
 El LLM que genera el resumen no es una autoridad ni puede validarse a sí mismo. Antes de publicar, otros pases con contexto limpio comprueban cada afirmación y referencia contra las páginas originales, y buscan omisiones o contradicciones en el documento completo. Las validaciones, los modelos, los prompts y las versiones de las herramientas quedan registrados en Git.
 
 La validación es automática y probabilística: reduce errores, pero no garantiza que la interpretación de los modelos sea infalible. Si las comprobaciones no coinciden o la evidencia es insuficiente, el programa permanece sin publicar.
 
-## Medición del cumplimiento
+## Ampliaciones futuras: medición del cumplimiento
+
+Estas evaluaciones no forman parte de la primera versión ni son un requisito para publicar un resumen factual. Su metodología necesitará una aprobación específica antes de implementarse.
 
 Manifesto Atlas distingue tres conceptos que no deben mezclarse en un único dato sin contexto.
 
@@ -155,4 +159,4 @@ Los documentos de terceros, incluidos programas electorales y documentos políti
 
 ## Estado
 
-Manifesto Atlas se encuentra en su fase inicial de diseño y preparación del repositorio. La [especificación técnica](docs/SPEC.md) describe el flujo completo y sus criterios de validación.
+Existen bibliotecas y pruebas de base, pero todavía no hay un recorrido funcional completo desde un PDF hasta un resumen público. La [especificación técnica](docs/SPEC.md) y el [contrato del MVP](docs/design/MVP.md) definen el plan reducido; actualizar tareas y contratos no significa que esas funciones ya estén implementadas.

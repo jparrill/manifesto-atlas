@@ -1,5 +1,9 @@
 # Artifact identity, invalidation, and attestation contract
 
+> Historical contract. For active MVP work, [MVP.md](MVP.md) and
+> [SPEC.md](../SPEC.md) supersede conflicting requirements. TQ-0063 retires the
+> inactive DAG/PKI platform while retaining useful strict JSON/hash helpers.
+
 Contract: `atlas.artifact/v1`. Status: implementation contract for TQ-0019 and
 TQ-0020, established by TQ-0008 under Juan's architecture assignment.
 

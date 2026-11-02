@@ -15,7 +15,7 @@ depends_on:
   - TQ-0013
   - TQ-0015
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T00:37:41+01:00
+updated: 2026-11-02T18:05:04+01:00
 ---
 
 ## Outcome
@@ -100,3 +100,4 @@ A commit/push/confirmation failure restores `TQ-0016` to `in-progress` with a bl
   - Gate 5 PASS — reviewed SPEC deterministic-rendering/site-validation/site-quality-tests/taxonomy and canonical/semantic/artifact designs. No political inference, omitted topics, merged source identities, model-generated assets or human programme-approval fallback introduced. Design prose only, no HTML/CSS/JS/templates authored.
   - Gate 6 PASS — design trust review covers contextual escaping, canonical-derived links, no arbitrary paths/network/credentials, isolated browser, hostile literal text, screenshot stale/hash checks, and independent composite approval. Missing supplied assets/isolation/baselines fail relevant runtime gates. No secrets/private paths.
   - Gate 7 PASS — current contract, concrete viewport/tool/threshold/baseline rules and gate notes recorded; deterministic inputs/version invalidation explicit; only design/task record changed. Real browser screenshots/a11y/pixel fixtures remain mandatory implementation gates, not claimed executed by this design task.
+- 2026-11-02T18:05:04+01:00 — Historical completion retained. Juan's TQ-0061 scope replan establishes docs/SPEC.md and docs/design/MVP.md as the current MVP contract; conflicting graph/PKI/network admission/legal-registry/calibrated-score/browser-pinning requirements in this task's original design are superseded for MVP work. This note does not recertify any historical implementation or erase prior execution evidence. TQ-0063 owns removal/adaptation of inactive platform code.

@@ -1,5 +1,9 @@
 # Immutable source identity and registration
 
+> Historical contract. Active source selection/metadata/storage follow
+> [MVP.md](MVP.md) and [SPEC.md](../SPEC.md); graph IDs, signed provenance and
+> general registry infrastructure below are not MVP registration prerequisites.
+
 Contract: `atlas.source/v1`, TQ-0011; implementation TQ-0027. Consumes
 [artifact identities](artifact-contract.md), [official provenance](provenance-trust.md)
 and [isolation](submission-isolation.md). Refines

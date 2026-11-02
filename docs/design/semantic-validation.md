@@ -1,5 +1,9 @@
 # Isolated semantic jobs and report contracts
 
+> Historical contract. [MVP.md](MVP.md) and [SPEC.md](../SPEC.md) govern one
+> actual provider and three clean roles with local input-bound reports. The
+> six-role framework, report PKI and full model/component identity platform are deferred.
+
 Version `atlas.semantic-job/v1`, TQ-0015, implementation TQ-0024 and the six
 skill tasks. Implements [agent skills](../SPEC.md#agent-skills),
 [LLM validation](../SPEC.md#llm-validation) and
