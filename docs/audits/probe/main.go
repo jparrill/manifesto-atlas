@@ -6,15 +6,12 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/jparrill/manifesto-atlas/internal/canonical"
-	"github.com/jparrill/manifesto-atlas/internal/provenance"
 	"github.com/jparrill/manifesto-atlas/internal/semantic"
 	"github.com/jparrill/manifesto-atlas/internal/taxonomy"
 )
@@ -33,8 +30,6 @@ func check(name string, safe bool) {
 func hash() string { return "sha256:" + strings.Repeat("a", 64) }
 
 func main() {
-	transport()
-	registry()
 	jurisdiction()
 	programme()
 	jobs()
@@ -42,41 +37,6 @@ func main() {
 	if failures != 0 {
 		os.Exit(1)
 	}
-}
-
-func transport() {
-	_, err := provenance.ValidateRequestURL("https://fixture.example:8443/document.pdf")
-	check("fetch rejects non-443 port", err != nil)
-	check("fetch rejects IPv6 documentation range", !provenance.IsPublicIP(net.ParseIP("2001:db8::1")))
-	var dialed string
-	_, _ = provenance.FetchEvidence(context.Background(), provenance.FetchRequest{
-		URL: "https://fixture.example/document.pdf",
-	}, provenance.Policy{
-		Resolver: func(context.Context, string) ([]net.IP, error) {
-			return []net.IP{net.ParseIP("93.184.216.34")}, nil
-		},
-		DialContext: func(_ context.Context, _, address string) (net.Conn, error) {
-			dialed = address
-			return nil, errors.New("offline probe: do not connect")
-		},
-	})
-	check("fetch hands pinned IP to dialer", dialed == "93.184.216.34:443")
-}
-
-func registry() {
-	reg := provenance.Registry{
-		Version: provenance.ProvenanceVersion, RegistryID: hash(),
-		ReviewedAt: "2030-01-01T00:00:00Z",
-		Parties: []provenance.Party{{
-			Version: provenance.PartyVersion, PartyID: "fixture-party",
-			LegalName: "Partido sintético", DisplayName: "Partido sintético",
-			KeyGrants: []provenance.KeyGrant{{
-				KeyID: "invalid", PublicKey: "not-a-key", State: "invalid",
-				ReviewedAt: "invalid", ValidUntil: "invalid",
-			}},
-		}},
-	}
-	check("registry rejects malformed publisher key grant", provenance.ValidateRegistry(reg) != nil)
 }
 
 func jurisdiction() {

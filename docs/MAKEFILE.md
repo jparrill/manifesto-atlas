@@ -18,14 +18,10 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes twelve implemented baseline targets and twelve declared
+The `Makefile` exposes ten implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
-
-Some currently installed targets exercise historical graph/attestation/network
-libraries. They remain truthful library checks until TQ-0063 removes that inactive
-scope; their presence is not a requirement to finish the former platform.
 
 | Target | What it does | Tools used |
 | --- | --- | --- |
@@ -33,14 +29,12 @@ scope; their presence is not a requirement to finish the former platform.
 | `make check` | Run baseline checks: Git whitespace, Taskqueue integrity, and Go format/build/vet. | `git`, `tq`, `gofmt`, `go` |
 | `make verify` | Run `check`, plus documentation-structure, relative-link, and Go test checks. | `git`, `tq`, `grep`, `dirname`, `test`, `go` |
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
-| `make test-artifacts` | Run the focused `atlas.artifact/v1` envelope/graph test suite (`go test ./internal/artifact/...`). | `go` |
-| `make test-attestations` | Run the focused `atlas.attestation/v1`/`atlas.trust/v1` signing/verification suite (`go test ./internal/attestation/...`). | `go` |
+| `make test-artifacts` | Run the focused strict canonical-JSON and SHA-256 hash helper suite (`go test ./internal/artifact/...`). | `go` |
 | `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and evidence-based document-scope classification suite (`go test ./internal/taxonomy/...`). | `go` |
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
-| `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
-| `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
 | `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
+| `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -68,15 +62,12 @@ network retrieval, model invocation, or publication.
 - **Go vet** — `go vet ./...` must report no static-analysis findings.
 - **Go tests** — `make test-cli` runs `go test ./internal/cli/...`, `make
   test-artifacts` runs `go test ./internal/artifact/...`, `make
-  test-attestations` runs `go test ./internal/attestation/...`, `make
   test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
   test-canonical` runs `go test ./internal/canonical/...`, `make
-  test-party-registry` and `make test-fetch` both run
-   `go test ./internal/provenance/...` (the party registry and the bounded
-   transport share the package), `make test-semantic-runner` runs
-   `go test ./internal/semantic/...`, and `make test-fixture-frente` runs
-   `go test ./internal/candidate/...`; all suites must pass. `make verify`
-   includes them.
+  test-semantic-runner` runs `go test ./internal/semantic/...`, `make
+  test-fixture-frente` runs `go test ./internal/candidate/...`, and `make
+  test-runs` runs `go test ./internal/run/...`; all suites must pass. `make
+  verify` includes them.
 
 Passing these suites does not qualify every planned contract. The
 [trust-boundary audit](audits/2026-11-02-trust-boundaries.md) records reopened
@@ -101,22 +92,15 @@ The repository is a Go module rooted at the checkout:
   - `cmd/manifesto-atlas/` — the entry point; dispatches to `internal/cli` and
     propagates its exit code.
   - `internal/cli/` — the command dispatcher and its tests.
-  - `internal/artifact/` — the `atlas.artifact/v1` canonicalization, hashing,
-    manifest/graph validation, and invalidation logic, and its fixtures
-    (TQ-0019).
-  - `internal/attestation/` — the `atlas.attestation/v1`/`atlas.trust/v1`
-    Ed25519 signing and offline verification logic, and its fixtures (TQ-0020).
+  - `internal/artifact/` — the strict canonical-JSON serialization and SHA-256
+    hash helpers (deterministic key order, integer/UTF-8/surrogate rules, depth
+    and size bounds), reused by the selection, canonical, and semantic packages.
   - `internal/taxonomy/` — the `atlas.taxonomy/v1` topic registry, topic-state
     classification, and evidence-based document-scope validation logic, and its
     fixtures (TQ-0036).
   - `internal/canonical/` — the `atlas.programme/v1` canonical schema, topic/
     state rules, citation/page/excerpt evidence, source binding, and
     deterministic-serialization validation logic, and its fixtures (TQ-0037).
-  - `internal/provenance/` — the `atlas.provenance/v1` party/territory/domain
-    evidence registry, fail-closed anchor authority checks, version
-    invalidation (TQ-0023), and the bounded safe HTTP transport with URL/SSRF/
-    redirect/size policy (TQ-0022), and their fixture anchors and local TLS
-    fixtures.
   - `internal/semantic/` — common `atlas.semantic-job/v1` response verification,
     rejection limits, retry eligibility and terminal cancellation checks
     (TQ-0059), with offline fake fixtures; the full runner remains TQ-0024.
@@ -124,6 +108,10 @@ The repository is a Go module rooted at the checkout:
     embedded `atlas.source.local/v1` record, with offline hash/metadata
     verification of the retained Frente Obrero general-political source and its
     origin evidence (TQ-0028), and its fixtures.
+  - `internal/run/` — the `atlas.selection/v1` owner selection record and the
+    `atlas.run/v1` per-programme run record, with strict parsing, deterministic
+    round-trip, and offline bounded-file hash verification (TQ-0063), and its
+    fixtures.
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit
@@ -133,9 +121,10 @@ These behaviors are covered by the `test-cli` suite.
 
 ## Planned pipeline stages
 
-The following is the **new MVP ownership map**, not a claim that the current
-unavailable recipes/CLI strings have already been migrated. Those still name
-legacy owners until TQ-0063. No target gains fake success during replanning.
+The following is the **MVP ownership map**; the unavailable recipes and CLI
+strings already name these owners (TQ-0063 removed the old platform code and
+migrated the obsolete ownership messages). No target gains fake success during
+replanning.
 
 Each stage is declared now so a fresh checkout can discover the full interface,
 but it fails non-zero with an actionable message that names its owning task.
@@ -158,10 +147,9 @@ task owns which target.
 | `make process` | `TQ-0051` | Orchestrate the applicable processing stages for one programme. |
 | `make serve` | `TQ-0065` | Preview an explicit private generated root on loopback without publication approval. |
 
-Invoking any of these today prints the stage name, a historical owning task,
-the purpose and a `tq show <id>` pointer, then exits non-zero. After TQ-0063,
-unavailable messages must identify the current owner above. Stages become real
-only in their implementation tasks.
+Invoking any of these today prints the stage name, its current owning task
+(from the map above), the purpose and a `tq show <id>` pointer, then exits
+non-zero. Stages become real only in their implementation tasks.
 
 ## Integration path
 

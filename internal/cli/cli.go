@@ -39,18 +39,18 @@ type stage struct {
 // stages mirrors the 12 pipeline stages from docs/SPEC.md#make-targets. The
 // order and names must stay in sync with the Makefile and the Spec.
 var stages = []stage{
-	{"submit", "TQ-0021", "quarantine candidate bytes and submission metadata"},
-	{"verify-source", "TQ-0022 TQ-0026", "establish provenance and retrieve canonical bytes"},
+	{"submit", "TQ-0021", "inspect a selected local candidate"},
+	{"verify-source", "TQ-0027", "verify local selection evidence and matching bytes"},
 	{"add", "TQ-0027", "register a verified immutable source"},
 	{"extract", "TQ-0030", "produce structured page-aware extraction"},
-	{"validate-extraction", "TQ-0035", "audit extraction fidelity"},
+	{"validate-extraction", "TQ-0030", "reject deterministic page/warning blockers"},
 	{"normalize", "TQ-0038", "produce draft canonical programme JSON"},
 	{"validate-content", "TQ-0041", "run claim and coverage validators"},
-	{"build", "TQ-0043 TQ-0044", "render Spanish Markdown and HTML deterministically"},
-	{"validate-site", "TQ-0049", "run site validation checks"},
-	{"publish-check", "TQ-0050", "verify the complete artifact graph is publishable"},
+	{"build", "TQ-0043 TQ-0044 TQ-0049", "render Spanish Markdown, previews, and HTML"},
+	{"validate-site", "TQ-0049", "run basic single-programme site quality checks"},
+	{"publish-check", "TQ-0050 TQ-0049", "verify offline Markdown eligibility first"},
 	{"process", "TQ-0051", "orchestrate the applicable processing stages"},
-	{"serve", "TQ-0051", "preview the generated static website locally"},
+	{"serve", "TQ-0065", "preview an explicit private generated root locally"},
 }
 
 // command is a dispatchable CLI command.

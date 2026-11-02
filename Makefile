@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch test-semantic-runner test-fixture-frente
+.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-runs
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -25,28 +25,26 @@ help:
 	  "  make check                 Run baseline checks (Git + Taskqueue + Go)." \
 	  "  make verify                Run full verification (check + docs + links + tests)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
-	  "  make test-artifacts        Run the focused artifact envelope/graph test suite." \
-	  "  make test-attestations     Run the focused attestation signing/verification suite." \
+	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
 	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
-	  "  make test-party-registry   Run the focused party trust-anchor/registry validation suite." \
-	  "  make test-fetch            Run the focused bounded safe HTTP transport (fetch) suite." \
 	  "  make test-semantic-runner  Run the focused semantic job runner (isolation/provider) suite." \
 	  "  make test-fixture-frente   Run the focused Frente Obrero candidate/source fixture suite." \
+	  "  make test-runs             Run the focused selection/run record validation suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
-	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
-	  "  make verify-source         TQ-0022 TQ-0026  Provenance and canonical bytes." \
+	  "  make submit                TQ-0021  Inspect a selected local candidate." \
+	  "  make verify-source         TQ-0027  Verify local selection evidence and bytes." \
 	  "  make add                   TQ-0027  Register a verified immutable source." \
-	  "  make extract               TQ-0030  Docling page-aware extraction." \
-	  "  make validate-extraction   TQ-0035  Extraction fidelity approval." \
+	  "  make extract               TQ-0030  Page-aware extraction." \
+	  "  make validate-extraction   TQ-0030  Deterministic page/warning blockers." \
 	  "  make normalize             TQ-0038  Draft canonical programme JSON." \
 	  "  make validate-content      TQ-0041  Claim and coverage validation." \
-	  "  make build                 TQ-0043 TQ-0044  Deterministic Markdown and HTML." \
+	  "  make build                 TQ-0043 TQ-0044 TQ-0049  Markdown, previews, HTML." \
 	  "  make validate-site         TQ-0049  Site validation gate." \
-	  "  make publish-check         TQ-0050  Publishable artifact graph." \
+	  "  make publish-check         TQ-0050 TQ-0049  Offline Markdown eligibility first." \
 	  "  make process               TQ-0051  Orchestrate programme processing." \
-	  "  make serve                 TQ-0051  Local site preview." \
+	  "  make serve                 TQ-0065  Local private preview." \
 	  "" \
 	  "Mapping and integration notes: docs/MAKEFILE.md"
 
@@ -72,20 +70,16 @@ verify: check
 	@$(MAKE) test-cli
 	@echo "verify: go test (test-artifacts)"
 	@$(MAKE) test-artifacts
-	@echo "verify: go test (test-attestations)"
-	@$(MAKE) test-attestations
 	@echo "verify: go test (test-taxonomy)"
 	@$(MAKE) test-taxonomy
 	@echo "verify: go test (test-canonical)"
 	@$(MAKE) test-canonical
-	@echo "verify: go test (test-party-registry)"
-	@$(MAKE) test-party-registry
-	@echo "verify: go test (test-fetch)"
-	@$(MAKE) test-fetch
 	@echo "verify: go test (test-semantic-runner)"
 	@$(MAKE) test-semantic-runner
 	@echo "verify: go test (test-fixture-frente)"
 	@$(MAKE) test-fixture-frente
+	@echo "verify: go test (test-runs)"
+	@$(MAKE) test-runs
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -93,17 +87,11 @@ verify: check
 test-cli:
 	@go test ./internal/cli/...
 
-# Focused gate for the atlas.artifact/v1 envelope and graph validator. Exercises
-# canonicalization, hashing, manifest/graph validation, and invalidation fixtures
-# offline; no live models or official websites.
+# Focused gate for the strict canonical-JSON serialization and SHA-256 hash
+# helpers. Exercises canonicalization, integer/UTF-8/surrogate handling, depth
+# and size bounds, and hash validation offline; no live models or websites.
 test-artifacts:
 	@go test ./internal/artifact/...
-
-# Focused gate for the atlas.attestation/v1 and atlas.trust/v1 contracts.
-# Exercises Ed25519 signing, offline verification, role/rotation/revocation, and
-# trust-bundle validation with test-only keys; no live models or official websites.
-test-attestations:
-	@go test ./internal/attestation/...
 
 # Focused gate for the atlas.taxonomy/v1 registry, topic states, and
 # evidence-based document-scope classification. Deterministic and offline; no
@@ -116,19 +104,6 @@ test-taxonomy:
 # Deterministic and offline; no live models or official websites.
 test-canonical:
 	@go test ./internal/canonical/...
-
-# Focused gate for the atlas.provenance/v1 party/territory/domain evidence
-# registry, fail-closed anchor authority checks, and version invalidation.
-# Deterministic and offline; fixture anchors only, no live official websites.
-test-party-registry:
-	@go test ./internal/provenance/...
-
-# Focused gate for the atlas.provenance/v1 bounded safe HTTP transport: URL/
-# DNS/IP (SSRF) policy, redirect revalidation, bounded downloads, and content
-# inspection. Deterministic and offline; synthetic local TLS fixtures with an
-# injected resolver/dialer, no live official websites.
-test-fetch:
-	@go test ./internal/provenance/...
 
 # Common semantic response rejection and fake-adapter regression gate.
 # Actual configured-provider, evidence/schema and runtime/session isolation
@@ -143,32 +118,39 @@ test-semantic-runner:
 test-fixture-frente:
 	@go test ./internal/candidate/...
 
+# Focused gate for the atlas.selection/v1 owner selection record and the
+# atlas.run/v1 per-programme run record: strict parsing, deterministic
+# round-trip, and offline bounded-file hash verification. No live models or
+# official websites.
+test-runs:
+	@go test ./internal/run/...
+
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 
 submit:
-	$(call unavailable,submit,TQ-0021,quarantine candidate bytes and submission metadata)
+	$(call unavailable,submit,TQ-0021,inspect a selected local candidate)
 verify-source:
-	$(call unavailable,verify-source,TQ-0022 TQ-0026,establish provenance and retrieve canonical bytes)
+	$(call unavailable,verify-source,TQ-0027,verify local selection evidence and matching bytes)
 add:
 	$(call unavailable,add,TQ-0027,register a verified immutable source)
 extract:
 	$(call unavailable,extract,TQ-0030,produce structured page-aware extraction)
 validate-extraction:
-	$(call unavailable,validate-extraction,TQ-0035,audit extraction fidelity)
+	$(call unavailable,validate-extraction,TQ-0030,reject deterministic page/warning blockers)
 normalize:
 	$(call unavailable,normalize,TQ-0038,produce draft canonical programme JSON)
 validate-content:
 	$(call unavailable,validate-content,TQ-0041,run claim and coverage validators)
 build:
-	$(call unavailable,build,TQ-0043 TQ-0044,render Spanish Markdown and HTML deterministically)
+	$(call unavailable,build,TQ-0043 TQ-0044 TQ-0049,render Spanish Markdown, previews, and HTML)
 validate-site:
-	$(call unavailable,validate-site,TQ-0049,run content parity, HTML, accessibility, responsive, and visual checks)
+	$(call unavailable,validate-site,TQ-0049,run basic single-programme site quality checks)
 publish-check:
-	$(call unavailable,publish-check,TQ-0050,verify the complete artifact graph is publishable)
+	$(call unavailable,publish-check,TQ-0050 TQ-0049,verify offline Markdown eligibility first)
 process:
 	$(call unavailable,process,TQ-0051,orchestrate the applicable processing stages)
 serve:
-	$(call unavailable,serve,TQ-0051,preview the generated static website locally)
+	$(call unavailable,serve,TQ-0065,preview an explicit private generated root locally)
 
 # --- Shared recipes (single-line shells; no multi-line expansion) -------------
 

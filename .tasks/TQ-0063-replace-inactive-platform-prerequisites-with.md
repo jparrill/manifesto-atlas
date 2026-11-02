@@ -1,7 +1,7 @@
 ---
 id: TQ-0063
 title: Replace inactive platform prerequisites with local programme run records
-status: todo
+status: done
 priority: high
 labels:
   - type/feature
@@ -10,7 +10,7 @@ labels:
 depends_on:
   - TQ-0061
 created: 2026-11-02T18:05:04+01:00
-updated: 2026-11-02T18:05:04+01:00
+updated: 2026-11-02T22:14:17+01:00
 ---
 
 ## Outcome
@@ -76,3 +76,10 @@ Follow AGENTS.md#closing-tasks-and-continuing-work: record gates, mark done, com
 ## Notes
 
 - 2026-11-02T18:05:04+01:00 — Created directly in todo under Juan's explicit TQ-0061 request to revise existing tasks and create the missing MVP outcomes. Outcome, scope, criteria, seven gates, priority, dependencies and execution role are declared. No authority to promote unrelated inbox proposals is granted.
+- 2026-11-02T22:13:12+01:00 — Gate 1 PASS: make test-runs exit 0. Named cases: TestSelectionRoundTrip + TestRunRoundTrip (deterministic round-trip, null refs preserved); TestParseSelectionRejects (duplicate programme_id->duplicate, malformed->bad-json, v2->bad-version, bad hash->bad-hash, unknown field->bad-field); TestParseRunRejectsUnknownStage (unknown input stage->bad-field, malformed->bad-json, v2->bad-version, bad ref hash->bad-hash, ../escape.json->bad-path); TestVerifyRunStaleMutation->hash-mismatch; TestVerifyRunMissingReference->missing-file; TestVerifyRunSymlink->symlink. Unavailable-stage ownership proven by make test-cli (build stage -> exit 1, 'not available yet', TQ-0043) plus the updated Makefile/CLI ownership map matching docs/SPEC.md#make-targets.
+- 2026-11-02T22:13:12+01:00 — Gate 2 PASS: make test-runs exit 0 with named positive/negative cases (round-trip, stale mutation, missing ref, symlink, traversal, duplicate, malformed JSON, bad version/hash/field). No fake model/converter evidence substituted; all offline.
+- 2026-11-02T22:13:42+01:00 — Gate 3 PASS: make verify exit 0 (check + docs structure + relative links + all focused suites incl. test-runs); go test ./... all ok (artifact, candidate, canonical, cli, run, semantic, taxonomy; cmd/probe no test files). No Taskqueue warnings, no live model/source-site requests, no skipped required tests.
+- 2026-11-02T22:13:42+01:00 — Gate 4 PASS: make check OK (git diff --check clean, tq list clean, gofmt empty, go build ./cmd/manifesto-atlas clean, go vet ./... clean); git diff --check clean; gofmt -l cmd internal empty.
+- 2026-11-02T22:13:42+01:00 — Gate 5 PASS: docs/MAKEFILE.md updated (baseline target table, Go-tests semantics, module layout, MVP ownership map, post-TQ-0063 migration wording); Makefile + internal/cli stage ownership now match docs/SPEC.md#make-targets (verify-source/add TQ-0027, validate-extraction TQ-0030, build TQ-0043/0044/0049, publish-check TQ-0050/0049, serve TQ-0065). SPEC.md already declares arbitrary-URL/attestation/domain-key-grants/semantic-provenance as deferred (104-107) and local-only acquisition (243-247); no conflict. Historical audit/design docs preserved. Technical prose English, no LLM presentation assets.
+- 2026-11-02T22:14:04+01:00 — Gate 6 PASS: negative cases exercised through the real interface with no network lookup (VerifyRun/Parse* are local file ops + strict JSON only): traversal ../escape.json->bad-path, symlink ref->symlink, stale mutation->hash-mismatch, absent file->missing-file, duplicate programme_id->duplicate, malformed JSON->bad-json, wrong version->bad-version, unknown field/stage->bad-field, malformed hash->bad-hash. No false approval, no unsafe writes, no leaked credentials, no panic.
+- 2026-11-02T22:14:04+01:00 — Gate 7 PASS: run/selection Marshal deterministic (repeat marshal identical, tested). Removed only internal/attestation, internal/provenance, and unused artifact manifest/kind/graph machinery after caller check (canonical/semantic use only Canonicalize/CanonicalValue, both retained); retained canonical/semantic/candidate/taxonomy negative cases. fixtures/frente/ source bytes + historical task/audit evidence intact; no unrelated user work removed. All required gates PASS.
