@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch test-semantic-runner
+.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch test-semantic-runner test-fixture-frente
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -32,6 +32,7 @@ help:
 	  "  make test-party-registry   Run the focused party trust-anchor/registry validation suite." \
 	  "  make test-fetch            Run the focused bounded safe HTTP transport (fetch) suite." \
 	  "  make test-semantic-runner  Run the focused semantic job runner (isolation/provider) suite." \
+	  "  make test-fixture-frente   Run the focused Frente Obrero candidate/source fixture suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -83,6 +84,8 @@ verify: check
 	@$(MAKE) test-fetch
 	@echo "verify: go test (test-semantic-runner)"
 	@$(MAKE) test-semantic-runner
+	@echo "verify: go test (test-fixture-frente)"
+	@$(MAKE) test-fixture-frente
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -132,6 +135,13 @@ test-fetch:
 # qualification remains TQ-0024. No live models or committed credentials.
 test-semantic-runner:
 	@go test ./internal/semantic/...
+
+# Focused gate for the retained Frente Obrero candidate (atlas.candidate/v1 with
+# the embedded atlas.source.local/v1 record): offline hash and metadata
+# verification of the recovered general-political source and its origin evidence.
+# Deterministic and offline; no live models or official websites.
+test-fixture-frente:
+	@go test ./internal/candidate/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 

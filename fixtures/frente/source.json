@@ -1,0 +1,45 @@
+{
+  "version": "atlas.candidate/v1",
+  "programme_id": "frente-obrero-programa-politico",
+  "candidate_path": "programa.pdf",
+  "metadata": {
+    "version": "atlas.source.local/v1",
+    "programme_id": "frente-obrero-programa-politico",
+    "party": {
+      "id": "frente-obrero",
+      "name": "Frente Obrero"
+    },
+    "document_type": "general-political",
+    "scope": "general-political",
+    "geography": {
+      "id": "es",
+      "name": "España"
+    },
+    "election": null,
+    "publication_date": null,
+    "archive_year": 2026,
+    "year_basis": "retrieval",
+    "source": {
+      "path": "sources/2026/frente-obrero-programa-politico/7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282/source.pdf",
+      "sha256": "7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282",
+      "size": 1202338,
+      "original_filename": "Programa.pdf",
+      "origin_url": "https://frenteobrero.es/wp-content/uploads/2026/10/Programa.pdf",
+      "retrieved_at": "2026-11-02T18:08:08Z"
+    },
+    "origin": {
+      "authority": "maintainer-selected",
+      "evidence": [
+        {
+          "path": "evidence/documentos-politicos.html",
+          "sha256": "50e61fd97432f07125761e6b4b65fac58b5f2ae8624b0a5314b6a6899897bf38"
+        }
+      ]
+    },
+    "rights": {
+      "publisher": "Frente Obrero",
+      "statement": null
+    },
+    "supersedes": null
+  }
+}

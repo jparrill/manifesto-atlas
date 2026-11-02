@@ -18,7 +18,7 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes eleven implemented baseline targets and twelve declared
+The `Makefile` exposes twelve implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
@@ -40,6 +40,7 @@ scope; their presence is not a requirement to finish the former platform.
 | `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
 | `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
+| `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -71,10 +72,11 @@ network retrieval, model invocation, or publication.
   test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
   test-canonical` runs `go test ./internal/canonical/...`, `make
   test-party-registry` and `make test-fetch` both run
-  `go test ./internal/provenance/...` (the party registry and the bounded
-  transport share the package), and `make test-semantic-runner` runs
-  `go test ./internal/semantic/...`; all suites must pass. `make verify`
-  includes them.
+   `go test ./internal/provenance/...` (the party registry and the bounded
+   transport share the package), `make test-semantic-runner` runs
+   `go test ./internal/semantic/...`, and `make test-fixture-frente` runs
+   `go test ./internal/candidate/...`; all suites must pass. `make verify`
+   includes them.
 
 Passing these suites does not qualify every planned contract. The
 [trust-boundary audit](audits/2026-11-02-trust-boundaries.md) records reopened
@@ -118,6 +120,10 @@ The repository is a Go module rooted at the checkout:
   - `internal/semantic/` — common `atlas.semantic-job/v1` response verification,
     rejection limits, retry eligibility and terminal cancellation checks
     (TQ-0059), with offline fake fixtures; the full runner remains TQ-0024.
+  - `internal/candidate/` — the `atlas.candidate/v1` recovery descriptor and
+    embedded `atlas.source.local/v1` record, with offline hash/metadata
+    verification of the retained Frente Obrero general-political source and its
+    origin evidence (TQ-0028), and its fixtures.
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit
