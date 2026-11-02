@@ -13,7 +13,7 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes nine implemented baseline targets and twelve declared
+The `Makefile` exposes ten implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
@@ -29,6 +29,7 @@ pipeline stages.
 | `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and jurisdiction-validation suite (`go test ./internal/taxonomy/...`). | `go` |
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
+| `make test-fetch` | Run the focused `atlas.provenance/v1` bounded safe HTTP transport (URL/SSRF/redirect/size) suite (`go test ./internal/provenance/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -59,8 +60,10 @@ network retrieval, model invocation, or publication.
   test-attestations` runs `go test ./internal/attestation/...`, `make
   test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
   test-canonical` runs `go test ./internal/canonical/...`, and `make
-  test-party-registry` runs `go test ./internal/provenance/...`; all suites
-  must pass. `make verify` includes them.
+  test-party-registry` and `make test-fetch` both run
+  `go test ./internal/provenance/...` (the party registry and the bounded
+  transport share the package); all suites must pass. `make verify`
+  includes them.
 
 ## Go module
 
@@ -86,8 +89,10 @@ The repository is a Go module rooted at the checkout:
     state rules, citation/page/excerpt evidence, source binding, and
     deterministic-serialization validation logic, and its fixtures (TQ-0037).
   - `internal/provenance/` — the `atlas.provenance/v1` party/territory/domain
-    evidence registry, fail-closed anchor authority checks, and version
-    invalidation logic, and its fixture anchors (TQ-0023).
+    evidence registry, fail-closed anchor authority checks, version
+    invalidation (TQ-0023), and the bounded safe HTTP transport with URL/SSRF/
+    redirect/size policy (TQ-0022), and their fixture anchors and local TLS
+    fixtures.
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit

@@ -1,8 +1,9 @@
 ---
 id: TQ-0022
 title: Retrieve official-source evidence through bounded safe HTTP transport
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -13,7 +14,7 @@ depends_on:
   - TQ-0010
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T14:40:45+01:00
 ---
 
 ## Outcome
@@ -85,3 +86,4 @@ A commit/push/confirmation failure restores `TQ-0022` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T14:40:35+01:00 — Quality gates — TQ-0022 (all PASS). Gate 1/2 (make test-fetch): ok internal/provenance (13 transport tests + 13 party tests). TestDirectFetch proves a fixture download retains exact checksum (artifact.HashBytes), status 200, original/final URLs, and derived filename; TestMultiHopRedirect proves two revalidated hops are retained with the correct final URL and byte checksum; TestReferralEvidence proves the referring-page URL is retained in the evidence; TestDNSAddressPolicy proves IsPublicIP rejects loopback/private/link-local/carrier-NAT/TEST-NET/unspecified/reserved and IPv6 loopback/link-local while accepting a public address, that a mixed public/private answer set fails closed, and that a loopback destination blocks the fetch BEFORE any dial (dialer must not be called); TestDisallowedScheme rejects http/ftp/schemeless; TestCredentialBearing rejects userinfo and bearer-style query fields (token); TestRedirectLoop bounds a self-redirect to the redirect cap; TestOversized rejects a body over MaxBytes without truncation; TestSlowResponse enforces the timeout budget; TestCancellation surfaces context cancellation and yields no partial evidence; TestFilenameTraversal rejects a Content-Disposition filename with traversal; TestInvalidMIME rejects a declared non-PDF MIME (absent MIME defers to parser+magic); TestBadStatus rejects non-200. All run against synthetic local TLS fixtures with an injected resolver/dialer — no real network, no live official websites. Gate 3 (regression): make verify -> check OK (git whitespace, tq list --json no warnings, gofmt OK, go build OK, go vet OK, docs structure OK, relative links OK) and go test test-cli/test-artifacts/test-attestations/test-taxonomy/test-canonical/test-party-registry/test-fetch all ok; git diff --check -> exit 0. Gate 4 (static/structural): gofmt -l cmd internal -> no files; go build ./... and go vet ./internal/provenance/ -> no findings; git diff --check -> 0 errors. Gate 5 (docs/spec consistency): docs/MAKEFILE.md updated (surface table, Go-tests bullet, module layout) for the new make test-fetch target and the bounded transport in internal/provenance; technical text English; no product decision changed. Gate 6 (trust-boundary): SSRF enforced on the initial host and EVERY redirect hop via ResolvePublicIP; unsafe filenames rejected (metadata only, never a path); response bombs bounded (MaxBytes +1 detection); bearer credentials rejected; timeouts enforced; transport cleanup (deferred Body.Close, keep-alives disabled); no secrets or absolute private paths committed. Gate 7 (artifact/task record): fixtures deterministic (pure stdlib + httptest, no live models, no live official websites); repeated make verify identical; only TQ-0022 intended files staged (internal/provenance/transport.go, transport_test.go, Makefile, docs/MAKEFILE.md, .tasks/TQ-0022-*.md).

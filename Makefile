@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry
+.PHONY: help check verify test-cli test-artifacts test-attestations test-taxonomy test-canonical test-party-registry test-fetch
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -30,6 +30,7 @@ help:
 	  "  make test-taxonomy         Run the focused taxonomy/jurisdiction validation suite." \
 	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
 	  "  make test-party-registry   Run the focused party trust-anchor/registry validation suite." \
+	  "  make test-fetch            Run the focused bounded safe HTTP transport (fetch) suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Quarantine candidate bytes and metadata." \
@@ -77,6 +78,8 @@ verify: check
 	@$(MAKE) test-canonical
 	@echo "verify: go test (test-party-registry)"
 	@$(MAKE) test-party-registry
+	@echo "verify: go test (test-fetch)"
+	@$(MAKE) test-fetch
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -112,6 +115,13 @@ test-canonical:
 # registry, fail-closed anchor authority checks, and version invalidation.
 # Deterministic and offline; fixture anchors only, no live official websites.
 test-party-registry:
+	@go test ./internal/provenance/...
+
+# Focused gate for the atlas.provenance/v1 bounded safe HTTP transport: URL/
+# DNS/IP (SSRF) policy, redirect revalidation, bounded downloads, and content
+# inspection. Deterministic and offline; synthetic local TLS fixtures with an
+# injected resolver/dialer, no live official websites.
+test-fetch:
 	@go test ./internal/provenance/...
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
