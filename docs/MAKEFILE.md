@@ -13,7 +13,7 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes eight implemented baseline targets and twelve declared
+The `Makefile` exposes nine implemented baseline targets and twelve declared
 pipeline stages.
 
 ### Baseline targets (implemented)
@@ -28,6 +28,7 @@ pipeline stages.
 | `make test-attestations` | Run the focused `atlas.attestation/v1`/`atlas.trust/v1` signing/verification suite (`go test ./internal/attestation/...`). | `go` |
 | `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and jurisdiction-validation suite (`go test ./internal/taxonomy/...`). | `go` |
 | `make test-canonical` | Run the focused `atlas.programme/v1` canonical schema, citation, and source-binding validation suite (`go test ./internal/canonical/...`). | `go` |
+| `make test-party-registry` | Run the focused `atlas.provenance/v1` party trust-anchor and registry-validation suite (`go test ./internal/provenance/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -56,9 +57,10 @@ network retrieval, model invocation, or publication.
 - **Go tests** — `make test-cli` runs `go test ./internal/cli/...`, `make
   test-artifacts` runs `go test ./internal/artifact/...`, `make
   test-attestations` runs `go test ./internal/attestation/...`, `make
-  test-taxonomy` runs `go test ./internal/taxonomy/...`, and `make
-  test-canonical` runs `go test ./internal/canonical/...`; all suites must
-  pass. `make verify` includes them.
+  test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
+  test-canonical` runs `go test ./internal/canonical/...`, and `make
+  test-party-registry` runs `go test ./internal/provenance/...`; all suites
+  must pass. `make verify` includes them.
 
 ## Go module
 
@@ -83,6 +85,9 @@ The repository is a Go module rooted at the checkout:
   - `internal/canonical/` — the `atlas.programme/v1` canonical schema, topic/
     state rules, citation/page/excerpt evidence, source binding, and
     deterministic-serialization validation logic, and its fixtures (TQ-0037).
+  - `internal/provenance/` — the `atlas.provenance/v1` party/territory/domain
+    evidence registry, fail-closed anchor authority checks, and version
+    invalidation logic, and its fixture anchors (TQ-0023).
 
 The CLI supports `help` and `version`, and declares the 12 pipeline stages. A
 stage requires exactly one target-path argument and reports not-available (exit

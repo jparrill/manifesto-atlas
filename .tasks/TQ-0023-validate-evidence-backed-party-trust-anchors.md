@@ -1,8 +1,9 @@
 ---
 id: TQ-0023
 title: Validate evidence-backed party trust anchors
-status: todo
+status: done
 priority: high
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -11,7 +12,7 @@ depends_on:
   - TQ-0010
   - TQ-0019
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-01T18:56:22+01:00
+updated: 2026-11-02T13:52:25+01:00
 ---
 
 ## Outcome
@@ -83,3 +84,4 @@ A commit/push/confirmation failure restores `TQ-0023` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
+- 2026-11-02T13:52:16+01:00 — Quality gates — TQ-0023 (all PASS). Gate 1/2 (make test-party-registry): ok internal/provenance, 13 PASS. TestCheckAnchorResolves proves an approved exact domain + evidence chain resolves deterministically for a party and scope; TestRegionalDomain proves a linked regional/campaign hostname with its own grant resolves; TestUnknownParty rejects a party absent from the registry; TestLookalike rejects typo/subdomain/suffix/appended and www hostnames (no wildcard/substring/suffix inference); TestScopeMismatch rejects a wrong territorial scope; TestRevoked rejects a revoked grant; TestExpired rejects now > valid_until; TestNotYetReviewed rejects now < reviewed_at; TestEvidenceIntegrity rejects non-hash evidence; TestConflictingIdentity rejects a hostname owned by a different party; TestValidateRegistryValid accepts the fixture registry; TestValidateRegistryRejects proves unknown version, duplicate party, Unicode hostname (no IDNA guessing), cross-party hostname conflict, and over-180-day grant are rejected; TestVersionInvalidation proves a superseding registry that revokes/removes a grant invalidates dependent provenance while an unchanged grant does not, without rewriting historical records. Gate 3 (regression): make verify -> check OK (git whitespace, tq list --json no warnings, gofmt OK, go build OK, go vet OK, docs structure OK, relative links OK) and go test test-cli/test-artifacts/test-attestations/test-taxonomy/test-canonical/test-party-registry all ok; git diff --check -> exit 0. Gate 4 (static/structural): gofmt -l cmd internal -> no files; go build ./... and go vet ./internal/provenance/ -> no findings; git diff --check -> 0 errors. Gate 5 (docs/spec consistency): docs/MAKEFILE.md updated (surface table, Go-tests bullet, module layout) for the new atlas.provenance/v1 package and make test-party-registry target; technical text English; no product decision changed. Gate 6 (trust-boundary): contributor cannot activate own authority (registry is caller-selected, grants require independent evidence hashes); Unicode/IDNA hostname ambiguity rejected; lookalike/suffix/subdomain not trusted; expiry/revocation/scope/evidence all fail closed; fixture anchors only, no unverified production facts, no secrets or absolute private paths committed. Gate 7 (artifact/task record): fixtures deterministic (pure stdlib, no live models, no live official websites); repeated make verify identical; only TQ-0023 intended files staged (internal/provenance/{party.go,party_test.go}, Makefile, docs/MAKEFILE.md, .tasks/TQ-0023-*.md).
