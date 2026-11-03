@@ -1,0 +1,63 @@
+{
+  "version": "atlas.semantic-smoke-actual/v1",
+  "endpoint": "http://127.0.0.1:8787/v1",
+  "model": "qwen3.8-27b-dflash2-q4",
+  "revision": "qwen3.8-27b-dflash2-q4",
+  "identity": "127.0.0.1:8787/qwen3.8-27b-dflash2-q4@qwen3.8-27b-dflash2-q4",
+  "invocations": [
+    {
+      "role": "manifesto-normalizer",
+      "job_id": "smoke-normalizer-1",
+      "status": "ok",
+      "endpoint": "http://127.0.0.1:8787/v1",
+      "requested_model": "qwen3.8-27b-dflash2-q4",
+      "reported_model": "/home/jparrill/infra/ai/models/gguf/Qwen3.8-27B-UD-Q4_K_XL.gguf",
+      "model_identity": "127.0.0.1:8787/qwen3.8-27b-dflash2-q4@qwen3.8-27b-dflash2-q4",
+      "prompt_hash": "sha256:387954a661339aa741d42ea522175a2ca2034b6928bc012d30d5482c89b4f775",
+      "evidence_hash": "sha256:3997f07c72383ccc87cbc2cad3e75351e8dd508a41aeb5d4e2124dd1ca7d0a99",
+      "inputs_hash": "sha256:17aedf90a96564b037b61e2909903a4c85c201a91c9a2629a9a6a3ab7c0903c3",
+      "request_hash": "sha256:d35d010faffe45086af12b53468b6ffe0d7cc743a484ca62466cee95976e0c7c",
+      "reply_bytes": 580,
+      "reply_hash": "sha256:9dae2a5eed2319d384ea6557541a6d332ed174ae300ba718277ec535c26fc2fa",
+      "reply": "{\"version\":\"atlas.semantic-job/v1\",\"job_id\":\"smoke-normalizer-1\",\"model_identity\":{\"provider\":\"127.0.0.1:8787\",\"model\":\"qwen3.8-27b-dflash2-q4\",\"revision\":\"qwen3.8-27b-dflash2-q4\"},\"report\":{\"version\":\"atlas.semantic-report/v1\",\"role\":\"manifesto-normalizer\",\"subject\":\"smoke-programme\",\"inputs\":{\"source\":\"sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6bde96a276fc\"},\"result\":\"insufficient\",\"findings\":[],\"checked\":{\"statements\":[],\"measures\":[],\"pages\":[1],\"topics\":[\"Principios generales\",\"Politica economica y fiscal\",\"Politica social y educativa\"]},\"details\":{}}}",
+      "verified": true,
+      "result": "insufficient"
+    },
+    {
+      "role": "manifesto-claim-validator",
+      "job_id": "smoke-claim-1",
+      "status": "ok",
+      "endpoint": "http://127.0.0.1:8787/v1",
+      "requested_model": "qwen3.8-27b-dflash2-q4",
+      "reported_model": "/home/jparrill/infra/ai/models/gguf/Qwen3.8-27B-UD-Q4_K_XL.gguf",
+      "model_identity": "127.0.0.1:8787/qwen3.8-27b-dflash2-q4@qwen3.8-27b-dflash2-q4",
+      "prompt_hash": "sha256:dec6a555ad24d26ec85065fd4c4aa5949de9a6eca636e3529c17cb52d79b4188",
+      "evidence_hash": "sha256:3997f07c72383ccc87cbc2cad3e75351e8dd508a41aeb5d4e2124dd1ca7d0a99",
+      "inputs_hash": "sha256:17aedf90a96564b037b61e2909903a4c85c201a91c9a2629a9a6a3ab7c0903c3",
+      "request_hash": "sha256:b451f08239e548c0532b5ac21ab6226741afc37e30b42d9270dd872a0a886cff",
+      "reply_bytes": 498,
+      "reply_hash": "sha256:6ec1778449cfa36e4dd3e93f9bd1d80c50e3f78f75e33841bd5a6a4b4a7c5bfd",
+      "reply": "{\"version\":\"atlas.semantic-job/v1\",\"job_id\":\"smoke-claim-1\",\"model_identity\":{\"provider\":\"127.0.0.1:8787\",\"model\":\"qwen3.8-27b-dflash2-q4\",\"revision\":\"qwen3.8-27b-dflash2-q4\"},\"report\":{\"version\":\"atlas.semantic-report/v1\",\"role\":\"manifesto-claim-validator\",\"subject\":\"smoke-programme\",\"inputs\":{\"source\":\"sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6bde96a276fc\"},\"result\":\"insufficient\",\"findings\":[],\"checked\":{\"statements\":[],\"measures\":[],\"pages\":[1],\"topics\":[]},\"details\":{}}}",
+      "verified": true,
+      "result": "insufficient"
+    },
+    {
+      "role": "manifesto-coverage-validator",
+      "job_id": "smoke-coverage-1",
+      "status": "ok",
+      "endpoint": "http://127.0.0.1:8787/v1",
+      "requested_model": "qwen3.8-27b-dflash2-q4",
+      "reported_model": "/home/jparrill/infra/ai/models/gguf/Qwen3.8-27B-UD-Q4_K_XL.gguf",
+      "model_identity": "127.0.0.1:8787/qwen3.8-27b-dflash2-q4@qwen3.8-27b-dflash2-q4",
+      "prompt_hash": "sha256:e31b51fd77c1f20590cb220a0f20204e3e51de1a690882f6ed48c56e771f103d",
+      "evidence_hash": "sha256:3997f07c72383ccc87cbc2cad3e75351e8dd508a41aeb5d4e2124dd1ca7d0a99",
+      "inputs_hash": "sha256:17aedf90a96564b037b61e2909903a4c85c201a91c9a2629a9a6a3ab7c0903c3",
+      "request_hash": "sha256:8778be5b4988dadfb101d3aa9a5d9ccdf3a68ac6a1b5cda40439349b2b51d6d8",
+      "reply_bytes": 578,
+      "reply_hash": "sha256:24b98b71b285027e9dbbee903fd0540ea69cb29793b5cad6af6d600d8ec2d30f",
+      "reply": "{\"version\":\"atlas.semantic-job/v1\",\"job_id\":\"smoke-coverage-1\",\"model_identity\":{\"provider\":\"127.0.0.1:8787\",\"model\":\"qwen3.8-27b-dflash2-q4\",\"revision\":\"qwen3.8-27b-dflash2-q4\"},\"report\":{\"version\":\"atlas.semantic-report/v1\",\"role\":\"manifesto-coverage-validator\",\"subject\":\"smoke-programme\",\"inputs\":{\"source\":\"sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6bde96a276fc\"},\"result\":\"pass\",\"findings\":[],\"checked\":{\"statements\":[],\"measures\":[],\"pages\":[1],\"topics\":[\"Principios generales\",\"Politica economica y fiscal\",\"Politica social y educativa\"]},\"details\":{}}}",
+      "verified": true,
+      "result": "pass"
+    }
+  ]
+}

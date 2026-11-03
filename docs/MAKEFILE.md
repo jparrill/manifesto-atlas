@@ -35,10 +35,13 @@ pipeline stages.
 | `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
  | `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
  | `make test-fixture-vox` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` VOX Castilla y León electoral candidate hash/metadata fixture suite (`go test -run TestCheckVoxFixture ./internal/candidate/...`). | `go` |
- | `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
+  | `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
+  | `make smoke-provider [TARGET=...]` | Operator gate: run the three clean semantic roles (normalizer, claim-validator, coverage-validator) through the operator-configured OpenAI-compatible local provider and retain the actual request/model identities and original bounded replies (`go run ./cmd/smoke-provider`). Requires `ATLAS_SMOKE_BASE_URL`/`ATLAS_SMOKE_MODEL`; not part of `make verify`. | `go`, configured local provider |
 
 `make` with no arguments runs the default goal (`help`) and performs no
-network retrieval, model invocation, or publication.
+network retrieval, model invocation, or publication. `make smoke-provider` is
+the single explicit exception: it is an operator gate that invokes the
+configured local model and is never run by `make verify` or `make check`.
 
 ### Baseline check semantics
 
@@ -68,8 +71,11 @@ network retrieval, model invocation, or publication.
   test-semantic-runner` runs `go test ./internal/semantic/...`, `make
    test-fixture-frente` runs `go test ./internal/candidate/...`, `make
    test-fixture-vox` runs `go test -run TestCheckVoxFixture ./internal/candidate/...`,
-   and `make test-runs` runs `go test ./internal/run/...`; all suites must pass.
-   `make verify` includes them.
+    and `make test-runs` runs `go test ./internal/run/...`; all suites must pass.
+    `make verify` includes them. `make smoke-provider` is deliberately excluded:
+    it is an explicit operator gate that invokes the configured local provider
+    (TQ-0024) and retains genuine request/model evidence, so it never runs under
+    `make verify` or `make check`.
 
 Passing these suites does not qualify every planned contract. The
 [trust-boundary audit](audits/2026-11-02-trust-boundaries.md) records reopened

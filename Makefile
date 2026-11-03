@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs
+.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -32,6 +32,7 @@ help:
 	  "  make test-fixture-frente   Run the focused Frente Obrero candidate/source fixture suite." \
 	  "  make test-fixture-vox      Run the focused VOX Castilla y León candidate/source fixture suite." \
 	  "  make test-runs             Run the focused selection/run record validation suite." \
+	  "  make smoke-provider        Run the three clean semantic roles through the configured local provider (TARGET=...)." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Inspect a selected local candidate." \
@@ -135,6 +136,16 @@ test-fixture-vox:
 # official websites.
 test-runs:
 	@go test ./internal/run/...
+
+# Explicit real-provider smoke gate (TQ-0024): runs the three clean semantic roles
+# (normalizer, claim-validator, coverage-validator) through the operator-configured
+# OpenAI-compatible local provider and retains the actual request/model identities
+# and original bounded replies. Requires ATLAS_SMOKE_BASE_URL and ATLAS_SMOKE_MODEL
+# in the environment; it is an operator gate, never part of make verify (regression
+# is offline). TARGET defaults to the committed synthetic smoke fixture.
+TARGET ?= fixtures/semantic/smoke.json
+smoke-provider:
+	@go run ./cmd/smoke-provider -target $(TARGET)
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 

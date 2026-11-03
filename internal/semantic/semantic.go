@@ -198,13 +198,37 @@ type ProviderAdapter interface {
 
 // Runner is the host-side bounded, verified runner.
 type Runner struct {
-	adapter  ProviderAdapter
-	usedJobs map[string]map[string]bool
+	adapter   ProviderAdapter
+	usedJobs  map[string]map[string]bool
+	callCount map[string]int
+	callsDur  map[string]time.Duration
 }
 
 // NewRunner binds a runner to a trusted provider adapter.
 func NewRunner(adapter ProviderAdapter) *Runner {
-	return &Runner{adapter: adapter, usedJobs: map[string]map[string]bool{}}
+	return &Runner{
+		adapter:   adapter,
+		usedJobs:  map[string]map[string]bool{},
+		callCount: map[string]int{},
+		callsDur:  map[string]time.Duration{},
+	}
+}
+
+// budgetExceeded reports whether the whole-evaluation (per programme) budget of
+// maxProgrammeTime / maxProgrammeCalls is already spent for the set.
+func (r *Runner) budgetExceeded(set string) error {
+	if r.callCount[set] >= maxProgrammeCalls {
+		return errf(CodeOverLimit, "programme-calls")
+	}
+	if r.callsDur[set] >= maxProgrammeTime {
+		return errf(CodeOverLimit, "programme-time")
+	}
+	return nil
+}
+
+func (r *Runner) noteCall(set string, d time.Duration) {
+	r.callCount[set]++
+	r.callsDur[set] += d
 }
 
 // Run performs one bounded, verified semantic job. It enforces clean context,
@@ -226,6 +250,10 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 	if req.Limits.MaxOutputTokens == 0 {
 		req.Limits.MaxOutputTokens = maxOutputTokens
 	}
+	// Whole-evaluation (per programme) budget: maxProgrammeTime / maxProgrammeCalls.
+	if err := r.budgetExceeded(req.EvaluationSet); err != nil {
+		return nil, err
+	}
 	// Reject job reuse within this runner/evaluation set. This bookkeeping does
 	// not establish provider conversation or KV-cache isolation.
 	set := r.usedJobs[req.EvaluationSet]
@@ -244,7 +272,9 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 		return nil, mapErr(ctx, ctx.Err())
 	}
 
+	start := time.Now()
 	raw, err := r.adapter.Run(ctx, req, ev)
+	r.noteCall(req.EvaluationSet, time.Since(start))
 	if ctx.Err() != nil {
 		return nil, mapErr(ctx, ctx.Err())
 	}
@@ -256,7 +286,9 @@ func (r *Runner) Run(ctx context.Context, req Request, ev EvidenceReader) (*Resp
 				return nil, errf(CodeCleanContext, retryReq.JobID)
 			}
 			set[retryReq.JobID] = true
+			retryStart := time.Now()
 			raw, err = r.adapter.Run(ctx, retryReq, ev)
+			r.noteCall(req.EvaluationSet, time.Since(retryStart))
 			if ctx.Err() != nil {
 				return nil, mapErr(ctx, ctx.Err())
 			}
@@ -447,6 +479,13 @@ func mapErr(ctx context.Context, err error) error {
 	}
 	if errors.Is(err, context.Canceled) {
 		return errf(CodeCancellation, "cancelled")
+	}
+	// Preserve a stable runner code the adapter already classified (e.g. evidence
+	// over-limit or missing evidence); only unclassified transport errors become
+	// generic provider errors.
+	var se *Error
+	if errors.As(err, &se) && se.Code != "" {
+		return se
 	}
 	return errf(CodeProviderError, err.Error())
 }
