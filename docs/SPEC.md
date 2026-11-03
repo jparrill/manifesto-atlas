@@ -308,7 +308,8 @@ evidence permits offline regression without calling a model or source website.
 ## Further Notes
 
 The exact approved Frente Obrero general-political and VOX Castilla y León
-documents remain the initial source targets; their bytes are absent today.
+documents are the initial source targets; both are retained as local candidate
+fixtures under `fixtures/` with evidenced origin metadata.
 Never invent URLs, checksums or election dates, substitute another revision, or
 call a candidate an automatically verified official source. If exact recovery
 is unavailable, leave its task open with concrete evidence of the blocker.

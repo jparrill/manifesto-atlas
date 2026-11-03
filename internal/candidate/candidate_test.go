@@ -41,6 +41,44 @@ func TestCheckFrenteFixture(t *testing.T) {
 	}
 }
 
+// voxFixtureRoot is the retained VOX Castilla y León candidate, relative to
+// this package.
+const voxFixtureRoot = "../../fixtures/vox"
+
+func TestCheckVoxFixture(t *testing.T) {
+	c, err := Check(voxFixtureRoot)
+	if err != nil {
+		t.Fatalf("Check: %v", err)
+	}
+	if c.Version != CandidateVersion {
+		t.Errorf("version = %q", c.Version)
+	}
+	if c.Metadata.DocumentType != "electoral-programme" {
+		t.Errorf("document_type = %q, want electoral-programme", c.Metadata.DocumentType)
+	}
+	if c.Metadata.Scope != "autonomous" {
+		t.Errorf("scope = %q, want autonomous", c.Metadata.Scope)
+	}
+	if c.Metadata.Election == nil {
+		t.Fatal("election = null, want a present electoral record (electoral programme)")
+	}
+	if c.Metadata.Election.Date != "2026-03-15" {
+		t.Errorf("election.date = %q, want 2026-03-15 (evidenced 15 March 2026)", c.Metadata.Election.Date)
+	}
+	if c.Metadata.PublicationDate != nil {
+		t.Errorf("publication_date = %q, want null (unknown, not guessed)", *c.Metadata.PublicationDate)
+	}
+	if c.Metadata.Rights.Statement != nil {
+		t.Errorf("rights.statement = %q, want null (unknown, not guessed)", *c.Metadata.Rights.Statement)
+	}
+	if c.Metadata.Origin.Authority != "maintainer-selected" {
+		t.Errorf("origin.authority = %q, want maintainer-selected", c.Metadata.Origin.Authority)
+	}
+	if len(c.Metadata.Origin.Evidence) == 0 {
+		t.Error("origin.evidence is empty, want at least one retained reference")
+	}
+}
+
 func loadBase(t *testing.T) map[string]any {
 	t.Helper()
 	data, err := os.ReadFile(filepath.Join(fixtureRoot, "source.json"))

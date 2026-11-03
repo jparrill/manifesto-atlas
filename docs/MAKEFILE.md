@@ -33,8 +33,9 @@ pipeline stages.
 | `make test-taxonomy` | Run the focused `atlas.taxonomy/v1` registry, topic-state, and evidence-based document-scope classification suite (`go test ./internal/taxonomy/...`). | `go` |
 | `make test-canonical` | Run the focused `atlas.programme.local/v1` local draft schema, citation, and source/extraction binding validation suite (`go test ./internal/canonical/...`). | `go` |
 | `make test-semantic-runner` | Run common semantic-response rejection and fake-adapter regression tests (`go test ./internal/semantic/...`). | `go` |
-| `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
-| `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
+ | `make test-fixture-frente` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` Frente Obrero candidate hash/metadata fixture suite (`go test ./internal/candidate/...`). | `go` |
+ | `make test-fixture-vox` | Run the focused `atlas.candidate/v1`/`atlas.source.local/v1` VOX Castilla y León electoral candidate hash/metadata fixture suite (`go test -run TestCheckVoxFixture ./internal/candidate/...`). | `go` |
+ | `make test-runs` | Run the focused `atlas.selection/v1`/`atlas.run/v1` record validation suite (`go test ./internal/run/...`). | `go` |
 
 `make` with no arguments runs the default goal (`help`) and performs no
 network retrieval, model invocation, or publication.
@@ -65,9 +66,10 @@ network retrieval, model invocation, or publication.
   test-taxonomy` runs `go test ./internal/taxonomy/...`, `make
   test-canonical` runs `go test ./internal/canonical/...`, `make
   test-semantic-runner` runs `go test ./internal/semantic/...`, `make
-  test-fixture-frente` runs `go test ./internal/candidate/...`, and `make
-  test-runs` runs `go test ./internal/run/...`; all suites must pass. `make
-  verify` includes them.
+   test-fixture-frente` runs `go test ./internal/candidate/...`, `make
+   test-fixture-vox` runs `go test -run TestCheckVoxFixture ./internal/candidate/...`,
+   and `make test-runs` runs `go test ./internal/run/...`; all suites must pass.
+   `make verify` includes them.
 
 Passing these suites does not qualify every planned contract. The
 [trust-boundary audit](audits/2026-11-02-trust-boundaries.md) records reopened

@@ -1,0 +1,41 @@
+Manifesto Atlas — VOX Castilla y León origin evidence (TQ-0029)
+================================================================
+Authority: maintainer-selected
+Source host: official VOX website (www.voxespana.es)
+Origin URL: https://www.voxespana.es/wp-content/uploads/2026/02/Programa-Electoral-VOX-CYL-2026.pdf
+Retrieved at: 2026-11-03T00:14:29Z
+Candidate bytes SHA-256: b1240d9fe6f34b06274d665f7abed6c21488a0babe69762c0a6e60e0ab773bbb
+Candidate bytes size: 29481929
+
+HTTP response for the source resource (authoritative server attestation)
+------------------------------------------------------------------------
+HTTP/2 200
+content-type: application/pdf
+content-length: 29481929
+server: cloudflare
+last-modified: Fri, 27 Feb 2026 13:19:13 GMT
+etag: "69a199d1-1c1dbc9"
+date: Mon, 02 Nov 2026 23:53:52 GMT
+
+Verification
+------------
+- Byte-identical on re-download (stable resource).
+- Valid PDF (version 1.4), 172 pages.
+- Embedded XMP metadata: title "UN PROGRAMA CON SENTIDO COMÚN",
+  keywords "castilla y leon, castilla y leon, castilla y leon".
+- Origin HTML landing page is protected by a Cloudflare challenge
+  (HTTP 403 for both curl and the browser fetcher), so the PDF resource
+  and its HTTP response headers are the retained authoritative origin
+  evidence; no mirror or archive revision was substituted.
+
+Electoral and territorial metadata (evidenced, not inferred)
+------------------------------------------------------------
+- Election: Elecciones a las Cortes de Castilla y León de 2026.
+- Election date: 2026-03-15 (domingo 15 de marzo de 2026).
+  Evidence: BOE Decreto 1/2026, de 19 de enero (BOE-A-2026-1260),
+  "se celebrarán el domingo 15 de marzo de 2026"; INE
+  "Elecciones a las Cortes de Castilla y León de 15 de marzo de 2026";
+  Junta Electoral de Castilla y León, resultados de las elecciones
+  celebradas el 15 de marzo de 2026.
+- Scope: autonomous community (Castilla y León), Cortes de Castilla y León.
+- Party: VOX.

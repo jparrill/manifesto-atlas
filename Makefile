@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-runs
+.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -30,6 +30,7 @@ help:
 	  "  make test-canonical        Run the focused canonical programme/citation validation suite." \
 	  "  make test-semantic-runner  Run the focused semantic job runner (isolation/provider) suite." \
 	  "  make test-fixture-frente   Run the focused Frente Obrero candidate/source fixture suite." \
+	  "  make test-fixture-vox      Run the focused VOX Castilla y León candidate/source fixture suite." \
 	  "  make test-runs             Run the focused selection/run record validation suite." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
@@ -78,6 +79,8 @@ verify: check
 	@$(MAKE) test-semantic-runner
 	@echo "verify: go test (test-fixture-frente)"
 	@$(MAKE) test-fixture-frente
+	@echo "verify: go test (test-fixture-vox)"
+	@$(MAKE) test-fixture-vox
 	@echo "verify: go test (test-runs)"
 	@$(MAKE) test-runs
 	@echo "verify: OK"
@@ -117,6 +120,14 @@ test-semantic-runner:
 # Deterministic and offline; no live models or official websites.
 test-fixture-frente:
 	@go test ./internal/candidate/...
+
+# Focused gate for the retained VOX Castilla y León candidate (atlas.candidate/v1
+# with the embedded atlas.source.local/v1 record): offline hash and metadata
+# verification of the recovered electoral source, its evidenced 15 March 2026
+# election, and its origin evidence. Deterministic and offline; no live models
+# or official websites.
+test-fixture-vox:
+	@go test -run TestCheckVoxFixture ./internal/candidate/...
 
 # Focused gate for the atlas.selection/v1 owner selection record and the
 # atlas.run/v1 per-programme run record: strict parsing, deterministic

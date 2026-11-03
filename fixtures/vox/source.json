@@ -1,0 +1,49 @@
+{
+  "version": "atlas.candidate/v1",
+  "programme_id": "vox-programa-electoral-cyl-2026",
+  "candidate_path": "programa.pdf",
+  "metadata": {
+    "version": "atlas.source.local/v1",
+    "programme_id": "vox-programa-electoral-cyl-2026",
+    "party": {
+      "id": "vox",
+      "name": "VOX"
+    },
+    "document_type": "electoral-programme",
+    "scope": "autonomous",
+    "geography": {
+      "id": "es-cl",
+      "name": "Castilla y León"
+    },
+    "election": {
+      "id": "cyl-2026",
+      "type": "autonomous",
+      "date": "2026-03-15"
+    },
+    "publication_date": null,
+    "archive_year": 2026,
+    "year_basis": "retrieval",
+    "source": {
+      "path": "sources/2026/vox-programa-electoral-cyl-2026/b1240d9fe6f34b06274d665f7abed6c21488a0babe69762c0a6e60e0ab773bbb/source.pdf",
+      "sha256": "b1240d9fe6f34b06274d665f7abed6c21488a0babe69762c0a6e60e0ab773bbb",
+      "size": 29481929,
+      "original_filename": "Programa-Electoral-VOX-CYL-2026.pdf",
+      "origin_url": "https://www.voxespana.es/wp-content/uploads/2026/02/Programa-Electoral-VOX-CYL-2026.pdf",
+      "retrieved_at": "2026-11-03T00:14:29Z"
+    },
+    "origin": {
+      "authority": "maintainer-selected",
+      "evidence": [
+        {
+          "path": "evidence/origin-http-headers.txt",
+          "sha256": "6a4e78f13c9d780dcfed5214fa4f46dd423d9c4a5cd9fb035664329de045f4ef"
+        }
+      ]
+    },
+    "rights": {
+      "publisher": "VOX",
+      "statement": null
+    },
+    "supersedes": null
+  }
+}

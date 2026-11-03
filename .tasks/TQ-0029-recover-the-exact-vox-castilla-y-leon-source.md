@@ -1,8 +1,9 @@
 ---
 id: TQ-0029
 title: Recover the exact VOX Castilla y Leon source and origin evidence
-status: todo
+status: done
 priority: normal
+assignee: auriga-prime/qwen3.8-27b-dflash2-q4
 labels:
   - type/feature
   - agent/developer
@@ -11,7 +12,7 @@ labels:
 depends_on:
   - TQ-0061
 created: 2026-11-01T17:07:33+01:00
-updated: 2026-11-02T18:05:04+01:00
+updated: 2026-11-03T01:51:07+01:00
 ---
 
 ## Outcome
@@ -78,3 +79,10 @@ Follow AGENTS.md#closing-tasks-and-continuing-work: record gates, mark done, com
 
 - 2026-11-01T18:56:22+01:00 — Approved for todo under Juan's explicit delegation in this session (TQ-0057). Reviewed outcome, scope, acceptance criteria, seven quality gates, priority, native dependencies, and execution role against the accepted specification. Implementation remains gated by approved design tasks and all existing dependencies; role restrictions, required real-fixture/model checks, and fail-closed behavior remain unchanged. This approval grants no standing authority to promote future inbox proposals.
 - 2026-11-02T18:05:04+01:00 — Rescoped under Juan's explicit TQ-0061 MVP replanning request after TQ-0060. The new outcome, boundaries, criteria, seven gates, priority and native dependencies supersede the former platform contract. Previous approvals/failures/notes remain history, not claims that the new outcome already passes. Execution role is unchanged; docs/SPEC.md and docs/design/MVP.md now govern.
+- 2026-11-03T01:50:59+01:00 — Gate 1 PASS: make test-fixture-vox -> ok internal/candidate. Exact VOX CyL PDF bytes retained (sha256 b1240d9f..., 29481929 bytes, valid PDF 1.4, 172pp), candidate parsed + verified offline; evidenced 15 March 2026 election, autonomous scope, VOX party, maintainer-selected origin.
+- 2026-11-03T01:50:59+01:00 — Gate 2 PASS: go test ./internal/candidate/... -> ok (TestCheckVoxFixture + TestCheckFrenteFixture + TestParseRejects + TestVerifyRejectsMutatedCandidate + TestVerifyRejectsMissingEvidence all PASS).
+- 2026-11-03T01:50:59+01:00 — Gate 3 PASS: make verify -> OK; go test ./... -> all packages ok.
+- 2026-11-03T01:50:59+01:00 — Gate 4 PASS: make check -> OK (git whitespace, taskqueue integrity, gofmt, go build, go vet); git diff --check clean.
+- 2026-11-03T01:50:59+01:00 — Gate 5 PASS: docs/MAKEFILE.md documents make test-fixture-vox; docs/SPEC.md updated (both initial source targets retained as fixtures); make verify docs+links OK.
+- 2026-11-03T01:50:59+01:00 — Gate 6 PASS: candidate.Check fail-closed (parse rejects unknown fields/bad enums/bad hashes/unsafe paths/non-https URLs; VerifyFiles rejects mutated or missing bytes). VOX fixture passes the same Check; existing reject suite green.
+- 2026-11-03T01:50:59+01:00 — Gate 7 PASS: fixtures/vox/{programa.pdf, evidence/origin-http-headers.txt, source.json} retained with matching SHA-256 (candidate b1240d9f..., evidence 6a4e78f1...); origin evidence = official voxespana.es PDF HTTP headers (Cloudflare-blocked HTML landing page documented); notes recorded.
