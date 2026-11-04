@@ -6,6 +6,12 @@ This file supersedes conflicting requirements in the nine older design documents
 for active MVP tasks. Historical artifacts/tasks are not retrospectively certified
 or erased. Runtime changes occur only in their owning implementation tasks.
 
+For the owner's immediate macOS E2E/HTML demonstration, the narrower
+[macOS preview contract](macos-preview.md) governs TQ-0062/TQ-0067. It uses installed
+Poppler and sandbox-exec plus the supplied immutable HTML reference. Fedora and
+the production Docling path are not prerequisites to this explicitly private
+preview; incomplete semantic checks remain visible and non-publishable.
+
 ## Milestones and native task map
 
 | Milestone | Tasks |

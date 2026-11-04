@@ -6,6 +6,11 @@ The [MVP contract](design/MVP.md) defines the current interfaces and milestones.
 Earlier design contracts are historical where they conflict with these files;
 their completed tasks and execution history remain preserved.
 
+Owner-requested local demonstration: [macOS preview](design/macos-preview.md)
+defines the current real-source E2E/HTML preview path (TQ-0062/TQ-0067). It uses
+installed macOS tools and supplied presentation assets without waiting for Fedora.
+Private preview outcomes are not production publication approval.
+
 ## Problem Statement
 
 Political programmes are difficult to find, preserve and read. Manifesto Atlas

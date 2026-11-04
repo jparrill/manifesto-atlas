@@ -33,11 +33,18 @@ completed task mentions it. Completed tasks retain their original history.
 
 ## Current implementation, not planned capability
 
+Current owner assignment: implement the real-source macOS E2E/HTML preview under
+[the macOS contract](docs/design/macos-preview.md), TQ-0062/TQ-0067. Use the supplied
+existing HTML as immutable presentation input; do not wait for Fedora. The live
+queue and retained run evidence take precedence over the older snapshot below.
+
 The repository contains a Go CLI, tested domain libraries, Make gates and design/
 task documentation. The ordinary executable still provides help/version and
-unavailable pipeline-stage messages. No source PDF, project skill, configured
-provider integration, public output, supplied presentation asset or CI workflow
-is committed. Passing library tests are not end-to-end product readiness.
+unavailable production pipeline-stage messages. Both candidate PDFs and origin
+evidence are now committed under `fixtures/`; the configured semantic provider
+and its real synthetic smoke evidence are implemented. There is still no completed
+production public output or CI workflow. Passing library tests are not end-to-end
+product readiness.
 
 The previous technical audit reopened TQ-0022/TQ-0023/TQ-0024/TQ-0036/TQ-0037;
 TQ-0059 fixed four common semantic-response rejection defects. TQ-0061 changes
