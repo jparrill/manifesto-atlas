@@ -13,7 +13,7 @@ labels:
 depends_on:
   - TQ-0062
 created: 2026-11-04T23:00:21+01:00
-updated: 2026-11-05T01:01:06+01:00
+updated: 2026-11-05T01:05:19+01:00
 ---
 
 ## Outcome
@@ -90,3 +90,5 @@ Follow AGENTS.md#closing-tasks-and-continuing-work for TQ-0067: all gates PASS, 
   - Gate 5 PASS — README, MAKEFILE usage, SPEC/MVP exception and handoff match actual private commands and limitations. Production targets remain truthfully unavailable; TQ-0021 now references macOS, and TQ-0042 only records the supplied reference without unauthorized inbox promotion. Standards review: two findings resolved. Spec review: three findings resolved, including one shared finding; both reviewers confirmed the fixes.
   - Gate 6 PASS — actual native positives and write/private-read/network denial, host-credential exclusion, parent-process inspection denial, default fork denial, whole-process-group timeout/cleanup, output ceiling and sampled RSS termination passed. HTML/Markdown escaping, unsafe paths/links, stale and non-passing report substitution, output symlink/hard-link preservation and retry evidence are covered. Provider URL credentials are rejected and no signing key/API credential is retained. RSS is explicitly sampled, not claimed as a kernel hard limit.
   - Gate 7 PASS — latest real run, preserved failures, immutable owner asset and desktop/mobile screenshots are current. CDP proves 21 rendered cards and no horizontal overflow at 1440x1000 and 390x844. Offline replay repeats identically; source bytes are preserved. All evidence is recorded before done; scoped commit/push confirmation follows.
+- 2026-11-05T01:04:02+01:00 — Delivery blocker: the combined commit/push command exceeded its 120-second tool deadline after commit succeeded. Remote inspection still shows the prior contract commit and local HEAD is one commit ahead. No task continuation is allowed until normal push and remote confirmation succeed; the task is reopened under the delivery policy. Source/HTML artifacts and all content gates remain intact.
+- 2026-11-05T01:05:19+01:00 — Delivery recovery: retrying the normal configured git push succeeded and remote confirmation matches the delivered preview commit. No code or evidence was changed during recovery. Regression make verify and git diff --check passed again; queue/task records remain valid. All seven pre-delivery gates remain PASS. Closing the reopened task and delivering this recovery record as a new commit, without amending history or weakening hooks/signing.
