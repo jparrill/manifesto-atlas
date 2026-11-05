@@ -18,8 +18,8 @@ expansion path.
 
 ## Current surface
 
-The `Makefile` exposes ten implemented baseline targets and twelve declared
-pipeline stages.
+The `Makefile` exposes implemented local checks/private-preview commands and
+twelve declared production pipeline stages.
 
 ### Baseline targets (implemented)
 
@@ -39,9 +39,30 @@ pipeline stages.
   | `make smoke-provider [TARGET=...]` | Operator gate: run the three clean semantic roles (normalizer, claim-validator, coverage-validator) through the operator-configured OpenAI-compatible local provider and retain the actual request/model identities and original bounded replies (`go run ./cmd/smoke-provider`). Requires `ATLAS_SMOKE_BASE_URL`/`ATLAS_SMOKE_MODEL`; not part of `make verify`. | `go`, configured local provider |
 
 `make` with no arguments runs the default goal (`help`) and performs no
-network retrieval, model invocation, or publication. `make smoke-provider` is
-the single explicit exception: it is an operator gate that invokes the
-configured local model and is never run by `make verify` or `make check`.
+network retrieval, model invocation, or publication. `make smoke-provider` and
+`make e2e-preview`/`make evaluate-preview` are explicit operator evaluations that
+invoke the configured model and are never run by `make verify` or `make check`.
+
+### macOS private preview (implemented)
+
+- `make test-preview`: offline source/citation, immutable supplied-asset binding,
+  injection, stale-input and stored-real-run regression. On macOS it also exercises
+  actual sandbox write/network denial, timeout/descendant cleanup and RSS/output
+  bounds; other systems have no macOS worker and retain portable offline tests.
+- `make render-preview [OUTPUT=...]`: check stored source/draft/report hashes and
+  regenerate private Markdown/HTML without model calls. The default retained run
+  is `runs/preview/frente-e2e`.
+- `make e2e-preview OUTPUT=runs/preview/new-run [SOURCE=...]`: inspect/extract a
+  real retained PDF, run three fresh configured-model roles and render a private
+  preview. Requires `ATLAS_BASE_URL`, `ATLAS_MODEL`, and the imported owner-supplied
+  reference; `ATLAS_API_KEY` is optional and never retained. The output directory
+  must be new to preserve previous attempts. `make evaluate-preview` is an alias.
+- `go run ./cmd/preview -check-browser -output runs/preview/frente-e2e`: actual
+  desktop/mobile Chrome with CDP device emulation, screenshots and layout checks.
+
+See the [macOS preview contract](design/macos-preview.md) for source selection,
+reference import, provider setup, actual retained outcomes and limitations. This
+private seam does not claim the production targets below are implemented.
 
 ### Baseline check semantics
 

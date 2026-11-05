@@ -1,5 +1,26 @@
 # Manifesto Atlas
 
+## Vista previa local en macOS
+
+Ya puedes abrir una ejecución real de Frente Obrero: 64 páginas procesadas,
+21 temas y 17 medidas principales con citas. El diseño reutiliza el HTML de
+referencia aportado para el proyecto, sin modificar sus estilos ni scripts.
+
+```bash
+make render-preview
+open runs/preview/frente-e2e/index.html
+```
+
+Es un **borrador privado**, no una publicación aprobada. Se conservan las llamadas
+reales de generación y validación independiente; falta evidencia visual para las
+páginas sin texto extraíble y el informe de cobertura señala posibles omisiones.
+La pestaña de VOX indica que aún está pendiente de
+este flujo. El JSON canónico, los informes y el Markdown están junto al HTML.
+
+Para repetir el proceso con modelos y un nuevo directorio de resultados, consulta
+el [flujo de macOS](docs/design/macos-preview.md). La regeneración ordinaria de
+la vista almacenada funciona sin conexión ni llamadas a modelos.
+
 > Encontrar información fiable, primaria y no editorializada sobre las promesas electorales es innecesariamente doloroso.
 
 Manifesto Atlas es un archivo abierto y versionado de programas electorales y documentos políticos. Transforma las fuentes oficiales publicadas por los partidos en resúmenes breves y verificables, y las conserva en Git como memoria histórica.

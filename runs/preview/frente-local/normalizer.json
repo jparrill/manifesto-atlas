@@ -1,0 +1,399 @@
+{
+  "version": "atlas.semantic-job/v1",
+  "job_id": "preview-manifesto-normalizer",
+  "model_identity": {
+    "provider": "127.0.0.1:18790",
+    "model": "qwen3.8-27b-dflash2-q4",
+    "revision": "unknown"
+  },
+  "report": {
+    "version": "atlas.semantic-report/v1",
+    "role": "manifesto-normalizer",
+    "subject": "frente-obrero-programa-politico",
+    "inputs": {
+      "extraction": "sha256:04d4c14a9969d547a751ca329ec8c93ddb0a661a5082c0f7e9220dcde6a7e997",
+      "metadata": "sha256:ee1fcc56d9b953377de54a813dc6fddea1c847ae699918c6acdab54f4bcb9f92",
+      "source": "sha256:7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282",
+      "taxonomy": "sha256:3f585f30240e3dc9b3b233e60310a0c5601456bf0b49a41beecdc3b9998b6a35"
+    },
+    "result": "pass",
+    "findings": [],
+    "checked": {
+      "statements": [
+        "El Frente Obrero propone un proceso constituyente para transformar la sociedad y abandonar la democracia representativa actual.",
+        "Se plantea la salida de la Unión Europea y de la OTAN para recuperar la soberanía nacional.",
+        "Se propone la reindustrialización del país y la nacionalización de sectores estratégicos.",
+        "Se aboga por un modelo energético basado en la energía nuclear y las renovables, regulando la factura de la luz.",
+        "Se propone una reforma fiscal que reduzca impuestos a los trabajadores y aumente la carga para las grandes empresas.",
+        "Se plantea una educación gratuita, pública y sin subvenciones a la privada, limitando el uso de tecnología en menores.",
+        "Se propone la defensa de la cultura española, el acceso gratuito a museos y la promoción del deporte de base.",
+        "Se plantean medidas para fomentar la natalidad, como guarderías gratuitas y ventajas fiscales para familias numerosas.",
+        "Se propone romper con la PAC, expropiar tierras sin usar y fomentar cooperativas agrarias.",
+        "Se plantea la derogación de leyes de discriminación positiva y la supresión del Ministerio de Igualdad.",
+        "Se propone la construcción de vivienda pública, la paralización de desahucios y la lucha contra la especulación.",
+        "Se plantea la reversión del aumento de la edad de jubilación y el incremento de pensiones mínimas.",
+        "Se propone el control absoluto de fronteras, la expulsión de inmigrantes irregulares y la restricción del asilo político.",
+        "Se plantea la simetría de competencias autonómicas, la centralización de servicios y la fusión de ayuntamientos.",
+        "Se propone la independencia judicial, la prohibición del indulto por corrupción y la extensión de penas a partidos políticos.",
+        "Se plantea la democratización de las fuerzas de seguridad y la supresión de las policías autonómicas.",
+        "Se propone la modernización del ejército, la libertad de sindicación militar y el fin de misiones en el extranjero."
+      ],
+      "measures": [
+        "Salida de la Unión Europea para recuperar la soberanía nacional.",
+        "Reindustrialización del país priorizando industrias estratégicas.",
+        "Apuesta por la energía nuclear y aumento de la inversión en plantas nucleares.",
+        "Reducción del impuesto sobre la renta para trabajadores con menos recursos.",
+        "Ofrecer educación gratuita en todos los niveles académicos.",
+        "Creación de planes estatales para el aumento de la natalidad nacional.",
+        "Expropiación de tierras sin usar en propiedad de grandes terratenientes.",
+        "Derogación de todas las leyes basadas en la discriminación positiva.",
+        "Construir vivienda pública de calidad para aumentar el número de inmuebles.",
+        "Revertir el incremento de la edad de jubilación.",
+        "Control absoluto de las fronteras terrestres y marítimas.",
+        "Implantar medidas para que todas las Comunidades Autónomas tengan las mismas competencias.",
+        "Garantizar la independencia judicial respecto al poder político.",
+        "Democratización de las estructuras del cuerpo de seguridad.",
+        "Modernización y democratización de las estructuras del ejército."
+      ],
+      "pages": [
+        3,
+        5,
+        6,
+        9,
+        11,
+        13,
+        15,
+        16,
+        18,
+        19,
+        21,
+        22,
+        24,
+        25,
+        26,
+        28,
+        29,
+        31,
+        32,
+        34,
+        35,
+        37,
+        38,
+        40,
+        42,
+        43,
+        45,
+        46,
+        48,
+        49,
+        51,
+        52,
+        53,
+        54,
+        56,
+        58,
+        59,
+        61,
+        63
+      ],
+      "topics": [
+        "institutions-democracy",
+        "administration-territory",
+        "economy-industry-trade",
+        "taxation-budgets",
+        "employment-labour",
+        "pensions",
+        "healthcare",
+        "education-research",
+        "housing",
+        "social-inclusion",
+        "family-demography",
+        "equality-rights",
+        "immigration-asylum",
+        "agriculture-rural",
+        "environment-climate",
+        "energy",
+        "transport-infrastructure",
+        "digital-science-innovation",
+        "culture-language-sport",
+        "justice-security",
+        "defence-foreign-eu"
+      ]
+    },
+    "details": {
+      "topics": [
+        {
+          "id": "institutions-democracy",
+          "measures": [
+            {
+              "evidence_id": "p6-e4",
+              "text": "Apostar por la realización de un proceso constituyente para dar solución a los grandes problemas del país."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p6-e4",
+            "text": "El Frente Obrero critica la partitocracia y la democracia representativa, proponiendo un proceso constituyente para transformar la sociedad y acabar con el régimen actual."
+          }
+        },
+        {
+          "id": "administration-territory",
+          "measures": [
+            {
+              "evidence_id": "p56-e11",
+              "text": "Implantar medidas para que todas las Comunidades Autónomas tengan las mismas competencias y el mismo régimen fiscal."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p56-e11",
+            "text": "Se propone hacer simétricas las competencias de las comunidades autónomas, centralizar servicios como sanidad y educación, y fusionar ayuntamientos para reducir la burocracia."
+          }
+        },
+        {
+          "id": "economy-industry-trade",
+          "measures": [
+            {
+              "evidence_id": "p13-e10",
+              "text": "Reindustrialización del país, priorizando el desarrollo de industrias estratégicas y que exploten los recursos con los que cuenta España."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p13-e10",
+            "text": "Se plantea la reindustrialización del país, la nacionalización de sectores estratégicos y el desarrollo de una estrategia industrial independiente de las imposiciones de la UE."
+          }
+        },
+        {
+          "id": "taxation-budgets",
+          "measures": [
+            {
+              "evidence_id": "p18-e10",
+              "text": "Reducir el impuesto sobre la renta a los trabajadores con menos recursos, a la par que incrementarlo para las rentas más altas."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p18-e10",
+            "text": "Se propone reducir impuestos a los trabajadores y autónomos, aumentar la carga fiscal de las grandes empresas y perseguir el fraude fiscal con multas o expropiaciones."
+          }
+        },
+        {
+          "id": "employment-labour",
+          "measures": [
+            {
+              "evidence_id": "p9-e1",
+              "text": "Aumento general de los salarios en relación al coste de la vida."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p9-e1",
+            "text": "Se propone aumentar salarios, fortalecer la negociación colectiva, prohibir las ETTs y derogar reformas laborales que faciliten el despido libre y barato."
+          }
+        },
+        {
+          "id": "pensions",
+          "measures": [
+            {
+              "evidence_id": "p48-e12",
+              "text": "Revertir el incremento de la edad de jubilación y establecer una edad de retiro adecuada al puesto laboral desempeñado."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p48-e12",
+            "text": "Se plantea revertir el aumento de la edad de jubilación, incrementar las pensiones mínimas y calcular la pensión por la media de los mejores años cotizados."
+          }
+        },
+        {
+          "id": "healthcare",
+          "measures": [
+            {
+              "evidence_id": "p42-e7",
+              "text": "Centralizar, unificar y homogeneizar el sistema nacional de salud. Acabar con el proceso de externalización y privatización de la sanidad."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p42-e7",
+            "text": "Se propone centralizar y unificar el sistema nacional de salud, acabar con la privatización, aumentar la inversión y garantizar servicios gratuitos como la odontología."
+          }
+        },
+        {
+          "id": "education-research",
+          "measures": [
+            {
+              "evidence_id": "p22-e3",
+              "text": "Ofrecer una educación gratuita en todos los niveles académicos, incluidos los superiores para las rentas más bajas."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p22-e3",
+            "text": "Se plantea una educación gratuita en todos los niveles, eliminación de subvenciones a la escuela privada, frenar la digitalización y expulsar a empresas privadas de la universidad."
+          }
+        },
+        {
+          "id": "housing",
+          "measures": [
+            {
+              "evidence_id": "p45-e14",
+              "text": "Construir vivienda pública de calidad para aumentar el número de inmuebles existentes y lograr que los trabajadores puedan acceder a una vivienda digna."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p45-e14",
+            "text": "Se propone construir vivienda pública, luchar contra la especulación de bancos y fondos buitre, paralizar desahucios y enfocarse en el acceso para españoles autóctonos."
+          }
+        },
+        {
+          "id": "social-inclusion",
+          "measures": [],
+          "state": "mentioned",
+          "summary": {
+            "evidence_id": "p35-e2",
+            "text": "Se mencionan medidas de apoyo a la infancia, protección del núcleo familiar y atención a la salud mental, aunque no se desarrolla un capítulo específico de servicios sociales e inclusión."
+          }
+        },
+        {
+          "id": "family-demography",
+          "measures": [
+            {
+              "evidence_id": "p34-e11",
+              "text": "Creación de planes estatales para el aumento de la natalidad nacional, concediendo ventajas fiscales y ayudas económicas a las familias numerosas."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p34-e11",
+            "text": "Se propone crear planes estatales para aumentar la natalidad, construir guarderías gratuitas, alargar las bajas por paternidad y prohibir la propaganda contraria a la familia."
+          }
+        },
+        {
+          "id": "equality-rights",
+          "measures": [
+            {
+              "evidence_id": "p32-e6",
+              "text": "Derogación parcial o total de todas las leyes basadas en la discriminación positiva. Supresión de los cupos."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p32-e6",
+            "text": "Se propone la derogación de leyes de discriminación positiva, la supresión del Ministerio de Igualdad y la prohibición de vientres de alquiler, defendiendo la igualdad real sin cupos."
+          }
+        },
+        {
+          "id": "immigration-asylum",
+          "measures": [
+            {
+              "evidence_id": "p53-e6",
+              "text": "Control absoluto de las fronteras tanto de las terrestres como del mar circundante."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p53-e6",
+            "text": "Se propone el control absoluto de fronteras, la expulsión de inmigrantes irregulares, la restricción del asilo político y la promoción de la asimilación cultural."
+          }
+        },
+        {
+          "id": "agriculture-rural",
+          "measures": [
+            {
+              "evidence_id": "p38-e1",
+              "text": "Romper con las políticas agrarias de la UE (PAC) y los Tratados Internacionales que merman nuestra capacidad productiva."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p38-e1",
+            "text": "Se propone romper con la PAC, expropiar tierras sin usar, fomentar cooperativas agrarias, invertir en infraestructuras hídricas y proteger la biodiversidad."
+          }
+        },
+        {
+          "id": "environment-climate",
+          "measures": [],
+          "state": "mentioned",
+          "summary": {
+            "evidence_id": "p38-e8",
+            "text": "Se mencionan medidas de protección de la biodiversidad, control de especies invasoras y gestión del agua, enmarcadas dentro de la defensa del campo y la soberanía energética."
+          }
+        },
+        {
+          "id": "energy",
+          "measures": [
+            {
+              "evidence_id": "p16-e3",
+              "text": "Apuesta por la energía nuclear, como fuente de energía fiable, estable y controlable. Aumentar la inversión para la puesta en marcha y modernización de las plantas nucleares."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p16-e3",
+            "text": "Se propone apostar por la energía nuclear y las renovables, regular la factura de la luz, frenar el cierre de centrales y poner fin a la 'transición ecológica' impuesta por la UE."
+          }
+        },
+        {
+          "id": "transport-infrastructure",
+          "measures": [],
+          "state": "not-covered",
+          "summary": null
+        },
+        {
+          "id": "digital-science-innovation",
+          "measures": [],
+          "state": "mentioned",
+          "summary": {
+            "evidence_id": "p21-e13",
+            "text": "Se menciona la necesidad de regular el uso de la inteligencia artificial y limitar el acceso a tecnologías para menores, así como la inversión en investigación para energías renovables."
+          }
+        },
+        {
+          "id": "culture-language-sport",
+          "measures": [
+            {
+              "evidence_id": "p25-e12",
+              "text": "Defender y proteger la cultura española de los intentos de sustitución cultural, impulsando una producción cultural propia."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p25-e12",
+            "text": "Se propone defender la cultura española, garantizar el acceso gratuito a museos y bibliotecas, fomentar el deporte de base y reducir impuestos sobre productos culturales."
+          }
+        },
+        {
+          "id": "justice-security",
+          "measures": [
+            {
+              "evidence_id": "p58-e12",
+              "text": "Garantizar la independencia judicial respecto al poder político, priorizando la membresía por carrera judicial en los órganos superiores."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p58-e12",
+            "text": "Se propone garantizar la independencia judicial, prohibir el indulto por corrupción, aumentar penas para partidos políticos y democratizar las fuerzas de seguridad."
+          }
+        },
+        {
+          "id": "defence-foreign-eu",
+          "measures": [
+            {
+              "evidence_id": "p11-e9",
+              "text": "Salida de la Unión Europea para recuperar nuestra soberanía nacional."
+            }
+          ],
+          "state": "proposals",
+          "summary": {
+            "evidence_id": "p11-e9",
+            "text": "Se propone la salida de la UE y la OTAN, la expulsión de bases militares extranjeras, la modernización del ejército y el fin de misiones en el extranjero."
+          }
+        }
+      ]
+    }
+  }
+}

@@ -17,7 +17,7 @@ preview; incomplete semantic checks remain visible and non-publishable.
 | Milestone | Tasks |
 | --- | --- |
 | Recover first source without platform prerequisites | TQ-0028 |
-| Choose one bounded Fedora converter deployment | TQ-0062 (architect), then TQ-0021 |
+| Define the current bounded macOS runtime and integrate intake | TQ-0062 (architect), TQ-0067 (preview proof), then TQ-0021 |
 | Retire unused platform code and supply simple run records | TQ-0063 |
 | Register/extract original and page evidence | TQ-0027, TQ-0030, TQ-0031 |
 | Fixed topics, canonical schema and one real provider | TQ-0036, TQ-0037, TQ-0024 |

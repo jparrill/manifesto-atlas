@@ -38,6 +38,18 @@ Current owner assignment: implement the real-source macOS E2E/HTML preview under
 existing HTML as immutable presentation input; do not wait for Fedora. The live
 queue and retained run evidence take precedence over the older snapshot below.
 
+The real preview is now retained at `runs/preview/frente-e2e/index.html`: a
+64-page Frente Obrero run with canonical JSON, 21 topics, 17 principal measures,
+literal source citations, separate actual Auriga reports and desktop/mobile
+browser evidence. Run `make render-preview` to regenerate it offline, then
+`open runs/preview/frente-e2e/index.html`. Both host semantic outcomes remain
+insufficient: pages 1, 2 and 64 need original visual evidence and coverage also
+flags possible material omissions. This is explicitly a private draft, not
+approved publication. The VOX tab is pending,
+not filled with the reference document's old summaries. See the macOS contract
+for fresh-run commands and retained failures. The source asset is copied unchanged
+under `assets/reference/`; only its existing programme data payload is bound by Go.
+
 The repository contains a Go CLI, tested domain libraries, Make gates and design/
 task documentation. The ordinary executable still provides help/version and
 unavailable production pipeline-stage messages. Both candidate PDFs and origin

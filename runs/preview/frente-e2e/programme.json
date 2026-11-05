@@ -1,0 +1,1132 @@
+{
+  "version": "atlas.programme.local/v1",
+  "programme_id": "frente-obrero-programa-politico",
+  "source_checksum": "sha256:7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282",
+  "source_metadata_checksum": "sha256:ee1fcc56d9b953377de54a813dc6fddea1c847ae699918c6acdab54f4bcb9f92",
+  "extraction_checksum": "sha256:04d4c14a9969d547a751ca329ec8c93ddb0a661a5082c0f7e9220dcde6a7e997",
+  "taxonomy_version": "1.0.0",
+  "metadata": {
+    "party": {
+      "id": "frente-obrero",
+      "name": "Frente Obrero"
+    },
+    "document_type": "general-political",
+    "scope": "general-political",
+    "geography": {
+      "id": "es",
+      "name": "España"
+    },
+    "election": null,
+    "publication_date": null,
+    "rights": {
+      "publisher": "Frente Obrero",
+      "statement": null
+    },
+    "document_title": null
+  },
+  "summary": [],
+  "topics": [
+    {
+      "id": "institutions-democracy",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-1",
+          "text": "El Frente Obrero critica la partitocracia y la democracia representativa, proponiendo un proceso constituyente para transformar la sociedad y acabar con el régimen actual.",
+          "citations": [
+            "c-1"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-1"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "administration-territory",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-2",
+          "text": "Se propone simetrizar las competencias de las comunidades autónomas, reforzar el gobierno central y eliminar la burocracia excesiva mediante la fusión de municipios.",
+          "citations": [
+            "c-2"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-2"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "economy-industry-trade",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-3",
+          "text": "El programa aboga por la reindustrialización del país, priorizando industrias estratégicas y nacionalizando sectores clave para recuperar la soberanía productiva.",
+          "citations": [
+            "c-3"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-3"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "taxation-budgets",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-4",
+          "text": "Se propone renovar el sistema fiscal para aliviar la carga de los trabajadores y castigar el fraude de las grandes empresas, aumentando impuestos a las rentas altas.",
+          "citations": [
+            "c-4"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-4"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "employment-labour",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-5",
+          "text": "El Frente Obrero busca fortalecer la negociación colectiva, prohibir las ETTs y derogar reformas laborales que facilitan el despido libre y barato.",
+          "citations": [
+            "c-5"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-5"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "pensions",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-6",
+          "text": "Se propone revertir el aumento de la edad de jubilación y garantizar la suficiencia de las pensiones mediante el cálculo de la media de los mejores años cotizados.",
+          "citations": [
+            "c-6"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-6"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "healthcare",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-7",
+          "text": "El programa defiende un sistema nacional de salud centralizado, gratuito y homogéneo, acabando con la externalización y privatización de los servicios sanitarios.",
+          "citations": [
+            "c-7"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-7"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "education-research",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-8",
+          "text": "Se propone una educación pública gratuita en todos los niveles, eliminando subvenciones a la escuela privada y expulsando a las empresas de la universidad.",
+          "citations": [
+            "c-8"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-8"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "housing",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-9",
+          "text": "El Frente Obrero propone construir vivienda pública de calidad y luchar contra la especulación de bancos y fondos buitre para garantizar el acceso a una vivienda digna.",
+          "citations": [
+            "c-9"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-9"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "social-inclusion",
+      "state": "mentioned",
+      "summary": [
+        {
+          "id": "s-10",
+          "text": "Se mencionan medidas de apoyo a la infancia y la familia, así como la integración de centros de desintoxicación en la sanidad pública para tratar la drogodependencia.",
+          "citations": [
+            "c-10"
+          ]
+        }
+      ],
+      "measure_ids": [],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "family-demography",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-11",
+          "text": "El programa busca aumentar la natalidad mediante planes estatales, ventajas fiscales para familias numerosas y la construcción de guarderías públicas gratuitas.",
+          "citations": [
+            "c-11"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-10"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "equality-rights",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-12",
+          "text": "El Frente Obrero se opone al feminismo sistémico y propone la derogación de leyes de discriminación positiva, la supresión del Ministerio de Igualdad y planes contra la trata.",
+          "citations": [
+            "c-12"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-11"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "immigration-asylum",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-13",
+          "text": "Se propone el control absoluto de las fronteras, la expulsión de inmigrantes irregulares o delincuentes y la restricción de la concesión de nacionalidades.",
+          "citations": [
+            "c-13"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-12"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "agriculture-rural",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-14",
+          "text": "El programa aboga por romper con la PAC de la UE, expropiar tierras sin usar para repartirlas entre agricultores y fomentar la creación de cooperativas agrarias.",
+          "citations": [
+            "c-14"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-13"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "environment-climate",
+      "state": "mentioned",
+      "summary": [
+        {
+          "id": "s-15",
+          "text": "Se mencionan medidas para la limpieza de ríos, la protección de la biodiversidad y la prohibición de parques solares en tierras aptas para el cultivo.",
+          "citations": [
+            "c-15"
+          ]
+        }
+      ],
+      "measure_ids": [],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "energy",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-16",
+          "text": "El Frente Obrero propone apostar por la energía nuclear como fuente fiable, frenar el cierre de centrales eficaces y regular la factura de la luz para acabar con la especulación.",
+          "citations": [
+            "c-16"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-14"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "transport-infrastructure",
+      "state": "not-covered",
+      "summary": [],
+      "measure_ids": [],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "digital-science-innovation",
+      "state": "mentioned",
+      "summary": [
+        {
+          "id": "s-17",
+          "text": "Se propone frenar la digitalización de la enseñanza, limitar el acceso a tecnologías para menores de 16 años y regular el uso de la inteligencia artificial.",
+          "citations": [
+            "c-17"
+          ]
+        }
+      ],
+      "measure_ids": [],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "culture-language-sport",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-18",
+          "text": "El programa defiende la cultura española frente al cosmopolitismo, proponiendo acceso gratuito a museos, fomento del deporte de base y reducción de impuestos a productos culturales.",
+          "citations": [
+            "c-18"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-15"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "justice-security",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-19",
+          "text": "Se propone garantizar la independencia judicial, aumentar las penas por corrupción, prohibir el indulto en casos de corrupción y democratizar las fuerzas de seguridad.",
+          "citations": [
+            "c-19"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-16"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    },
+    {
+      "id": "defence-foreign-eu",
+      "state": "proposals",
+      "summary": [
+        {
+          "id": "s-20",
+          "text": "El Frente Obrero propone la salida de la Unión Europea y de la OTAN, la expulsión de bases militares extranjeras y la modernización y democratización del ejército.",
+          "citations": [
+            "c-20"
+          ]
+        }
+      ],
+      "measure_ids": [
+        "m-17"
+      ],
+      "secondary_measure_ids": [],
+      "basis": {
+        "page_ranges": [
+          {
+            "start": 1,
+            "end": 64
+          }
+        ],
+        "scope_evidence": null
+      }
+    }
+  ],
+  "measures": [
+    {
+      "id": "m-1",
+      "primary_topic": "institutions-democracy",
+      "action": {
+        "id": "s-21",
+        "text": "Apostar por la realización de un proceso constituyente para dar solución a los grandes problemas del país.",
+        "citations": [
+          "c-21"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-21"
+      ]
+    },
+    {
+      "id": "m-2",
+      "primary_topic": "administration-territory",
+      "action": {
+        "id": "s-22",
+        "text": "Implantar medidas para que todas las Comunidades Autónomas tengan las mismas competencias y el mismo régimen fiscal.",
+        "citations": [
+          "c-22"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-22"
+      ]
+    },
+    {
+      "id": "m-3",
+      "primary_topic": "economy-industry-trade",
+      "action": {
+        "id": "s-23",
+        "text": "Reindustrialización del país, priorizando el desarrollo de industrias estratégicas y que exploten los recursos con los que cuenta España.",
+        "citations": [
+          "c-23"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-23"
+      ]
+    },
+    {
+      "id": "m-4",
+      "primary_topic": "taxation-budgets",
+      "action": {
+        "id": "s-24",
+        "text": "Reducir el impuesto sobre la renta a los trabajadores con menos recursos, a la par que incrementarlo para las rentas más altas.",
+        "citations": [
+          "c-24"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-24"
+      ]
+    },
+    {
+      "id": "m-5",
+      "primary_topic": "employment-labour",
+      "action": {
+        "id": "s-25",
+        "text": "Fortalecer la negociación colectiva a través de la implementación de un sistema obligatorio de representación de los trabajadores en todas las empresas con diez trabajadores o más.",
+        "citations": [
+          "c-25"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-25"
+      ]
+    },
+    {
+      "id": "m-6",
+      "primary_topic": "pensions",
+      "action": {
+        "id": "s-26",
+        "text": "Revertir el incremento de la edad de jubilación y establecer una edad de retiro adecuada al puesto laboral desempeñado.",
+        "citations": [
+          "c-26"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-26"
+      ]
+    },
+    {
+      "id": "m-7",
+      "primary_topic": "healthcare",
+      "action": {
+        "id": "s-27",
+        "text": "Centralizar, unificar y homogeneizar el sistema nacional de salud. Acabar con el proceso de externalización y privatización de la sanidad.",
+        "citations": [
+          "c-27"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-27"
+      ]
+    },
+    {
+      "id": "m-8",
+      "primary_topic": "education-research",
+      "action": {
+        "id": "s-28",
+        "text": "Ofrecer una educación gratuita en todos los niveles académicos, incluidos los superiores para las rentas más bajas.",
+        "citations": [
+          "c-28"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-28"
+      ]
+    },
+    {
+      "id": "m-9",
+      "primary_topic": "housing",
+      "action": {
+        "id": "s-29",
+        "text": "Construir vivienda pública de calidad para aumentar el número de inmuebles existentes y lograr que los trabajadores puedan acceder a una vivienda digna.",
+        "citations": [
+          "c-29"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-29"
+      ]
+    },
+    {
+      "id": "m-10",
+      "primary_topic": "family-demography",
+      "action": {
+        "id": "s-30",
+        "text": "Creación de planes estatales para el aumento de la natalidad nacional, concediendo ventajas fiscales y ayudas económicas a las familias numerosas.",
+        "citations": [
+          "c-30"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-30"
+      ]
+    },
+    {
+      "id": "m-11",
+      "primary_topic": "equality-rights",
+      "action": {
+        "id": "s-31",
+        "text": "Derogación parcial o total de todas las leyes basadas en la discriminación positiva. Supresión de los cupos.",
+        "citations": [
+          "c-31"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-31"
+      ]
+    },
+    {
+      "id": "m-12",
+      "primary_topic": "immigration-asylum",
+      "action": {
+        "id": "s-32",
+        "text": "Control absoluto de las fronteras tanto de las terrestres como del mar circundante.",
+        "citations": [
+          "c-32"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-32"
+      ]
+    },
+    {
+      "id": "m-13",
+      "primary_topic": "agriculture-rural",
+      "action": {
+        "id": "s-33",
+        "text": "Romper con las políticas agrarias de la UE (PAC) y los Tratados Internacionales que merman nuestra capacidad productiva.",
+        "citations": [
+          "c-33"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-33"
+      ]
+    },
+    {
+      "id": "m-14",
+      "primary_topic": "energy",
+      "action": {
+        "id": "s-34",
+        "text": "Apuesta por la energía nuclear, como fuente de energía fiable, estable y controlable. Aumentar la inversión para la puesta en marcha y modernización de las plantas nucleares.",
+        "citations": [
+          "c-34"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-34"
+      ]
+    },
+    {
+      "id": "m-15",
+      "primary_topic": "culture-language-sport",
+      "action": {
+        "id": "s-35",
+        "text": "Defender y proteger la cultura española de los intentos de sustitución cultural, impulsando una producción cultural propia.",
+        "citations": [
+          "c-35"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-35"
+      ]
+    },
+    {
+      "id": "m-16",
+      "primary_topic": "justice-security",
+      "action": {
+        "id": "s-36",
+        "text": "Garantizar la independencia judicial respecto al poder político, priorizando la membresía por carrera judicial en los órganos superiores.",
+        "citations": [
+          "c-36"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-36"
+      ]
+    },
+    {
+      "id": "m-17",
+      "primary_topic": "defence-foreign-eu",
+      "action": {
+        "id": "s-37",
+        "text": "Salida de la Unión Europea para recuperar nuestra soberanía nacional.",
+        "citations": [
+          "c-37"
+        ]
+      },
+      "conditions": [],
+      "institution": null,
+      "citations": [
+        "c-37"
+      ]
+    }
+  ],
+  "citations": [
+    {
+      "id": "c-1",
+      "page": 6,
+      "block_id": "page-6",
+      "start": 629,
+      "end": 867,
+      "excerpt": "acabar con el régimen actual y dar solución a los gran- des problemas que afectan a nuestro país. Por ello apostamos por la realización de un proceso constituyente. No hay solución posible dentro de los marcos actuales. No queremos llevar"
+    },
+    {
+      "id": "c-2",
+      "page": 56,
+      "block_id": "page-56",
+      "start": 432,
+      "end": 673,
+      "excerpt": "propuesta del Frente Obrero es iniciar un proceso inmediato en el que se consiga que las comunidades autónomas sean simétricas, es decir, que todas tengan los mismos derechos y obligaciones. A su vez, creemos que hay que reforzar el gobierno"
+    },
+    {
+      "id": "c-3",
+      "page": 13,
+      "block_id": "page-13",
+      "start": 1785,
+      "end": 2064,
+      "excerpt": "nuestra patria, estaremos vendidos. Por estas razones, creemos que en España es necesario luchar por este conjunto medidas: 1. Reindustrialización del país, priorizando el desarrollo de industrias estratégicas y que exploten los recursos con los que cuenta España. 2. Desarrollar"
+    },
+    {
+      "id": "c-4",
+      "page": 18,
+      "block_id": "page-18",
+      "start": 1740,
+      "end": 1985,
+      "excerpt": "que menos tienen. Por estas razones, creemos que es necesario implementar las siguientes medidas: 1. Reducir el impuesto sobre la renta a los trabajadores con menos recursos, a la par que incrementarlo para las rentas más altas con la ampliación"
+    },
+    {
+      "id": "c-5",
+      "page": 9,
+      "block_id": "page-9",
+      "start": 0,
+      "end": 253,
+      "excerpt": "Medidas: 1. Aumento general de los salarios en relación al coste de la vida. 2. Fortalecer la negociación colectiva a través de la implementación de un sistema obligatorio de representación de los trabajadores en todos las empresas con diez trabajadores"
+    },
+    {
+      "id": "c-6",
+      "page": 48,
+      "block_id": "page-48",
+      "start": 2146,
+      "end": 2371,
+      "excerpt": "la solución efectiva al problema de las pensiones no se podrá resolver en el estado actual del sistema. Las medidas a incorporar en este sentido son: 1. Revertir el incremento de la edad de jubilación y establecer una edad de"
+    },
+    {
+      "id": "c-7",
+      "page": 42,
+      "block_id": "page-42",
+      "start": 1226,
+      "end": 1495,
+      "excerpt": "lugar de nacimiento. Por ello, vemos necesarias la implantación de las siguientes medidas: Centralizar, unificar y homogeneizar el sistema nacional de salud. Acabar con el proceso de externalización y privatización de la sanidad. Mayor control sobre la actuación de las"
+    },
+    {
+      "id": "c-8",
+      "page": 22,
+      "block_id": "page-22",
+      "start": 396,
+      "end": 670,
+      "excerpt": "lo “políticamente correcto” y del pensamiento único. Por ello, desde el Frente Obrero vemos necesario implantar las siguientes medidas: 1. Ofrecer una educación gratuita en todos los niveles académicos, incluidos los su- periores para las rentas más bajas. Implementación de"
+    },
+    {
+      "id": "c-9",
+      "page": 45,
+      "block_id": "page-45",
+      "start": 2499,
+      "end": 2758,
+      "excerpt": "una vivienda digna a los trabajadores de España. Para remediar esta situación, desde el Frente Obrero proponemos las siguientes medi- das: 1. Construir vivienda pública de calidad para aumentar el número de inmuebles existen- tes y lograr que los trabajadores"
+    },
+    {
+      "id": "c-10",
+      "page": 29,
+      "block_id": "page-29",
+      "start": 641,
+      "end": 878,
+      "excerpt": "a aquellos que juegan con la vida de miles de jóvenes. 5. Integrar los centros de desintoxicación a la sanidad pública y dotarlos de más recur- sos. La drogodependencia es una enfermedad que tiene que recibir atención mé- dica. Asimismo,"
+    },
+    {
+      "id": "c-11",
+      "page": 34,
+      "block_id": "page-34",
+      "start": 1920,
+      "end": 2168,
+      "excerpt": "una nueva generación recoja el legado de quienes les precedieron. Un país sin la sangre nueva de su juventud está destinado a su desaparición. Por todo esto, defendemos la implantación de las siguientes medidas: 1. Creación de planes estatales para"
+    },
+    {
+      "id": "c-12",
+      "page": 32,
+      "block_id": "page-32",
+      "start": 937,
+      "end": 1203,
+      "excerpt": "conseguirla. Precisamente por ello, somos contrarios al feminismo en todas sus formas y variantes. Por todo lo descrito proponemos las siguientes medidas: 1. Derogación parcial o total de todas las leyes basadas en la discriminación positiva. Supresión de los cupos."
+    },
+    {
+      "id": "c-13",
+      "page": 53,
+      "block_id": "page-53",
+      "start": 976,
+      "end": 1221,
+      "excerpt": "todo esto, proponemos una serie de medidas que deben ser de inmediato cumpli- miento. Siendo conscientes de que habrá que tener una nueva constitución para poder llevarlas a cabo: 1. Control absoluto de las fronteras tanto de las terrestres como"
+    },
+    {
+      "id": "c-14",
+      "page": 38,
+      "block_id": "page-38",
+      "start": 0,
+      "end": 262,
+      "excerpt": "Para ello, apostamos por las siguientes medidas: 1. Romper con las políticas agrarias de la UE (PAC) y los Tratados Internacionales que merman nuestra capacidad productiva, derogación de las leyes que contribuyan a la desaparición del campo español. 2. Expropiar"
+    },
+    {
+      "id": "c-15",
+      "page": 38,
+      "block_id": "page-38",
+      "start": 1447,
+      "end": 1708,
+      "excerpt": "y mantenimiento de los ríos, lagos y embalses para garantizar fuentes de agua potable y de riego saludables y duraderos. 9. Elaborar planes de recuperación de la biodiversidad y del patrimonio natural. Pro- teger incansablemente especies en peligro de extinción"
+    },
+    {
+      "id": "c-16",
+      "page": 16,
+      "block_id": "page-16",
+      "start": 378,
+      "end": 633,
+      "excerpt": "a la práctica de las puertas giratorias. 4. Frenar el cierre paulatino de las centrales energéticas que se encuentran en plenas capacidades productivas. 5. Apuesta por la energía nuclear, como fuente de energía fiable, estable y controla- ble. Aumentar la"
+    },
+    {
+      "id": "c-17",
+      "page": 21,
+      "block_id": "page-21",
+      "start": 1589,
+      "end": 1823,
+      "excerpt": "de lo que estudian. Es necesario dar marcha atrás a la digitalización de la enseñanza como ya han hecho países que fueron promotores de la misma, como por ejemplo Suecia. Los estudian- tes cada vez tienen más problemas de aprendizaje,"
+    },
+    {
+      "id": "c-18",
+      "page": 25,
+      "block_id": "page-25",
+      "start": 2145,
+      "end": 2401,
+      "excerpt": "Por todo esto, apostamos por la implementación de las siguientes medidas: 1. Defender y proteger la cultura española de los intentos de sustitución cultural. Apostando por impulsar una producción cultural propia, que ponga en valor lo nuestro y ponga freno"
+    },
+    {
+      "id": "c-19",
+      "page": 58,
+      "block_id": "page-58",
+      "start": 2092,
+      "end": 2343,
+      "excerpt": "el poder político cuando sea necesario. Jugar con el dinero y las instituciones de los españoles debe tener un alto precio a pagar. Por todo ello apostamos por la implantación de las siguientes medidas: 1. Garantizar la independencia judicial respecto"
+    },
+    {
+      "id": "c-20",
+      "page": 11,
+      "block_id": "page-11",
+      "start": 1502,
+      "end": 1751,
+      "excerpt": "y no nos apoya en el conflicto que mantenemos con Marruecos, por mucho que a nivel oficial puedan parecer nuestros aliados. Por ello apostamos por tomar las siguientes medidas: 1. Salida de la Unión Europea para recuperar nuestra soberanía nacional."
+    },
+    {
+      "id": "c-21",
+      "page": 6,
+      "block_id": "page-6",
+      "start": 629,
+      "end": 867,
+      "excerpt": "acabar con el régimen actual y dar solución a los gran- des problemas que afectan a nuestro país. Por ello apostamos por la realización de un proceso constituyente. No hay solución posible dentro de los marcos actuales. No queremos llevar"
+    },
+    {
+      "id": "c-22",
+      "page": 56,
+      "block_id": "page-56",
+      "start": 2067,
+      "end": 2355,
+      "excerpt": "administraciones locales. Por todo ello, proponemos las siguientes medidas para ser aplicadas cuanto antes: 1. Implantar medidas para que todas las Comunidades Autónomas tengan las mismas competencias y el mismo régimen fiscal. Se acabaron las desigualdades entre regiones. 2. Centralizar"
+    },
+    {
+      "id": "c-23",
+      "page": 13,
+      "block_id": "page-13",
+      "start": 1785,
+      "end": 2064,
+      "excerpt": "nuestra patria, estaremos vendidos. Por estas razones, creemos que en España es necesario luchar por este conjunto medidas: 1. Reindustrialización del país, priorizando el desarrollo de industrias estratégicas y que exploten los recursos con los que cuenta España. 2. Desarrollar"
+    },
+    {
+      "id": "c-24",
+      "page": 18,
+      "block_id": "page-18",
+      "start": 1740,
+      "end": 1985,
+      "excerpt": "que menos tienen. Por estas razones, creemos que es necesario implementar las siguientes medidas: 1. Reducir el impuesto sobre la renta a los trabajadores con menos recursos, a la par que incrementarlo para las rentas más altas con la ampliación"
+    },
+    {
+      "id": "c-25",
+      "page": 9,
+      "block_id": "page-9",
+      "start": 0,
+      "end": 253,
+      "excerpt": "Medidas: 1. Aumento general de los salarios en relación al coste de la vida. 2. Fortalecer la negociación colectiva a través de la implementación de un sistema obligatorio de representación de los trabajadores en todos las empresas con diez trabajadores"
+    },
+    {
+      "id": "c-26",
+      "page": 48,
+      "block_id": "page-48",
+      "start": 2146,
+      "end": 2371,
+      "excerpt": "la solución efectiva al problema de las pensiones no se podrá resolver en el estado actual del sistema. Las medidas a incorporar en este sentido son: 1. Revertir el incremento de la edad de jubilación y establecer una edad de"
+    },
+    {
+      "id": "c-27",
+      "page": 42,
+      "block_id": "page-42",
+      "start": 1226,
+      "end": 1495,
+      "excerpt": "lugar de nacimiento. Por ello, vemos necesarias la implantación de las siguientes medidas: Centralizar, unificar y homogeneizar el sistema nacional de salud. Acabar con el proceso de externalización y privatización de la sanidad. Mayor control sobre la actuación de las"
+    },
+    {
+      "id": "c-28",
+      "page": 22,
+      "block_id": "page-22",
+      "start": 396,
+      "end": 670,
+      "excerpt": "lo “políticamente correcto” y del pensamiento único. Por ello, desde el Frente Obrero vemos necesario implantar las siguientes medidas: 1. Ofrecer una educación gratuita en todos los niveles académicos, incluidos los su- periores para las rentas más bajas. Implementación de"
+    },
+    {
+      "id": "c-29",
+      "page": 45,
+      "block_id": "page-45",
+      "start": 2499,
+      "end": 2758,
+      "excerpt": "una vivienda digna a los trabajadores de España. Para remediar esta situación, desde el Frente Obrero proponemos las siguientes medi- das: 1. Construir vivienda pública de calidad para aumentar el número de inmuebles existen- tes y lograr que los trabajadores"
+    },
+    {
+      "id": "c-30",
+      "page": 34,
+      "block_id": "page-34",
+      "start": 1920,
+      "end": 2168,
+      "excerpt": "una nueva generación recoja el legado de quienes les precedieron. Un país sin la sangre nueva de su juventud está destinado a su desaparición. Por todo esto, defendemos la implantación de las siguientes medidas: 1. Creación de planes estatales para"
+    },
+    {
+      "id": "c-31",
+      "page": 32,
+      "block_id": "page-32",
+      "start": 937,
+      "end": 1203,
+      "excerpt": "conseguirla. Precisamente por ello, somos contrarios al feminismo en todas sus formas y variantes. Por todo lo descrito proponemos las siguientes medidas: 1. Derogación parcial o total de todas las leyes basadas en la discriminación positiva. Supresión de los cupos."
+    },
+    {
+      "id": "c-32",
+      "page": 53,
+      "block_id": "page-53",
+      "start": 976,
+      "end": 1221,
+      "excerpt": "todo esto, proponemos una serie de medidas que deben ser de inmediato cumpli- miento. Siendo conscientes de que habrá que tener una nueva constitución para poder llevarlas a cabo: 1. Control absoluto de las fronteras tanto de las terrestres como"
+    },
+    {
+      "id": "c-33",
+      "page": 38,
+      "block_id": "page-38",
+      "start": 0,
+      "end": 262,
+      "excerpt": "Para ello, apostamos por las siguientes medidas: 1. Romper con las políticas agrarias de la UE (PAC) y los Tratados Internacionales que merman nuestra capacidad productiva, derogación de las leyes que contribuyan a la desaparición del campo español. 2. Expropiar"
+    },
+    {
+      "id": "c-34",
+      "page": 16,
+      "block_id": "page-16",
+      "start": 378,
+      "end": 633,
+      "excerpt": "a la práctica de las puertas giratorias. 4. Frenar el cierre paulatino de las centrales energéticas que se encuentran en plenas capacidades productivas. 5. Apuesta por la energía nuclear, como fuente de energía fiable, estable y controla- ble. Aumentar la"
+    },
+    {
+      "id": "c-35",
+      "page": 25,
+      "block_id": "page-25",
+      "start": 2145,
+      "end": 2401,
+      "excerpt": "Por todo esto, apostamos por la implementación de las siguientes medidas: 1. Defender y proteger la cultura española de los intentos de sustitución cultural. Apostando por impulsar una producción cultural propia, que ponga en valor lo nuestro y ponga freno"
+    },
+    {
+      "id": "c-36",
+      "page": 58,
+      "block_id": "page-58",
+      "start": 2092,
+      "end": 2343,
+      "excerpt": "el poder político cuando sea necesario. Jugar con el dinero y las instituciones de los españoles debe tener un alto precio a pagar. Por todo ello apostamos por la implantación de las siguientes medidas: 1. Garantizar la independencia judicial respecto"
+    },
+    {
+      "id": "c-37",
+      "page": 11,
+      "block_id": "page-11",
+      "start": 1502,
+      "end": 1751,
+      "excerpt": "y no nos apoya en el conflicto que mantenemos con Marruecos, por mucho que a nivel oficial puedan parecer nuestros aliados. Por ello apostamos por tomar las siguientes medidas: 1. Salida de la Unión Europea para recuperar nuestra soberanía nacional."
+    }
+  ]
+}

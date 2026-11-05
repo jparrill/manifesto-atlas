@@ -1,0 +1,20 @@
+{
+  "browser": "Google Chrome 157.0.8103.39",
+  "desktop": {
+    "height": 1000,
+    "horizontal_overflow": false,
+    "rendered_cards": 21,
+    "screenshot_sha256": "sha256:d501924e342972d92925a0cb3cf60ba62c58300c179b1f7a7acd170ae57610c2",
+    "width": 1440
+  },
+  "html_sha256": "sha256:ed03e2962c7dbfcb7f66c5a41ac8bc019885a9e6fc91942c5d3653b560b0d565",
+  "mobile": {
+    "height": 844,
+    "horizontal_overflow": false,
+    "rendered_cards": 21,
+    "screenshot_sha256": "sha256:76c49637f597c1492e76dbd40dadf6eb472588b544c49cf72d0705745bfa0f9e",
+    "width": 390
+  },
+  "private_preview": true,
+  "viewport_control": "CDP Emulation.setDeviceMetricsOverride"
+}

@@ -1,8 +1,9 @@
 ---
 id: TQ-0067
 title: Run a real macOS PDF-to-HTML preview with independent model checks
-status: todo
+status: done
 priority: high
+assignee: gpt-6.1-sol
 labels:
   - type/feature
   - area/extraction
@@ -12,7 +13,7 @@ labels:
 depends_on:
   - TQ-0062
 created: 2026-11-04T23:00:21+01:00
-updated: 2026-11-04T23:00:21+01:00
+updated: 2026-11-05T01:01:06+01:00
 ---
 
 ## Outcome
@@ -75,3 +76,17 @@ Follow AGENTS.md#closing-tasks-and-continuing-work for TQ-0067: all gates PASS, 
 - docs/design/MVP.md
 - docs/design/macos-preview.md
 - docs/QUALITY_GATES.md
+
+---
+
+## Notes
+
+- 2026-11-05T01:01:06+01:00 — Delivered real macOS private E2E under runs/preview/frente-e2e: 64 retained original pages, 21 ordered topics, 17 principal measures, exact host-resolved source citations, three genuine independent Auriga calls, canonical JSON, Markdown and supplied-reference HTML. Model claim result was pass but host conservatively marks it insufficient because original pages 1/2/64 lack visual evidence; coverage is insufficient and flags possible omissions. Public eligibility remains false. Earlier sandbox failure, cancelled proxy request, nonliteral quote and malformed finding-schema attempts are preserved separately, never relabelled passing. The original owner reference was imported byte-identically; all presentation/script bytes outside the programme data payload remain unchanged. Fedora is not a prerequisite. Follow-up evidence belongs to existing original-page/content tasks; production CLI/registry/publication integration is not claimed complete.
+  Quality gates:
+  - Gate 1 PASS — actual make evaluate-preview OUTPUT=runs/preview/frente-e2e through the configured Auriga endpoint completed normalization, independent checks and private rendering. Genuine bounded requests/replies, source/model/tool hashes and expected non-publishable outcomes are retained.
+  - Gate 2 PASS — make test-preview via make verify passed literal Unicode/evidence-ID binding, source/schema validation, all-topic data parity, deterministic offline rerender, missing/stale model/source/draft/report rejection, all-outcome report bindings, symlink/hard-link-safe output replacement, 100 MiB PDF vs 16 MiB JSON bounds, complete retry-attempt retention, escaping and native sandbox/timeout/RSS cases.
+  - Gate 3 PASS — make verify and go test ./... passed all required offline suites without live model calls or queue warnings. The separate actual-tool gate ATLAS_EVALUATE_REAL_PDF=1 go test ./internal/preview -run TestActualMacSource -count=1 -v passed and exactly matched all 64 retained pages/tools/warnings; it was not substituted with a skipped test.
+  - Gate 4 PASS — formatting, build, vet, queue, documentation/link checks, git diff --check and staged whitespace validation passed. Retained JSON is parsed by current helpers; actual Chrome desktop/mobile checks passed.
+  - Gate 5 PASS — README, MAKEFILE usage, SPEC/MVP exception and handoff match actual private commands and limitations. Production targets remain truthfully unavailable; TQ-0021 now references macOS, and TQ-0042 only records the supplied reference without unauthorized inbox promotion. Standards review: two findings resolved. Spec review: three findings resolved, including one shared finding; both reviewers confirmed the fixes.
+  - Gate 6 PASS — actual native positives and write/private-read/network denial, host-credential exclusion, parent-process inspection denial, default fork denial, whole-process-group timeout/cleanup, output ceiling and sampled RSS termination passed. HTML/Markdown escaping, unsafe paths/links, stale and non-passing report substitution, output symlink/hard-link preservation and retry evidence are covered. Provider URL credentials are rejected and no signing key/API credential is retained. RSS is explicitly sampled, not claimed as a kernel hard limit.
+  - Gate 7 PASS — latest real run, preserved failures, immutable owner asset and desktop/mobile screenshots are current. CDP proves 21 rendered cards and no horizontal overflow at 1440x1000 and 390x844. Offline replay repeats identically; source bytes are preserved. All evidence is recorded before done; scoped commit/push confirmation follows.

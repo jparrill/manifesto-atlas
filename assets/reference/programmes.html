@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programas 2026 · Resumen de medidas</title>
+<style>
+:root{color-scheme:dark;--bg:#1a1b26;--panel:#24283b;--panel2:#1f2335;--border:#414868;--text:#c0caf5;--muted:#a9b1d6;--blue:#7aa2f7;--cyan:#7dcfff;--purple:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--shadow:0 18px 50px #10111680}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#292e49 0,transparent 28rem),var(--bg);color:var(--text);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(1120px,calc(100% - 32px));margin:auto;padding:64px 0}.eyebrow{margin:0 0 8px;color:var(--cyan);font:700 .78rem/1.2 ui-monospace,SFMono-Regular,monospace;letter-spacing:.15em;text-transform:uppercase}h1{max-width:760px;margin:0;font-size:clamp(2.2rem,6vw,4.5rem);line-height:1.05;letter-spacing:-.05em;background:linear-gradient(100deg,var(--blue),var(--purple));color:transparent;background-clip:text}.intro{max-width:740px;margin:22px 0 36px;color:var(--muted);font-size:1.08rem}.tabs{display:flex;gap:10px;padding:7px;width:max-content;max-width:100%;overflow:auto;background:#16161e;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}.tab{border:0;border-radius:9px;padding:11px 18px;background:transparent;color:var(--muted);font:700 .95rem inherit;white-space:nowrap;cursor:pointer}.tab:hover{color:var(--text);background:#ffffff08}.tab[aria-selected=true]{color:#16161e;background:var(--blue)}.tab:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}.party{margin-top:24px}.party-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:26px;background:linear-gradient(135deg,var(--panel),var(--panel2));border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.party h2{margin:0 0 5px;font-size:1.75rem;letter-spacing:-.025em}.meta{margin:0;color:var(--muted)}.badge{flex:none;padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--green);font:700 .75rem ui-monospace,SFMono-Regular,monospace;text-transform:uppercase}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.card{min-height:170px;padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:14px;transition:.18s ease}.card:hover{transform:translateY(-3px);border-color:var(--blue);box-shadow:0 12px 30px #10111666}.num{display:block;margin-bottom:14px;color:var(--purple);font:700 .75rem ui-monospace,SFMono-Regular,monospace}.card h3{margin:0 0 8px;color:var(--blue);font-size:1rem}.card p{margin:0;color:var(--muted);font-size:.93rem}.note{margin-top:22px;padding:18px 20px;border-left:3px solid var(--orange);background:#ff9e640d;color:var(--muted);border-radius:0 10px 10px 0}.sources{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.source{padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);font-size:.86rem}footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--border);color:#737aa2;font-size:.84rem}@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.wrap{padding:38px 0}.grid{grid-template-columns:1fr}.party-head{display:block}.badge{display:inline-block;margin-top:14px}.card{min-height:0}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<p class="eyebrow">Elecciones y documentos políticos · 2026</p>
+<h1>Principales medidas, sin ruido.</h1>
+<p class="intro">Resumen temático y descriptivo de los dos documentos disponibles. Selecciona un partido para consultar sus principales propuestas.</p>
+<div class="tabs" role="tablist" aria-label="Partidos">
+<button class="tab" role="tab" id="tab-fo" aria-controls="panel" aria-selected="true" data-party="fo">Frente Obrero</button>
+<button class="tab" role="tab" id="tab-vox" aria-controls="panel" aria-selected="false" data-party="vox" tabindex="-1">VOX · Castilla y León</button>
+</div>
+<section id="panel" class="party" role="tabpanel" aria-live="polite" aria-labelledby="tab-fo"></section>
+<footer>Este documento resume lo expresado por cada formación. No verifica las cifras de los programas ni valora la viabilidad o conveniencia de sus propuestas.</footer>
+</main>
+<script>
+const parties={
+fo:{name:"Frente Obrero",meta:"Programa político · 64 páginas · 21 apartados",badge:"Ámbito nacional",note:"El propio documento indica que es un programa político y que no pretende ser un programa electoral.",pdf:"Frente-Obrero-Programa-2026-10.pdf",md:"Resumen-Frente-Obrero-2026.md",items:[
+["Política exterior","Salida de la UE y la OTAN, retirada de bases extranjeras y refuerzo militar."],
+["Trabajo","Subidas salariales, representación laboral obligatoria, límites a temporalidad y mayor inspección."],
+["Economía","Reindustrialización y nacionalización de sectores considerados estratégicos."],
+["Energía","Regulación de precios, ampliación nuclear y renovables como complemento."],
+["Fiscalidad","Menor carga para rentas bajas y mayor tributación de rentas altas y grandes empresas."],
+["Educación","Gratuidad para rentas bajas, refuerzo de la pública y límites a la digitalización."],
+["Familia","Ayudas por hijos, conciliación, guarderías públicas y permisos parentales más largos."],
+["Campo","Cooperativas, reparto de tierras sin uso, planes de agua y gestión estatal de fauna."],
+["Sanidad","Centralización del SNS, fin de externalizaciones y ampliación de prestaciones."],
+["Vivienda","Parque público, protección ante desahucios vulnerables y prioridad nacional."],
+["Inmigración","Expulsiones, revisión de nacionalidades y restricciones sobre asilo y prácticas islámicas."],
+["Estado","Proceso constituyente, centralización y reformas judiciales, policiales y militares."]]},
+vox:{name:"VOX",meta:"Programa electoral de Castilla y León · 172 páginas · 509 medidas",badge:"Ámbito autonómico",note:"Incluye medidas autonómicas y peticiones dirigidas al Gobierno de España y a la Unión Europea.",pdf:"Programa-Electoral-VOX-CYL-2026.pdf",md:"Resumen-VOX-Castilla-y-Leon-2026.md",items:[
+["Instituciones","Auditorías, sanciones y reducción de cargos, organismos y subvenciones."],
+["Sanidad","Coordinación nacional, más personal, atención rural, listas de espera y dependencia."],
+["Inmigración","Prioridad nacional, expulsiones, cierre de centros y restricciones islámicas."],
+["Campo","Rechazo de PAC y Mercosur, seguros, regadíos y relevo generacional."],
+["Medio natural","Gestión forestal, prevención de incendios, caza, pesca y tradiciones."],
+["Industria y empleo","Reindustrialización, contratación indefinida, automoción y apoyo a pymes."],
+["Energía","Extensión nuclear, posible reactor en Garoña, biomasa y límites a macroparques."],
+["Infraestructuras","Autovías, ferrocarril, aeropuertos, transporte rural, conectividad y agua."],
+["Familia","Ayudas por hijos, conciliación, servicios rurales y políticas provida."],
+["Vivienda","Más oferta, incentivos fiscales, prioridad por arraigo y desalojos en 24 horas."],
+["Educación","Revisión curricular, mérito, prueba común, FP Dual y escuela rural."],
+["Fiscalidad","Rebajas, deducciones familiares, silencio positivo y reducción normativa."]]}}
+const panel=document.querySelector("#panel"),tabs=[...document.querySelectorAll(".tab")];
+function render(key){const p=parties[key];panel.setAttribute("aria-labelledby",`tab-${key}`);panel.innerHTML=`<header class="party-head"><div><h2>${p.name}</h2><p class="meta">${p.meta}</p></div><span class="badge">${p.badge}</span></header><div class="grid">${p.items.map((x,i)=>`<article class="card"><span class="num">${String(i+1).padStart(2,"0")}</span><h3>${x[0]}</h3><p>${x[1]}</p></article>`).join("")}</div><aside class="note">${p.note}</aside><div class="sources"><a class="source" href="${p.pdf}">Ver PDF original ↗</a><a class="source" href="${p.md}">Ver resumen completo ↗</a></div>`}
+tabs.forEach((tab,i)=>{tab.addEventListener("click",()=>select(tab));tab.addEventListener("keydown",e=>{if(!["ArrowLeft","ArrowRight"].includes(e.key))return;e.preventDefault();select(tabs[(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length],true)})});
+function select(tab,focus=false){tabs.forEach(t=>{const active=t===tab;t.setAttribute("aria-selected",active);t.tabIndex=active?0:-1});render(tab.dataset.party);if(focus)tab.focus()}
+render("fo");
+</script>
+</body>
+</html>

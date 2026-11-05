@@ -116,14 +116,16 @@ IPv6 and DNS/redirect validation) remain necessary for that expanded boundary.
 Selected PDFs and model outputs remain untrusted data. Enforce safe rooted paths,
 PDF MIME/magic/parser checks, byte/page bounds, deadlines, memory limits and
 whole-job cleanup. PDF workers cannot write the repository, read home/secrets or
-use general network access. TQ-0062 chooses one minimal supported Fedora
-deployment using installed tools and actual bounded denial/resource checks;
-TQ-0021 implements it. Rootless Podman, custom OCI-image sealing and a generalized
-platform qualification laboratory are not prerequisites imposed by this Spec.
+use general network access. TQ-0062 defines the current macOS local runtime;
+TQ-0067 demonstrates it with installed Poppler/sandbox-exec and actual native
+denial/resource checks. TQ-0021 integrates that runtime into production intake.
+Fedora, rootless Podman, custom OCI-image sealing and a generalized platform
+qualification laboratory are not prerequisites for the owner-requested macOS path.
 
-Use Fedora qpdf for inspection; record its actual package/tool version. Do not
-run a converter unsafely just because qpdf is installed. A missing required
-enforcement mechanism is a genuine failure, never a skipped passing gate.
+Record actual tool versions and the documented sampled-RSS limitation; do not
+claim a kernel hard limit. Older Fedora/qpdf observations are historical, not a
+missing macOS prerequisite. A missing required enforcement mechanism is a genuine
+failure, never a skipped passing gate.
 
 ### Immutable source storage
 

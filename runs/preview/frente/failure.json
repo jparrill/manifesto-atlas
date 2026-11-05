@@ -1,0 +1,7 @@
+{
+  "version": "atlas.preview.attempt/v1",
+  "stage": "inspection",
+  "result": "error",
+  "error": "Initial macOS sandbox policy prevented native process startup; pdfinfo exited with abort trap before model execution.",
+  "resolution": "The policy now permits the required OS root-directory read and resolves macOS system path aliases. Native positive and negative sandbox probes pass. A new run uses frente-macos; this failed attempt is retained, not promoted."
+}

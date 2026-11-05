@@ -1,0 +1,17 @@
+{
+  "browser": "Google Chrome 157.0.8103.39",
+  "desktop": {
+    "height": 1000,
+    "rendered_cards": 21,
+    "screenshot_sha256": "sha256:f896555dd0b17dbb43ff3e4c77cf8662f3288fbbae7e1ea83dec4893723c0dc8",
+    "width": 1440
+  },
+  "html_sha256": "sha256:3fa830c9ad256fc566cad8b87a668744a6bf94bfba6be35edc5efb3e88955a71",
+  "mobile": {
+    "height": 844,
+    "rendered_cards": 21,
+    "screenshot_sha256": "sha256:6296c556bd8076b33624fedd82aa911d156b45c47c746871ac6c9b8d6d6e388a",
+    "width": 390
+  },
+  "private_preview": true
+}

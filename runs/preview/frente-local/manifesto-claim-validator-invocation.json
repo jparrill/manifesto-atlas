@@ -1,0 +1,18 @@
+{
+  "evidence_hash": "sha256:24b9c6608d03b9e8e1c76430e4593843f2fcccb602e05943ed501a2fac44a831",
+  "inputs_hash": "sha256:c37e0bd10b9b3b80cb194ec27b786342c30298af639b4a3be0491e887df54cd3",
+  "job_id": "preview-manifesto-claim-validator",
+  "model_identity": {
+    "provider": "127.0.0.1:18790",
+    "model": "qwen3.8-27b-dflash2-q4",
+    "revision": "unknown"
+  },
+  "prompt_hash": "sha256:7047c4370afc9b323581bf5819881f05e3981d44d9ec4000d80477048ae9f93a",
+  "reply_bytes": 3844,
+  "reply_hash": "sha256:cf59a8f7e44841b88980109dec8f7d24a9ba905b8ae91b694c34b71ca87ca211",
+  "reported_model_basename": "Qwen3.8-27B-UD-Q4_K_XL.gguf",
+  "request_bytes": 130627,
+  "request_hash": "sha256:028d473e72cd45c1c211677acf8f1b2c49d7969b41134bb6580a4de25b6cb0c4",
+  "role": "manifesto-claim-validator",
+  "status": "ok"
+}

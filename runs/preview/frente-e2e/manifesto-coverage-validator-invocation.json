@@ -1,0 +1,18 @@
+{
+  "evidence_hash": "sha256:89c0cc3bfccbe047fb76b003e7dc25ed293ecc9790aba2e344d32392d7c2956e",
+  "inputs_hash": "sha256:de568b42b86c4b730d0202cb1fccd112f05ad5f7ee8bc519c3d22278dd50ab65",
+  "job_id": "preview-manifesto-coverage-validator",
+  "model_identity": {
+    "provider": "127.0.0.1:18790",
+    "model": "qwen3.8-27b-dflash2-q4",
+    "revision": "unknown"
+  },
+  "prompt_hash": "sha256:3f725ecd0e7534d0ea134cde801ad4e9a28166c1c8a159e55c7baef2402c3b4d",
+  "reply_bytes": 5109,
+  "reply_hash": "sha256:8250b361423f09a63484608e5216303a8063e6fa681de0c223ffa17902f76e0d",
+  "reported_model_basename": "Qwen3.8-27B-UD-Q4_K_XL.gguf",
+  "request_bytes": 131013,
+  "request_hash": "sha256:0ce2400b9c37b5818921a4801348e7e4505fc612fe923946686252c42e5522a6",
+  "role": "manifesto-coverage-validator",
+  "status": "ok"
+}

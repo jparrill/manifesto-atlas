@@ -1,0 +1,39 @@
+{
+  "version": "atlas.preview.run/v1",
+  "private_preview": true,
+  "public_eligible": false,
+  "inputs": {
+    "evidence.json": "sha256:8e29624acbf69dabd8548e3dfe170f59489110504f7a5f61d180776131cc1188",
+    "extraction.json": "sha256:04d4c14a9969d547a751ca329ec8c93ddb0a661a5082c0f7e9220dcde6a7e997",
+    "extraction.txt": "sha256:9618bae6a90799e57af4ddf945d70a3bb56cc0ca8c17c4e6a78b053157d788bf",
+    "inspection.txt": "sha256:6f701e91d674bad5d863f90ddc793768d8ce3e3f82e9572cafdd5a49fee427bb",
+    "manifesto-claim-validator-invocation.json": "sha256:6a0755e4c5bbf9fb0b5309592a732ed5a72b29d081be7a91372888f15d466348",
+    "manifesto-claim-validator-reply.txt": "sha256:cf59a8f7e44841b88980109dec8f7d24a9ba905b8ae91b694c34b71ca87ca211",
+    "manifesto-claim-validator-request.json": "sha256:028d473e72cd45c1c211677acf8f1b2c49d7969b41134bb6580a4de25b6cb0c4",
+    "manifesto-claim-validator.json": "sha256:a66ca576e409eafcf594ed4777e949be04799ce179cca357727fcfad6f7ebe1d",
+    "manifesto-coverage-validator-invocation.json": "sha256:23e32d4f4cc953d732b42328c7e4d99ad319c2e5a6dcb8015e2c4c79fbdd7755",
+    "manifesto-coverage-validator-reply.txt": "sha256:75153963910880786e0a837478537fbc1602dfc99fac63ba76e797889c7e7191",
+    "manifesto-coverage-validator-request.json": "sha256:ba62ecddd2e078e7a5a587eb65f08b161d373bbc0bc207ae944a3466c2710b51",
+    "manifesto-coverage-validator.json": "sha256:a66ca576e409eafcf594ed4777e949be04799ce179cca357727fcfad6f7ebe1d",
+    "manifesto-normalizer-invocation.json": "sha256:2cf424b43dacff51bc0b990126b0d0a3ec41a4aae20b76481478673dd36b943e",
+    "manifesto-normalizer-reply.txt": "sha256:d473af36e5b38c3930e7e8ba149037bc7059085707b0ba4a8f5c33f077ad3042",
+    "manifesto-normalizer-request.json": "sha256:f9efc9eb70cb7ff673ca8d87f62c75bc3a1b7b2e998a9a03ba9137dabfe075a3",
+    "metadata.json": "sha256:ee1fcc56d9b953377de54a813dc6fddea1c847ae699918c6acdab54f4bcb9f92",
+    "model.json": "sha256:2da7f9b7e5d1251bd571da95461b292674368de6daeebf08a93137fe194de6ed",
+    "normalizer.json": "sha256:6431a040b41e46d7ab92f4046fc7f370480652189a12568cf675de157e17dc35",
+    "programme.json": "sha256:1ed275ba42bedf4faa0b3e77eeac9d08d00fdfb2e7c123a4a1c15adc5a785bc4",
+    "source.pdf": "sha256:7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282",
+    "taxonomy.json": "sha256:3f585f30240e3dc9b3b233e60310a0c5601456bf0b49a41beecdc3b9998b6a35"
+  },
+  "reports": {
+    "manifesto-claim-validator": {
+      "result": "error",
+      "error": "semantic: bad-report (object-fields)"
+    },
+    "manifesto-coverage-validator": {
+      "result": "error",
+      "error": "semantic: bad-report (object-fields)"
+    }
+  },
+  "reference_sha256": "sha256:1efca2b80db73cc6a588fc87c0dbe4e500ea9e449fb9c1f182cd3bbf8b184270"
+}

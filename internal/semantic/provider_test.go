@@ -93,6 +93,35 @@ func TestRealAdapterTransport(t *testing.T) {
 	}
 }
 
+func TestTrustedRoleInstructions(t *testing.T) {
+	req := baseReq(semantic.RoleNormalizer, "role-config-1", "preview-1")
+	req.Prompt = "Use the operator-selected canonical details schema."
+	req.Configuration = map[string]string{"enable_thinking": "false", "json_object": "true"}
+	var captured struct {
+		Messages []struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		} `json:"messages"`
+		Template map[string]bool   `json:"chat_template_kwargs"`
+		Format   map[string]string `json:"response_format"`
+	}
+	p := newOpenAIProvider(t, func(w http.ResponseWriter, r *http.Request, prov *semantic.OpenAIProvider) {
+		if err := json.NewDecoder(r.Body).Decode(&captured); err != nil {
+			t.Error(err)
+		}
+		_, _ = w.Write(openaiReply(prov.Identity().Model, validReply(req, prov.Identity(), semantic.ResultPass)))
+	}, "real-model", "")
+	if _, err := semantic.NewRunner(p).Run(t.Context(), req, stubReader{}); err != nil {
+		t.Fatal(err)
+	}
+	if len(captured.Messages) != 2 || captured.Messages[0].Role != "system" || !strings.Contains(captured.Messages[0].Content, req.Prompt) {
+		t.Fatal("trusted stage-specific schema instructions were dropped")
+	}
+	if enabled, ok := captured.Template["enable_thinking"]; !ok || enabled || captured.Format["type"] != "json_object" {
+		t.Fatal("operator-selected provider output settings were dropped")
+	}
+}
+
 func TestRealAdapterCleanRequestCanary(t *testing.T) {
 	const canary = "CANYARY-PRIVATE-GENERATOR-REASONING"
 	reqGen := baseReq(semantic.RoleNormalizer, "gen-1", "es-1")

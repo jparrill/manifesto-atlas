@@ -11,7 +11,7 @@ labels:
 depends_on:
   - TQ-0016
 created: 2026-11-01T17:07:34+01:00
-updated: 2026-11-01T18:56:24+01:00
+updated: 2026-11-05T00:20:21+01:00
 ---
 
 ## Outcome
@@ -85,3 +85,4 @@ A commit/push/confirmation failure restores `TQ-0042` to `in-progress` with a bl
 ## Notes
 
 - 2026-11-01T18:56:24+01:00 — TQ-0057 review: retained in inbox because presentation assets require Juan or a non-LLM author. An LLM execution agent must not claim or author this work. Downstream HTML/site dependencies remain intact until approved human-authored assets are supplied.
+- 2026-11-05T00:20:21+01:00 — Owner supplied an existing HTML reference during TQ-0067. Its bytes are imported unchanged under assets/reference and the private renderer binds only programme JSON data; desktop/mobile evidence is retained with the real preview. This does not claim all production presentation acceptance criteria or promote this inbox task.

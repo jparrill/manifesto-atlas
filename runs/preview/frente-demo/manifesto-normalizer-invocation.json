@@ -1,0 +1,18 @@
+{
+  "evidence_hash": "sha256:7a3468c12afd4bf574c45578ff5e06224913cfa29075c2369d1d2e49702649eb",
+  "inputs_hash": "sha256:cff2de7ac6daba4ab35c7d68a8835e17b0f8695301fcd90696e15d4fc387d379",
+  "job_id": "preview-manifesto-normalizer",
+  "model_identity": {
+    "provider": "127.0.0.1:18790",
+    "model": "qwen3.8-27b-dflash2-q4",
+    "revision": "unknown"
+  },
+  "prompt_hash": "sha256:8e3014e98fdb6f3718efb02912f715ad9fd3c29e23e5faa024f6478b46f63934",
+  "reply_bytes": 13898,
+  "reply_hash": "sha256:3d548520e48aec5701a3ec78c8bca4a200d3d42783002a8e939bac40886ef078",
+  "reported_model_basename": "Qwen3.8-27B-UD-Q4_K_XL.gguf",
+  "request_bytes": 94398,
+  "request_hash": "sha256:2d2c2ec0d65c87b8821748bbf96a8d6e684247aa18cf28e2ff535a0c40b328ac",
+  "role": "manifesto-normalizer",
+  "status": "ok"
+}

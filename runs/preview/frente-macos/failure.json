@@ -1,0 +1,8 @@
+{
+  "version": "atlas.preview.attempt/v1",
+  "stage": "normalization",
+  "result": "error",
+  "error": "The proxy-backed nonstreaming normalizer request was cancelled after the 600-second evaluation limit; no model reply or canonical draft was received.",
+  "evidence": "manifesto-normalizer-request.json and manifesto-normalizer-invocation.json retain the exact attempted request identity and terminal outcome.",
+  "resolution": "Use the direct configured Auriga inference endpoint with explicit JSON/non-thinking output settings in a separate retained attempt; never turn this timeout into a passing report."
+}

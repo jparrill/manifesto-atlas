@@ -1,0 +1,7 @@
+{
+  "version": "atlas.preview.attempt/v1",
+  "stage": "semantic-report-schema-and-browser-capture",
+  "result": "error",
+  "error": "The genuine validator responses omitted mandatory finding fields and were rejected as malformed; this run is not validated. The initial mobile image used a CLI window size rather than true device emulation and is not mobile acceptance evidence.",
+  "resolution": "Original requests, replies and initial screenshots are preserved. The corrected finding instructions and actual CDP device-emulated desktop/mobile proof belong to the separate frente-e2e run."
+}

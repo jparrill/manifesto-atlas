@@ -259,10 +259,13 @@ func (p *OpenAIProvider) buildPrompt(req Request, ev EvidenceReader) (system, us
 			"Output EXACTLY one JSON object and nothing else. No prose, no markdown, no code fences.\n"+
 			"The object must have exactly these field names and values for the fixed parts:\n"+
 			"{\"version\":\"%s\",\"job_id\":%q,\"model_identity\":%s,\"report\":{\"version\":\"%s\",\"role\":%q,\"subject\":%q,\"inputs\":%s,\"result\":\"RESULT\",\"findings\":[],\"checked\":{\"statements\":[],\"measures\":[],\"pages\":[],\"topics\":[]},\"details\":{}}}\n"+
-			"Echo job_id, model_identity, role, subject and inputs exactly as shown. Replace RESULT with exactly one of: pass, fail, insufficient, error. In checked, statements, measures and topics are arrays of strings and pages is an array of 1-based integer page numbers. Add a finding only for a real, evidence-backed issue.\n",
+			"Echo job_id, model_identity, role, subject and inputs exactly as shown. Replace RESULT with exactly one of: pass, fail, insufficient, error. In checked, statements, measures and topics are arrays of strings and pages is an array of 1-based integer page numbers. Add a finding only for a real, evidence-backed issue. Each finding MUST contain EXACTLY these seven fields: {\"id\":\"f-1\",\"code\":\"short-issue-code\",\"severity\":\"blocker\",\"target\":\"source-or-statement-id\",\"evidence\":\"original-page-reference\",\"message\":\"concise explanation\"}. IDs must be unique; severity is info, warning or blocker. Never omit id, code or severity.\n",
 		req.Role, task, JobVersion, req.JobID, string(identityJSON),
 		ReportVersion, req.Role, req.Subject, string(inputsJSON),
 	)
+	if req.Prompt != "" {
+		system += "\nOperator-defined role instructions (trusted configuration):\n" + req.Prompt + "\n"
+	}
 
 	var evBuf strings.Builder
 	evTotal := 0
@@ -294,15 +297,23 @@ func (p *OpenAIProvider) requestBody(system, user string, req Request) ([]byte, 
 		Content string `json:"content"`
 	}
 	body := struct {
-		Model       string  `json:"model"`
-		Messages    []msg   `json:"messages"`
-		MaxTokens   int     `json:"max_tokens"`
-		Temperature float64 `json:"temperature"`
+		Model             string            `json:"model"`
+		Messages          []msg             `json:"messages"`
+		MaxTokens         int               `json:"max_tokens"`
+		Temperature       float64           `json:"temperature"`
+		TemplateArguments map[string]bool   `json:"chat_template_kwargs,omitempty"`
+		ResponseFormat    map[string]string `json:"response_format,omitempty"`
 	}{
 		Model:       p.cfg.Model,
 		Messages:    []msg{{Role: "system", Content: system}, {Role: "user", Content: user}},
 		MaxTokens:   maxTokens,
 		Temperature: 0,
+	}
+	if req.Configuration["enable_thinking"] == "false" {
+		body.TemplateArguments = map[string]bool{"enable_thinking": false}
+	}
+	if req.Configuration["json_object"] == "true" {
+		body.ResponseFormat = map[string]string{"type": "json_object"}
 	}
 	return json.Marshal(body)
 }

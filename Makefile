@@ -11,7 +11,7 @@
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider
+.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -33,6 +33,8 @@ help:
 	  "  make test-fixture-vox      Run the focused VOX Castilla y León candidate/source fixture suite." \
 	  "  make test-runs             Run the focused selection/run record validation suite." \
 	  "  make smoke-provider        Run the three clean semantic roles through the configured local provider (TARGET=...)." \
+	  "  make e2e-preview           Real macOS PDF/model/private HTML run (OUTPUT=new-directory)." \
+	  "  make render-preview        Rerender retained private evidence offline (no models)." \
 	  "" \
 	  "Pipeline stages (planned — fail until their owning task lands):" \
 	  "  make submit                TQ-0021  Inspect a selected local candidate." \
@@ -84,6 +86,7 @@ verify: check
 	@$(MAKE) test-fixture-vox
 	@echo "verify: go test (test-runs)"
 	@$(MAKE) test-runs
+	@$(MAKE) test-preview
 	@echo "verify: OK"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
@@ -146,6 +149,16 @@ test-runs:
 TARGET ?= fixtures/semantic/smoke.json
 smoke-provider:
 	@go run ./cmd/smoke-provider -target $(TARGET)
+
+# The macOS preview is an explicit operator evaluation, never an offline gate.
+SOURCE ?= fixtures/frente/source.json
+OUTPUT ?= runs/preview/frente-e2e
+test-preview:
+	@go test ./internal/preview/...
+e2e-preview evaluate-preview:
+	@go run ./cmd/preview -source "$(SOURCE)" -output "$(OUTPUT)"
+render-preview:
+	@go run ./cmd/preview -render -output "$(OUTPUT)"
 
 # --- Planned pipeline stages (fail until their owning task lands) -------------
 

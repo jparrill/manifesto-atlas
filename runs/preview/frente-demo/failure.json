@@ -1,0 +1,7 @@
+{
+  "version": "atlas.preview.attempt/v1",
+  "stage": "canonical-citation-check",
+  "result": "error",
+  "error": "The actual normalizer supplied a quotation that was not a literal substring of original page 16. Canonical validation rejected it; no summary or approval was emitted.",
+  "resolution": "The normalizer protocol now selects host-assigned original-evidence IDs. The host resolves exact source slices instead of asking the model to retype quotations. This failed response is retained unchanged."
+}
