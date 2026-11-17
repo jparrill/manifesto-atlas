@@ -28,6 +28,9 @@ twelve declared production pipeline stages.
 | `make help` | Print this target list. Distinguish implemented checks from planned stages. | none (print only) |
 | `make check` | Run baseline checks: Git whitespace, Taskqueue integrity, and Go format/build/vet. | `git`, `tq`, `gofmt`, `go` |
 | `make verify` | Run `check`, the programme-run gate, documentation-structure, relative-link, and Go test checks. | `git`, `tq`, `grep`, `dirname`, `test`, `go` |
+| `make extract` | `PDF= URL= PROG= [RUN= TITLE= COVERAGE=]` — record provenance, extract page by page, register the document and write the summary skeleton. Offline, needs `pdfinfo` and `pdftotext`. Contract: `docs/design/programme-run.md`. | `go`, `pdfinfo`, `pdftotext` |
+| `make validate-content` | `RUN=` — run the gate and write `Verificacion.md` from the report. | `go` |
+| `make build` | `RUN= [OUT= FORCE=]` — render the single-file view with every document embedded. | `go` |
 | `make check-run` | Verify a programme run deterministically: literal quotes, page citations, proposal coverage, curated claims, section codes and a self-contained view (`RUN=runs/29n2026`). Offline; no models, no source PDFs. Contract: `docs/design/programme-run.md`. | `go` |
 | `make test-cli` | Run the focused Go CLI test suite (`go test ./internal/cli/...`). | `go` |
 | `make test-artifacts` | Run the focused strict canonical-JSON and SHA-256 hash helper suite (`go test ./internal/artifact/...`). | `go` |

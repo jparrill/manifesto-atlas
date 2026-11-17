@@ -23,17 +23,21 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/jparrill/manifesto-atlas/internal/runmanifest"
 )
 
 // Issue codes. They are stable so a run note can cite one.
 const (
-	CodeSpec     = "runcheck.spec"
-	CodeQuote    = "runcheck.quote"
-	CodePage     = "runcheck.page"
-	CodeCoverage = "runcheck.coverage"
-	CodeClaim    = "runcheck.claim"
-	CodeSection  = "runcheck.section"
-	CodeEmbed    = "runcheck.embed"
+	CodeSpec       = "runcheck.spec"
+	CodeQuote      = "runcheck.quote"
+	CodePage       = "runcheck.page"
+	CodeCoverage   = "runcheck.coverage"
+	CodeClaim      = "runcheck.claim"
+	CodeSection    = "runcheck.section"
+	CodeEmbed      = "runcheck.embed"
+	CodeProvenance = "runcheck.provenance"
+	CodeScaffold   = "runcheck.scaffold"
 )
 
 // Issue is one failed check.
@@ -44,26 +48,6 @@ type Issue struct {
 }
 
 func (i Issue) String() string { return i.Code + ": " + i.File + ": " + i.Detail }
-
-// Document is one programme inside a run.
-type Document struct {
-	Programme string `json:"programme"`
-	Source    string `json:"source"`  // page-marked extraction, e.g. pp.md
-	Summary   string `json:"summary"` // factual summary, e.g. Resumen-PP-2026.md
-	Proposals int    `json:"proposals"`
-	// Coverage selects how proposals are checked: "numbers" (the document
-	// numbers 1..N once) or "items" (numbering restarts in every section).
-	Coverage string `json:"coverage"`
-}
-
-// Spec is the run manifest, run.json.
-type Spec struct {
-	Name      string     `json:"name"`
-	Claims    string     `json:"claims"`
-	View      string     `json:"view"`
-	Allow     string     `json:"allow"`
-	Documents []Document `json:"documents"`
-}
 
 // Counts are the elements each check examined.
 type Counts struct {
@@ -79,7 +63,7 @@ type Counts struct {
 
 // Report is the outcome of a run verification.
 type Report struct {
-	Spec   Spec
+	Spec   runmanifest.Spec
 	Counts Counts
 	Issues []Issue
 }
@@ -88,22 +72,10 @@ type Report struct {
 func (r Report) OK() bool { return len(r.Issues) == 0 }
 
 // Load reads and validates the run manifest.
-func Load(dir string) (Spec, error) {
-	raw, err := os.ReadFile(filepath.Join(dir, "run.json"))
+func Load(dir string) (runmanifest.Spec, error) {
+	spec, err := runmanifest.Load(dir)
 	if err != nil {
-		return Spec{}, fmt.Errorf("%s: read run.json: %w", CodeSpec, err)
-	}
-	var spec Spec
-	if err := json.Unmarshal(raw, &spec); err != nil {
-		return Spec{}, fmt.Errorf("%s: parse run.json: %w", CodeSpec, err)
-	}
-	if spec.Name == "" || len(spec.Documents) == 0 {
-		return Spec{}, fmt.Errorf("%s: run.json needs a name and at least one document", CodeSpec)
-	}
-	for _, doc := range spec.Documents {
-		if doc.Programme == "" || doc.Source == "" || doc.Summary == "" || doc.Proposals <= 0 {
-			return Spec{}, fmt.Errorf("%s: document %+v is incomplete", CodeSpec, doc)
-		}
+		return runmanifest.Spec{}, fmt.Errorf("%s: %w", CodeSpec, err)
 	}
 	return spec, nil
 }
@@ -116,11 +88,11 @@ func Verify(dir string) (Report, error) {
 	}
 	rep := Report{Spec: spec}
 
-	var claims []Claim
+	var claims []runmanifest.Claim
 	if spec.Claims != "" {
-		claims, err = loadClaims(filepath.Join(dir, spec.Claims))
+		claims, err = runmanifest.LoadClaims(filepath.Join(dir, spec.Claims))
 		if err != nil {
-			return Report{}, err
+			return Report{}, fmt.Errorf("%s: %w", CodeSpec, err)
 		}
 	}
 
@@ -153,6 +125,8 @@ func Verify(dir string) (Report, error) {
 		rep.Counts.Proposals += doc.Proposals
 		rep.Issues = append(rep.Issues, coverage...)
 
+		rep.Issues = append(rep.Issues, CheckScaffold(doc.Summary, summary)...)
+
 		sections := CheckSections(doc.Summary, summary, source)
 		rep.Counts.Sections += sections.total
 		rep.Issues = append(rep.Issues, sections.issues...)
@@ -170,6 +144,8 @@ func Verify(dir string) (Report, error) {
 			}
 		}
 	}
+	rep.Issues = append(rep.Issues, CheckProvenance(spec)...)
+
 	if spec.View != "" {
 		embed, refs, issues := CheckView(filepath.Join(dir, spec.View), programmeNames(spec))
 		rep.Counts.Embedded += embed
@@ -571,6 +547,59 @@ func (l allowList) match(i Issue) (AllowRule, bool) {
 	return AllowRule{}, false
 }
 
+// ---------------------------------------------------------------- provenance
+
+var hexHash = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
+// CheckProvenance requires every document to carry a verifiable origin: an
+// https URL, the byte size and the SHA-256 of the exact PDF analysed.
+func CheckProvenance(spec runmanifest.Spec) []Issue {
+	var issues []Issue
+	origin := map[string]runmanifest.Source{}
+	for _, s := range spec.Sources {
+		origin[s.Programme] = s
+	}
+	for _, doc := range spec.Documents {
+		src, ok := origin[doc.Programme]
+		if !ok {
+			issues = append(issues, Issue{Code: CodeProvenance, File: "run.json",
+				Detail: "programme " + doc.Programme + " has no source entry"})
+			continue
+		}
+		switch {
+		case !strings.HasPrefix(src.URL, "https://"):
+			issues = append(issues, Issue{Code: CodeProvenance, File: "run.json",
+				Detail: "programme " + doc.Programme + ": origin URL is not https"})
+		case !hexHash.MatchString(src.SHA256):
+			issues = append(issues, Issue{Code: CodeProvenance, File: "run.json",
+				Detail: "programme " + doc.Programme + ": sha256 is not a lowercase hex digest"})
+		case src.Bytes <= 0:
+			issues = append(issues, Issue{Code: CodeProvenance, File: "run.json",
+				Detail: "programme " + doc.Programme + ": byte size is missing"})
+		case src.Pages <= 0:
+			issues = append(issues, Issue{Code: CodeProvenance, File: "run.json",
+				Detail: "programme " + doc.Programme + ": page count is missing"})
+		}
+	}
+	return issues
+}
+
+// ---------------------------------------------------------------- scaffold
+
+// scaffoldMarker is written by `extract` while a summary is still unwritten.
+const scaffoldMarker = "PARA-COMPLETAR"
+
+// CheckScaffold fails while the deterministic skeleton of a summary is still
+// unfilled, so an empty run cannot pass as a finished one.
+func CheckScaffold(file, summary string) []Issue {
+	if !strings.Contains(summary, scaffoldMarker) {
+		return nil
+	}
+	count := strings.Count(summary, scaffoldMarker)
+	return []Issue{{Code: CodeScaffold, File: file,
+		Detail: fmt.Sprintf("%d placeholders %s left in the summary", count, scaffoldMarker)}}
+}
+
 // ---------------------------------------------------------------- embedding
 
 var (
@@ -707,7 +736,7 @@ func isExternal(ref string) bool {
 	return false
 }
 
-func programmeNames(spec Spec) []string {
+func programmeNames(spec runmanifest.Spec) []string {
 	names := make([]string, 0, len(spec.Documents))
 	for _, d := range spec.Documents {
 		names = append(names, d.Programme)
@@ -717,34 +746,7 @@ func programmeNames(spec Spec) []string {
 
 // ---------------------------------------------------------------- claims
 
-// Claim is one curated factual datum of the run.
-type Claim struct {
-	Programme string
-	Pages     string
-	Phrase    string
-}
-
-func loadClaims(path string) ([]Claim, error) {
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("%s: read %s: %w", CodeSpec, filepath.Base(path), err)
-	}
-	var claims []Claim
-	for i, line := range strings.Split(string(raw), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		fields := strings.Split(line, "\t")
-		if len(fields) != 3 {
-			return nil, fmt.Errorf("%s: %s:%d: want 3 tab-separated fields", CodeSpec, filepath.Base(path), i+1)
-		}
-		claims = append(claims, Claim{Programme: fields[0], Pages: fields[1], Phrase: fields[2]})
-	}
-	return claims, nil
-}
-
-func claimFound(c Claim, source Pages) bool {
+func claimFound(c runmanifest.Claim, source Pages) bool {
 	pages := citedPages("[p. " + c.Pages + "]")
 	if len(pages) == 0 {
 		return false
@@ -781,6 +783,65 @@ func (r Report) Summary() []string {
 		fmt.Sprintf("  sections     %d checked, %s", r.Counts.Sections, status(byCode[CodeSection])),
 		fmt.Sprintf("  embedding    %d documents embedded, %d references checked, %s",
 			r.Counts.Embedded, r.Counts.Refs, status(byCode[CodeEmbed])),
+		fmt.Sprintf("  provenance   %d sources declared, %s", len(r.Spec.Sources), status(byCode[CodeProvenance])),
+		fmt.Sprintf("  scaffold     %s", status(byCode[CodeScaffold])),
 		fmt.Sprintf("  exceptions   %d reviewed (see the run's allow file)", r.Counts.Allowed),
 	}
+}
+
+// Markdown renders the report as the per-run verification document. It is what
+// `validate-content` writes next to the summary, so the evidence and the gate
+// never disagree.
+func (r Report) Markdown() string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Verificación del run %s\n\n", r.Spec.Name)
+	b.WriteString("Generado por `manifesto-atlas validate-content`. Comprueba literalidad de citas,\n")
+	b.WriteString("atribución de página, cobertura de propuestas, datos curados, códigos de sección,\n")
+	b.WriteString("procedencia de las fuentes y que la vista embeba todos los documentos.\n\n")
+	b.WriteString("## Resultado\n\n")
+	b.WriteString("| Comprobación | Elementos | Resultado |\n|---|---|---|\n")
+	rows := []struct {
+		name   string
+		total  int
+		issues int
+	}{
+		{"Citas literales", r.Counts.Quotes, countCode(r.Issues, CodeQuote)},
+		{"Atribución de página", r.Counts.Pages, countCode(r.Issues, CodePage)},
+		{"Cobertura de propuestas", r.Counts.Proposals, countCode(r.Issues, CodeCoverage)},
+		{"Datos curados", r.Counts.Claims, countCode(r.Issues, CodeClaim)},
+		{"Códigos de sección", r.Counts.Sections, countCode(r.Issues, CodeSection)},
+		{"Procedencia", len(r.Spec.Sources), countCode(r.Issues, CodeProvenance)},
+		{"Andamiaje sin completar", 1, countCode(r.Issues, CodeScaffold)},
+		{"Embebido en la vista", r.Counts.Embedded, countCode(r.Issues, CodeEmbed)},
+	}
+	for _, row := range rows {
+		result := "ok"
+		if row.issues > 0 {
+			result = fmt.Sprintf("%d fallos", row.issues)
+		}
+		fmt.Fprintf(&b, "| %s | %d | %s |\n", row.name, row.total, result)
+	}
+	fmt.Fprintf(&b, "\nExcepciones revisadas: %d (ver `checks/allow.tsv`).\n", r.Counts.Allowed)
+	if len(r.Issues) > 0 {
+		b.WriteString("\n## Fallos\n\n")
+		for _, i := range r.Issues {
+			fmt.Fprintf(&b, "- `%s` en `%s`: %s\n", i.Code, i.File, i.Detail)
+		}
+	}
+	b.WriteString("\n## Límites\n\n")
+	b.WriteString("- La verificación es mecánica: no juzga la interpretación ni la exactitud de\n")
+	b.WriteString("  las cifras que declara el partido.\n")
+	b.WriteString("- El proceso que redactó los resúmenes es el mismo que ejecuta esta\n")
+	b.WriteString("  comprobación, así que no sustituye una revisión humana independiente.\n")
+	return b.String()
+}
+
+func countCode(issues []Issue, code string) int {
+	n := 0
+	for _, i := range issues {
+		if i.Code == code {
+			n++
+		}
+	}
+	return n
 }

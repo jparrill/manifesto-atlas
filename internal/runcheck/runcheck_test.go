@@ -66,6 +66,10 @@ func mustSpec(t *testing.T, files map[string]string) string {
   "name": "prueba",
   "claims": "checks/claims.tsv",
   "allow": "checks/allow.tsv",
+  "sources": [
+    {"programme": "pp", "url": "https://example.org/p.pdf", "file": "p.pdf",
+     "bytes": 1024, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "pages": 2}
+  ],
   "documents": [
     {"programme": "pp", "source": "pp.md", "summary": "Resumen-PP-2026.md", "proposals": 2}
   ]
@@ -337,6 +341,8 @@ func TestViewMustBeSelfContained(t *testing.T) {
 	docs := `{"pp":[{"label":"Resumen completo","title":"t","html":"<h1>Resumen</h1>"}],"sources":{"html":"<h1>Fuentes</h1>"}}`
 	spec := func(view string) string {
 		return `{"name":"prueba","claims":"checks/claims.tsv","view":"` + view + `",
+  "sources":[{"programme":"pp","url":"https://example.org/p.pdf","file":"p.pdf","bytes":1024,
+    "sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","pages":2}],
   "documents":[{"programme":"pp","source":"pp.md","summary":"Resumen-PP-2026.md","proposals":2}]}`
 	}
 
@@ -420,6 +426,86 @@ func TestViewMustBeSelfContained(t *testing.T) {
 		}
 		if !has(report.Issues, CodeEmbed) {
 			t.Fatalf("want %s, got %v", CodeEmbed, codes(report.Issues))
+		}
+	})
+}
+
+func TestProvenance(t *testing.T) {
+	source := func(field, value string) string {
+		base := `{"programme":"pp","url":"https://example.org/p.pdf","file":"p.pdf","bytes":1024,
+      "sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","pages":2}`
+		return strings.Replace(base, `"`+field+`":`+value, `"`+field+`":"x"`, 1)
+	}
+	t.Run("When a source records https, bytes, pages and hash it should pass", func(t *testing.T) {
+		report, err := Verify(run(t, map[string]string{
+			"pp.md": sourceMarked, "Resumen-PP-2026.md": summaryGood,
+		}))
+		if err != nil {
+			t.Fatalf("Verify: %v", err)
+		}
+		if has(report.Issues, CodeProvenance) {
+			t.Fatalf("unexpected %s: %v", CodeProvenance, report.Issues)
+		}
+	})
+	t.Run("When the origin is not https it should be reported", func(t *testing.T) {
+		report, err := Verify(run(t, map[string]string{
+			"run.json": `{"name":"prueba","claims":"checks/claims.tsv",
+  "sources":[{"programme":"pp","url":"http://example.org/p.pdf","file":"p.pdf","bytes":1024,
+    "sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","pages":2}],
+  "documents":[{"programme":"pp","source":"pp.md","summary":"Resumen-PP-2026.md","proposals":2}]}`,
+			"pp.md": sourceMarked, "Resumen-PP-2026.md": summaryGood,
+		}))
+		if err != nil {
+			t.Fatalf("Verify: %v", err)
+		}
+		if !has(report.Issues, CodeProvenance) {
+			t.Fatalf("want %s, got %v", CodeProvenance, codes(report.Issues))
+		}
+	})
+	t.Run("When a document has no source entry it should be reported", func(t *testing.T) {
+		report, err := Verify(run(t, map[string]string{
+			"run.json": `{"name":"prueba","claims":"checks/claims.tsv",
+  "documents":[{"programme":"pp","source":"pp.md","summary":"Resumen-PP-2026.md","proposals":2}]}`,
+			"pp.md": sourceMarked, "Resumen-PP-2026.md": summaryGood,
+		}))
+		if err != nil {
+			t.Fatalf("Verify: %v", err)
+		}
+		if !has(report.Issues, CodeProvenance) {
+			t.Fatalf("want %s, got %v", CodeProvenance, codes(report.Issues))
+		}
+	})
+	_ = source
+}
+
+func TestScaffoldMustBeCompleted(t *testing.T) {
+	t.Run("When the summary still carries placeholders it should be reported", func(t *testing.T) {
+		report, err := Verify(run(t, map[string]string{
+			"pp.md":              sourceMarked,
+			"Resumen-PP-2026.md": summaryGood + "\n<!-- PARA-COMPLETAR: propuesta 2 -->\n",
+		}))
+		if err != nil {
+			t.Fatalf("Verify: %v", err)
+		}
+		if !has(report.Issues, CodeScaffold) {
+			t.Fatalf("want %s, got %v", CodeScaffold, codes(report.Issues))
+		}
+	})
+}
+
+func TestReportMarkdown(t *testing.T) {
+	t.Run("When the run passes the report should list every check as ok", func(t *testing.T) {
+		report, err := Verify(run(t, map[string]string{
+			"pp.md": sourceMarked, "Resumen-PP-2026.md": summaryGood,
+		}))
+		if err != nil {
+			t.Fatalf("Verify: %v", err)
+		}
+		md := report.Markdown()
+		for _, want := range []string{"# Verificación del run prueba", "Citas literales", "| ok |", "## Límites"} {
+			if !strings.Contains(md, want) {
+				t.Fatalf("report misses %q:\n%s", want, md)
+			}
 		}
 	})
 }

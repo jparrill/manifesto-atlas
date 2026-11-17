@@ -17,6 +17,7 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"strings"
 )
 
 // Version is the manifesto-atlas version reported by the version command.
@@ -42,15 +43,20 @@ var stages = []stage{
 	{"submit", "TQ-0021", "inspect a selected local candidate"},
 	{"verify-source", "TQ-0027", "verify local selection evidence and matching bytes"},
 	{"add", "TQ-0027", "register a verified immutable source"},
-	{"extract", "TQ-0030", "produce structured page-aware extraction"},
 	{"validate-extraction", "TQ-0030", "reject deterministic page/warning blockers"},
 	{"normalize", "TQ-0038", "produce draft canonical programme JSON"},
-	{"validate-content", "TQ-0041", "run claim and coverage validators"},
-	{"build", "TQ-0043 TQ-0044 TQ-0049", "render Spanish Markdown, previews, and HTML"},
 	{"validate-site", "TQ-0049", "run basic single-programme site quality checks"},
 	{"publish-check", "TQ-0050 TQ-0049", "verify offline Markdown eligibility first"},
 	{"process", "TQ-0051", "orchestrate the applicable processing stages"},
 	{"serve", "TQ-0065", "preview an explicit private generated root locally"},
+}
+
+// stageCommand is an implemented pipeline stage that takes flags.
+type stageCommand struct {
+	name       string
+	positional int
+	flags      func(string) (*flag.FlagSet, *stageFlags)
+	run        func(pos []string, f *stageFlags, w io.Writer) int
 }
 
 // command is a dispatchable CLI command.
@@ -58,6 +64,9 @@ type command struct {
 	name       string
 	positional int // exact number of positional arguments accepted
 	run        func(args []string, w io.Writer) int
+	// flags, when set, parses stage flags before runWithFlags is called.
+	flags        func(string) (*flag.FlagSet, *stageFlags)
+	runWithFlags func(pos []string, f *stageFlags, w io.Writer) int
 }
 
 func (c *command) flagSet() *flag.FlagSet {
@@ -76,6 +85,14 @@ func usage(w io.Writer) {
 	fmt.Fprintln(w, "Commands:")
 	fmt.Fprintln(w, "  help       Show this help.")
 	fmt.Fprintln(w, "  version    Show the version and the Go runtime version.")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "Run stages (implemented, deterministic, offline):")
+	fmt.Fprintln(w, "  extract <pdf> -url U -programme ID [-run DIR] [-title NAME] [-coverage numbers|items]")
+	fmt.Fprintln(w, "             provenance + page-marked extraction + manifest + summary skeleton.")
+	fmt.Fprintln(w, "  validate-content <run>")
+	fmt.Fprintln(w, "             run the gate and write Verificacion.md next to the run.")
+	fmt.Fprintln(w, "  build <run> [-out FILE] [-template FILE] [-force]")
+	fmt.Fprintln(w, "             render the single-file view with the documents embedded.")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Pipeline stages (declared; not available until their owning task lands):")
 	for _, s := range stages {
@@ -105,6 +122,33 @@ func run(args []string, out, errOut io.Writer) int {
 		fmt.Fprintf(errOut, "manifesto-atlas: unknown command %q\n", name)
 		fmt.Fprintln(errOut, "Run 'manifesto-atlas help' for usage.")
 		return exitUsage
+	}
+
+	if cmd.flags != nil {
+		fs, f := cmd.flags(cmd.name)
+		// Flags may follow the target path ("extract programa.pdf -url …"): take
+		// the leading positional first so the standard flag parser sees flags only.
+		var pos []string
+		if len(rest) > 0 && !strings.HasPrefix(rest[0], "-") {
+			pos = append(pos, rest[0])
+			rest = rest[1:]
+		}
+		if err := fs.Parse(rest); err != nil {
+			if err == flag.ErrHelp {
+				usage(out)
+				return exitOK
+			}
+			fmt.Fprintf(errOut, "manifesto-atlas %s: %v\n", cmd.name, err)
+			fmt.Fprintln(errOut, "Run 'manifesto-atlas help' for usage.")
+			return exitUsage
+		}
+		pos = append(pos, fs.Args()...)
+		if len(pos) != cmd.positional {
+			fmt.Fprintf(errOut, "manifesto-atlas %s: expected %s\n", cmd.name, wantArgs(cmd.positional))
+			fmt.Fprintln(errOut, "Run 'manifesto-atlas help' for usage.")
+			return exitUsage
+		}
+		return cmd.runWithFlags(pos, f, out)
 	}
 
 	fs := cmd.flagSet()
@@ -138,6 +182,16 @@ func wantArgs(n int) string {
 	}
 }
 
+// extractStage, validateStage and buildStage adapt the implemented stages to the
+// plain command shape used by the dispatcher.
+func extractStage() *command  { return adapt(extractCommand()) }
+func validateStage() *command { return adapt(validateContent()) }
+func buildStage() *command    { return adapt(buildCommand()) }
+
+func adapt(s stageCommand) *command {
+	return &command{name: s.name, positional: s.positional, flags: s.flags, runWithFlags: s.run}
+}
+
 // lookup returns the command for name, or nil if it is not registered.
 func lookup(name string) *command {
 	switch name {
@@ -152,6 +206,14 @@ func lookup(name string) *command {
 			fmt.Fprintf(w, "go %s\n", runtime.Version())
 			return exitOK
 		}}
+	}
+	switch name {
+	case "extract":
+		return extractStage()
+	case "validate-content":
+		return validateStage()
+	case "build":
+		return buildStage()
 	}
 	for i := range stages {
 		if stages[i].name == name {

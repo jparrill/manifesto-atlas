@@ -3,27 +3,56 @@
   "claims": "checks/claims.tsv",
   "allow": "checks/allow.tsv",
   "view": "Programas-electorales-2026.html",
+  "sources": [
+    {
+      "programme": "fo",
+      "url": "https://frenteobrero.es/documentos/programa-frente-obrero.pdf",
+      "file": "Frente-Obrero-Programa-2026-10.pdf",
+      "bytes": 1202338,
+      "sha256": "7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282",
+      "pages": 64
+    },
+    {
+      "programme": "vox",
+      "url": "https://www.voxespana.es/wp-content/uploads/2026/11/Programa-completo-A5-1.pdf",
+      "file": "Programa-completo-A5-1.pdf",
+      "bytes": 14536418,
+      "sha256": "065abf6720be2f7b19b8e911920c2ee2ce5c2059d0ae8bf09770bc790ed11b65",
+      "pages": 66
+    },
+    {
+      "programme": "pp",
+      "url": "https://www.pp.es/wp-content/uploads/2026/11/PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf",
+      "file": "PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf",
+      "bytes": 12304990,
+      "sha256": "ae0c35d7ef3faf540acaa79d47abbe3ae2bf56a3a755c4e78a8f5bf3ea49789c",
+      "pages": 64
+    }
+  ],
   "documents": [
     {
       "programme": "fo",
       "source": "frente-obrero.md",
       "summary": "Resumen-Frente-Obrero-2026.md",
       "proposals": 133,
-      "coverage": "items"
+      "coverage": "items",
+      "title": "Frente Obrero"
     },
     {
       "programme": "vox",
       "source": "vox.md",
       "summary": "Resumen-VOX-2026.md",
       "proposals": 115,
-      "coverage": "numbers"
+      "coverage": "numbers",
+      "title": "VOX"
     },
     {
       "programme": "pp",
       "source": "pp.md",
       "summary": "Resumen-PP-2026.md",
       "proposals": 249,
-      "coverage": "numbers"
+      "coverage": "numbers",
+      "title": "Partido Popular"
     }
   ]
 }

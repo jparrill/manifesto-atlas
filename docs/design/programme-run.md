@@ -202,7 +202,46 @@ line in this document. Read them before writing a summary.
 | Viewer without scroll | `overflow: hidden` on the body, long text unreachable | stated in `docs/design/site-quality.md` review; probe before shipping |
 | Template drift in the generator | the payload merges into nothing after an edit | `runcheck.embed` fails; regenerate and re-check |
 
-## 8. Adding a run
+## 8. The deterministic half, as commands
+
+Everything that does not need judgement is a command. A run is created and
+rendered with three of them, and the gate closes it.
+
+```bash
+# 1. provenance + extraction + manifest + summary skeleton
+make extract PDF=/path/to/programa.pdf \
+             URL=https://partido.example/programa.pdf \
+             PROG=pp TITLE="Partido Popular" RUN=runs/mi-run
+
+# 2. write Resumen-<TITLE>.md from the skeleton (agent or human), then
+make validate-content RUN=runs/mi-run     # writes Verificacion.md
+
+# 3. single-file view with every document embedded
+make build RUN=runs/mi-run                 # Programa-electorales.html
+make validate-content RUN=runs/mi-run      # now also checks the embedding
+```
+
+What each command guarantees:
+
+- `extract` refuses a non-`https` origin, records size and SHA-256, needs
+  `pdfinfo` and `pdftotext` on `PATH`, fails when the extracted page count and the
+  PDF page count disagree, and writes `SOURCES.md`, `run.json`, `checks/*.tsv`, the
+  raw text, the page-marked extraction and a summary skeleton full of
+  `PARA-COMPLETAR` markers. It counts the numbered items of the source and stores
+  the total as the coverage target.
+- `validate-content` runs the gate and writes `Verificacion.md` from the report, so
+  the document and the gate cannot disagree. It fails while any
+  `PARA-COMPLETAR` marker survives: an unwritten run cannot pass.
+- `build` renders `templates/view.html` with the payload inside one file, and
+  records the view in the manifest only when the gate can resolve it from the run
+  directory. It refuses to overwrite a file it did not generate unless `-force` is
+  given, so a hand-made view is never clobbered.
+
+The summary itself is the only part no command writes: it needs reading the
+programme. That is the boundary this project keeps between deterministic
+operations and semantic work.
+
+## 9. Adding a run
 
 1. Create `runs/<run>/`, copy the source PDFs out of Git, and write `SOURCES.md`
    with URL, size and SHA-256.
@@ -218,13 +257,13 @@ line in this document. Read them before writing a summary.
    counts, the exceptions and the limits.
 8. Close the Taskqueue task with the gate output as evidence.
 
-## 9. Gate mapping
+## 10. Gate mapping
 
 | Task gate | Evidence from this run |
 | --- | --- |
 | Acceptance criteria | `make check-run` output plus the counts in the run `README.md` |
-| Focused behavior | `go test ./internal/runcheck/...` — one subtest per check and per failure mode |
-| Regression | `make verify`, which now runs `check-run` before the documentation checks |
+| Focused behavior | `go test ./internal/runcheck/...` and `./internal/cli` — one subtest per check, per failure mode and for the end-to-end flow with fake `pdftotext`/`pdfinfo` |
+| Regression | `make verify`, which runs the run gate and the pipeline tests before the documentation checks |
 | Static and structural | `node --check` over the view script, headless render, `pdftotext` over the compendium |
 | Documentation | this file, the run `README.md` and `SOURCES.md` |
 | Trust boundary | provenance is verified but not certified; empty proposals reported; exceptions carry a reason |

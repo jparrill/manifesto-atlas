@@ -29,6 +29,9 @@ help:
 	  "  make check                 Run baseline checks (Git + Taskqueue + Go)." \
 	  "  make verify                Run full verification (check + docs + links + run gate + tests)." \
 	  "  make check-run             Run the deterministic second gate of a programme run (RUN=runs/29n2026)." \
+	  "  make extract PDF= URL= PROG=  Run stages: provenance, extraction, manifest and summary skeleton." \
+	  "  make validate-content      Run the gate and write Verificacion.md (RUN=runs/29n2026)." \
+	  "  make build                 Render the single-file view with the documents embedded (RUN=..., OUT=...)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
@@ -45,11 +48,8 @@ help:
 	  "  make submit                TQ-0021  Inspect a selected local candidate." \
 	  "  make verify-source         TQ-0027  Verify local selection evidence and bytes." \
 	  "  make add                   TQ-0027  Register a verified immutable source." \
-	  "  make extract               TQ-0030  Page-aware extraction." \
 	  "  make validate-extraction   TQ-0030  Deterministic page/warning blockers." \
 	  "  make normalize             TQ-0038  Draft canonical programme JSON." \
-	  "  make validate-content      TQ-0041  Claim and coverage validation." \
-	  "  make build                 TQ-0043 TQ-0044 TQ-0049  Markdown, previews, HTML." \
 	  "  make validate-site         TQ-0049  Site validation gate." \
 	  "  make publish-check         TQ-0050 TQ-0049  Offline Markdown eligibility first." \
 	  "  make process               TQ-0051  Orchestrate programme processing." \
@@ -94,8 +94,8 @@ verify: check
 	@echo "verify: go test (test-runs)"
 	@$(MAKE) test-runs
 	@$(MAKE) test-preview
-	@echo "verify: go test (test-runcheck)"
-	@go test ./internal/runcheck/...
+	@echo "verify: go test (run pipeline)"
+	@go test ./internal/runcheck/... ./internal/runsource/... ./internal/runview/... ./internal/mdrender/...
 	@echo "verify: OK"
 
 # Deterministic second gate of a programme run: literal quotes, page citations,
@@ -184,15 +184,19 @@ verify-source:
 add:
 	$(call unavailable,add,TQ-0027,register a verified immutable source)
 extract:
-	$(call unavailable,extract,TQ-0030,produce structured page-aware extraction)
+	@test -n "$(PDF)" || { echo "make extract: PDF=<ruta al pdf> URL=<url oficial> PROG=<id> [RUN=dir]"; exit 2; }
+	@test -n "$(URL)" || { echo "make extract: falta URL (la procedencia oficial del PDF)"; exit 2; }
+	@test -n "$(PROG)" || { echo "make extract: falta PROG (identificador corto, p. ej. pp)"; exit 2; }
+	@go run ./cmd/manifesto-atlas extract "$(PDF)" -url "$(URL)" -programme "$(PROG)" \
+		-run "$(or $(RUN),runs/$(PROG))" -title "$(or $(TITLE),$(PROG))" -coverage "$(or $(COVERAGE),numbers)"
 validate-extraction:
 	$(call unavailable,validate-extraction,TQ-0030,reject deterministic page/warning blockers)
 normalize:
 	$(call unavailable,normalize,TQ-0038,produce draft canonical programme JSON)
 validate-content:
-	$(call unavailable,validate-content,TQ-0041,run claim and coverage validators)
+	@go run ./cmd/manifesto-atlas validate-content "$(or $(RUN),runs/29n2026)"
 build:
-	$(call unavailable,build,TQ-0043 TQ-0044 TQ-0049,render Spanish Markdown, previews, and HTML)
+	@go run ./cmd/manifesto-atlas build "$(or $(RUN),runs/29n2026)" $(if $(OUT),-out "$(OUT)",) $(if $(FORCE),-force,)
 validate-site:
 	$(call unavailable,validate-site,TQ-0049,run basic single-programme site quality checks)
 publish-check:
