@@ -328,6 +328,8 @@ func processCommand() stageCommand {
 			{"summarize", summarizeCommand(), []string{run}},
 			{"validate-content", validateContent(), []string{run}},
 			{"build", buildCommand(), []string{run}},
+			// The embedding check can only pass once the view exists.
+			{"validate-content (vista)", validateContent(), []string{run}},
 		}
 		for _, step := range steps {
 			fmt.Fprintf(w, "process: %s\n", step.label)

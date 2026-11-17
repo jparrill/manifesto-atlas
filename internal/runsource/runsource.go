@@ -269,7 +269,7 @@ func SourcesMarkdown(spec runmanifest.Spec) []byte {
 // CountSourceProposals counts the numbered items of an extraction. It is the
 // total a summary must cover, whatever numbering the document uses.
 func CountSourceProposals(pages Pages) int {
-	re := regexp.MustCompile(`(?m)^\s{0,3}(\d{1,2})\.\s+\S`)
+	re := regexp.MustCompile(`(?m)^\s{0,3}(\d{1,3})\.\s+\S`)
 	n := 0
 	for _, page := range pages {
 		n += len(re.FindAllStringSubmatch(page, -1))

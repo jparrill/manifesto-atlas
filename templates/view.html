@@ -6,43 +6,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Programas · resumen verificado</title>
 <style>
-:root{color-scheme:dark;--bg:#1a1b26;--panel:#24283b;--panel2:#1f2335;--border:#414868;--text:#c0caf5;--muted:#a9b1d6;--blue:#7aa2f7;--cyan:#7dcfff;--purple:#bb9af7;--green:#9ece6a;--orange:#ff9e64}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan)}.wrap{width:min(1060px,calc(100% - 32px));margin:auto;padding:48px 0}
-h1{margin:0 0 6px;font-size:clamp(1.9rem,4vw,2.8rem);letter-spacing:-.03em}.eyebrow{margin:0 0 6px;color:var(--cyan);font:700 .75rem ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase}
-.intro{color:var(--muted);max-width:70ch;margin:12px 0 26px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.tab{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:10px;padding:9px 16px;font:700 .92rem inherit;cursor:pointer}
-.tab[aria-selected=true]{background:var(--blue);color:#16161e;border-color:var(--blue)}.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.btn{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:9px;padding:7px 13px;font:700 .82rem inherit;cursor:pointer}
-.count{margin-left:auto;color:var(--muted);font:700 .76rem ui-monospace,monospace}
-details.sec{background:var(--panel2);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden}
-details.sec>summary{cursor:pointer;list-style:none;padding:14px 18px;font-weight:700;display:flex;gap:10px}
-details.sec>summary::-webkit-details-marker{display:none}details.sec>summary::before{content:"▸";color:var(--blue)}details.sec[open]>summary::before{content:"▾"}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px 14px}
-details.card{background:var(--panel);border:1px solid var(--border);border-radius:10px}
-details.card>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:.94rem;display:flex;gap:8px}
-details.card>summary::-webkit-details-marker{display:none}details.card>summary::before{content:"+";color:var(--purple);font:700 .9rem ui-monospace,monospace}
-details.card[open]>summary::before{content:"−"}.card p{margin:0;padding:0 14px 12px 34px;color:var(--muted);font-size:.92rem}
-.note{margin:22px 0;padding:14px 18px;border-left:3px solid var(--orange);background:#ff9e640d;color:var(--muted);border-radius:0 10px 10px 0;font-size:.9rem}
-.viewer{position:fixed;inset:0;z-index:60;background:#14151d;overflow-y:auto}.viewer[hidden]{display:none}
-.viewer-bar{position:sticky;top:0;display:flex;gap:12px;align-items:center;padding:12px 18px;background:#16161e;border-bottom:1px solid var(--border)}
-.viewer-bar h2{margin:0;font-size:1rem;flex:1}.viewer-body{width:min(860px,calc(100% - 36px));margin:auto;padding:26px 0 80px}
-.prose h1{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:8px}.prose h2{font-size:1.12rem;color:var(--blue);margin:26px 0 8px}.prose h3{font-size:1rem}
-.prose p,.prose li{color:var(--text);font-size:.96rem}.prose table{width:100%;border-collapse:collapse;font-size:.84rem;margin:0 0 16px}.prose th,.prose td{border:1px solid var(--border);padding:5px 8px;text-align:left}.prose th{background:#ffffff08}
-.prose code{background:#ffffff12;padding:1px 4px;border-radius:4px;font-size:.86em}.prose blockquote{border-left:3px solid var(--border);margin:0 0 12px;padding-left:12px;color:var(--muted)}
-footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);color:#737aa2;font-size:.83rem}
-@media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+:root{color-scheme:dark;--bg:#1a1b26;--panel:#24283b;--panel2:#1f2335;--border:#414868;--text:#c0caf5;--muted:#a9b1d6;--blue:#7aa2f7;--cyan:#7dcfff;--purple:#bb9af7;--green:#9ece6a;--orange:#ff9e64;--red:#f7768e;--shadow:0 18px 50px #10111680}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#292e49 0,transparent 28rem),var(--bg);color:var(--text);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(1120px,calc(100% - 32px));margin:auto;padding:64px 0}.eyebrow{margin:0 0 8px;color:var(--cyan);font:700 .78rem/1.2 ui-monospace,SFMono-Regular,monospace;letter-spacing:.15em;text-transform:uppercase}h1{max-width:760px;margin:0;font-size:clamp(2.2rem,6vw,4.5rem);line-height:1.05;letter-spacing:-.05em;background:linear-gradient(100deg,var(--blue),var(--purple));color:transparent;background-clip:text}.intro{max-width:740px;margin:22px 0 36px;color:var(--muted);font-size:1.08rem}.tabs{display:flex;gap:10px;padding:7px;width:max-content;max-width:100%;overflow:auto;background:#16161e;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}.tab{border:0;border-radius:9px;padding:11px 18px;background:transparent;color:var(--muted);font:700 .95rem inherit;white-space:nowrap;cursor:pointer}.tab:hover{color:var(--text);background:#ffffff08}.tab[aria-selected=true]{color:#16161e;background:var(--blue)}.tab:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}.party{margin-top:24px}.party-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:26px;background:linear-gradient(135deg,var(--panel),var(--panel2));border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.party h2{margin:0 0 5px;font-size:1.75rem;letter-spacing:-.025em}.meta{margin:0;color:var(--muted)}.badge{flex:none;padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--green);font:700 .75rem ui-monospace,SFMono-Regular,monospace;text-transform:uppercase}.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 0}.btn{border:1px solid var(--border);border-radius:9px;background:var(--panel2);color:var(--muted);font:700 .82rem inherit;padding:8px 14px;cursor:pointer}.btn:hover{color:var(--text);border-color:var(--blue)}.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}.count{margin-left:auto;color:var(--muted);font:700 .78rem ui-monospace,SFMono-Regular,monospace}details.sec{margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:16px;overflow:hidden}details.sec>summary{display:flex;align-items:baseline;gap:12px;padding:16px 20px;cursor:pointer;list-style:none;font-weight:700;font-size:1.02rem;letter-spacing:-.01em}details.sec>summary::-webkit-details-marker{display:none}details.sec>summary::before{content:"▸";flex:none;color:var(--blue);font-size:.9em;transition:transform .15s ease}details.sec[open]>summary::before{transform:rotate(90deg)}details.sec>summary:hover{background:#ffffff06}.pg{margin-left:auto;flex:none;color:#7c85ab;font:700 .74rem ui-monospace,SFMono-Regular,monospace}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 14px 16px}details.card{margin:0;background:var(--panel);border:1px solid var(--border);border-radius:12px;transition:border-color .18s ease}details.card[open]{border-color:var(--blue);box-shadow:0 12px 30px #10111666}details.card>summary{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;list-style:none}details.card>summary::-webkit-details-marker{display:none}details.card>summary::before{content:"+";flex:none;width:14px;color:var(--purple);font:700 .95rem ui-monospace,SFMono-Regular,monospace}details.card[open]>summary::before{content:"−"}details.card h3{margin:0;color:var(--blue);font-size:.98rem;line-height:1.3}.k{margin-left:auto;flex:none;padding:1px 5px;border:1px solid var(--border);border-radius:5px;color:#7c85ab;font:700 .72rem ui-monospace,SFMono-Regular,monospace}.what{margin:0;padding:0 16px 12px 40px;color:var(--muted);font-size:.93rem}.ctx{margin:0 16px 16px 40px;padding:10px 12px;border-left:2px solid var(--purple);background:#bb9af70d;border-radius:0 8px 8px 0;color:#9aa2c6;font-size:.87rem}.ctx b{color:var(--purple);font:700 .72rem ui-monospace,SFMono-Regular,monospace;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px}.note{margin-top:22px;padding:18px 20px;border-left:3px solid var(--orange);background:#ff9e640d;color:var(--muted);border-radius:0 10px 10px 0}.sources{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.source{padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);font-size:.86rem}footer{margin-top:46px;padding-top:24px;border-top:1px solid var(--border);color:#737aa2;font-size:.84rem}.viewer{position:fixed;inset:0;z-index:60;background:#14151d;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.viewer[hidden]{display:none}.viewer-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:14px;padding:12px 20px;background:#16161e;border-bottom:1px solid var(--border)}.viewer-bar h2{margin:0;font-size:1rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.viewer-body{width:min(880px,calc(100% - 40px));margin:0 auto;padding:30px 0 90px}.prose{color:var(--text);font-size:.97rem;line-height:1.68}.prose h1{font-size:1.6rem;line-height:1.2;margin:0 0 20px;background:none;color:var(--text);-webkit-text-fill-color:var(--text);letter-spacing:-.02em}.prose h2{font-size:1.14rem;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);color:var(--blue)}.prose h3{font-size:1rem;margin:22px 0 8px;color:var(--text)}.prose p{margin:0 0 12px}.prose ul,.prose ol{margin:0 0 14px;padding-left:22px}.prose li{margin:0 0 6px}.prose table{width:100%;border-collapse:collapse;font-size:.84rem;margin:0 0 20px}.prose th,.prose td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top}.prose th{background:#ffffff08}.prose code{background:#ffffff12;padding:1px 5px;border-radius:4px;font-size:.86em}.prose blockquote{margin:0 0 14px;padding-left:12px;border-left:3px solid var(--border);color:var(--muted)}.prose hr{border:0;border-top:1px solid var(--border);margin:26px 0}.prose strong{color:#dbe2ff}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.wrap{padding:38px 0}.grid{grid-template-columns:1fr}.party-head{display:block}.badge{display:inline-block;margin-top:14px}.count{margin-left:0}}
+.pg{margin-left:auto;flex:none;color:#7c85ab;font:700 .74rem ui-monospace,SFMono-Regular,monospace}.what a{color:var(--cyan)}
 </style>
 </head>
 <body>
 <main class="wrap">
-<p class="eyebrow">Programas · resumen y verificación</p>
-<h1 id="run-title">Programas</h1>
-<p class="intro">Cada pestaña reúne el resumen de un programa, con la página de origen de cada propuesta, el informe de verificación y la procedencia del PDF. Todo el contenido viaja dentro de este fichero.</p>
-<div class="tabs" role="tablist" id="tabs"></div>
-<section id="panel"></section>
+<p class="eyebrow" id="eyebrow">Programas electorales · resumen verificado</p>
+<h1>Principales medidas, sin ruido.</h1>
+<p class="intro" id="intro">Resumen temático de cada programa, medida a medida y con la página del documento. Despliega cada bloque para ver qué propone exactamente y abre el resumen completo o el informe de verificación cuando quieras el detalle.</p>
+<div class="tabs" role="tablist" aria-label="Programas" id="tabs"></div>
+<section id="panel" class="party" role="tabpanel" aria-live="polite"></section>
 <footer>
-<p>Resumen descriptivo: no valora la viabilidad ni la conveniencia de las propuestas ni verifica las cifras que declara el partido.</p>
-<p>Generado por <code>manifesto-atlas build</code> a partir de los resúmenes del run. Los PDF de origen no se incluyen: se identifican por URL y SHA-256.</p>
+<p>Este documento resume lo expresado por cada formación. No verifica las cifras de los programas ni valora la viabilidad o conveniencia de sus propuestas.</p>
+<p>Generado por <code>manifesto-atlas build</code>: los resúmenes y los informes de verificación viajan dentro de este fichero. Los PDF de origen no se incluyen; se identifican por URL oficial y SHA-256.</p>
 </footer>
 </main>
 <section class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title" hidden>
@@ -62,22 +40,31 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","
 function docsOf(id){const d=DATA[id];return Array.isArray(d)?d:[]}
 function render(p){
   const docs=docsOf(p.id);
-  panel.innerHTML=`<div class="bar"><button class="btn" type="button" data-open="all">Abrir todo</button><button class="btn" type="button" data-open="none">Cerrar todo</button><span class="count">${p.meta||""} · ${p.sections.reduce((n,s)=>n+s.cards.length,0)} fichas</span></div>`
-   + p.sections.map(s=>`<details class="sec"><summary>${esc(s.title||"Sin título")}</summary><div class="grid">${s.cards.map(c=>`<details class="card"><summary>${esc(c.text)}</summary><p>${esc(c.text)}</p></details>`).join("")}</div></details>`).join("")
-   + `<div class="bar">${docs.map((d,i)=>`<button class="btn" type="button" data-doc="${i}">${esc(d.label)}</button>`).join("")}${DATA.sources?`<button class="btn" type="button" data-sources="1">${esc(DATA.sources.label)}</button>`:""}${p.url?`<a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">Fuente oficial ↗</a>`:""}</div>`
-   + (p.sha256?`<aside class="note">Procedencia verificada: SHA-256 <code>${esc(p.sha256)}</code></aside>`:"");
-  panel.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>{const on=b.dataset.open==="all";panel.querySelectorAll("details").forEach(d=>d.open=on)}));
+  const cards=p.sections.reduce((n,s)=>n+s.cards.length,0);
+  panel.innerHTML=`<header class="party-head"><div><h2>${esc(p.title)}</h2><p class="meta">${esc(p.meta||"")}</p></div><span class="badge">${esc(p.badge||"Programa")}</span></header>`
+   + `<div class="toolbar"><button type="button" class="btn" data-act="open">Abrir todo</button><button type="button" class="btn" data-act="close">Cerrar todo</button>`
+   + (docs.length?`<button type="button" class="btn" data-doc="0">Leer resumen completo</button>`:"")
+   + `<span class="count">${cards} fichas · ${p.sections.length} bloques</span></div>`
+   + p.sections.map(s=>`<details class="sec"><summary><span>${esc(s.title||"Sin título")}</span>${s.page?`<span class="pg">${esc(s.page)}</span>`:""}</summary><div class="grid">`
+     + s.cards.map(c=>`<details class="card"><summary><h3>${esc(c.label||c.text)}</h3></summary><p class="what">${c.html}</p></details>`).join("")
+     + `</div></details>`).join("")
+   + `<aside class="note">Procedencia verificada: <code>${esc(p.sha256||"")}</code>${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">fuente oficial ↗</a>`:""}</aside>`
+   + `<div class="sources">${docs.map((d,i)=>`<button class="source src-btn" type="button" data-doc="${i}">${esc(d.label)}</button>`).join("")}`
+   + (DATA.sources?`<button class="source src-btn" type="button" data-sources="1">${esc(DATA.sources.label)}</button>`:"")
+   + (p.url?`<a class="source" href="${esc(p.url)}" target="_blank" rel="noopener">Fuente oficial ↗</a>`:"")+`</div>`;
+  panel.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{const on=b.dataset.act==="open";panel.querySelectorAll("details").forEach(d=>d.open=on)}));
   panel.querySelectorAll("[data-doc]").forEach(b=>b.addEventListener("click",()=>{const d=docs[+b.dataset.doc];if(d)openViewer(d.title||d.label,d.html)}));
   const sb=panel.querySelector("[data-sources]");
   if(sb)sb.addEventListener("click",()=>openViewer(DATA.sources.title||"Fuentes",DATA.sources.html));
 }
 function select(i){
   const p=VIEW.programmes[i];
-  [...tabsEl.children].forEach((t,j)=>t.setAttribute("aria-selected",j===i));
+  panel.setAttribute("aria-labelledby","tab-"+p.id);
+  [...tabsEl.children].forEach((t,j)=>{t.setAttribute("aria-selected",j===i);t.tabIndex=j===i?0:-1});
   render(p);
 }
-VIEW.programmes.forEach((p,i)=>{const b=document.createElement("button");b.className="tab";b.type="button";b.setAttribute("role","tab");b.textContent=p.title;b.addEventListener("click",()=>select(i));tabsEl.appendChild(b)});
-document.getElementById("run-title").textContent=VIEW.run;
+VIEW.programmes.forEach((p,i)=>{const b=document.createElement("button");b.className="tab";b.type="button";b.setAttribute("role","tab");b.id="tab-"+p.id;b.setAttribute("aria-controls","panel");b.textContent=p.title;b.addEventListener("click",()=>select(i));tabsEl.appendChild(b)});
+document.getElementById("eyebrow").textContent="Programas electorales · "+(VIEW.run||"resumen verificado");
 if(VIEW.programmes.length) select(0);
 </script>
 </body>

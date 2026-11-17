@@ -24,6 +24,8 @@ type Document struct {
 	Title string `json:"title,omitempty"`
 	// PDF is the source file name, used for the provenance link.
 	PDF string `json:"pdf,omitempty"`
+	// Scope is the human label of the document's territorial nature.
+	Scope string `json:"scope,omitempty"`
 }
 
 // Source is the provenance of one immutable PDF.

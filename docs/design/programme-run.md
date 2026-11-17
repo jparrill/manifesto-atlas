@@ -173,6 +173,22 @@ them in an overlay viewer.
   printable PDFs of the summaries are generated from that same text, so they are
   derivable artifacts and are not embedded.
 
+The generated view must look like the hand-made reference, not a different
+product. Parity is measured, not judged:
+
+```bash
+make view-parity CURATED=runs/29n2026/Programas-electorales-2026.html \
+                 GENERATED=runs/mi-run/Programas-electorales.html
+```
+
+The script opens both pages in Playwright, compares the computed styles of the
+same components (tabs, party header, toolbar, blocks, cards, note, sources,
+footer, viewer), allows sub-pixel layout noise, and then drives the generated
+page: switch tabs, open and close everything, open a document, check that the
+viewer scrolls and that Escape closes it. Any difference is printed and the target
+fails. It needs a Playwright copy reachable through `PLAYWRIGHT_PATH`; it is a dev
+tool, not a project dependency.
+
 Portable companions, both generated:
 
 ```bash

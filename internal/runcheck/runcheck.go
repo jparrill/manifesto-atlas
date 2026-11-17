@@ -437,10 +437,23 @@ func CheckCoverage(file, summary string, proposals int, mode string, source Page
 	}
 
 	have := map[int]bool{}
+	highest := 0
 	for _, m := range summaryItem.FindAllStringSubmatch(summary, -1) {
 		if n, err := strconv.Atoi(m[1]); err == nil {
 			have[n] = true
+			if n > highest {
+				highest = n
+			}
 		}
+	}
+	// A summary that numbers further than the declared target proves the target
+	// was undercounted, so anything past it was never verified.
+	if highest > proposals {
+		issues = append(issues, Issue{
+			Code: CodeCoverage, File: file,
+			Detail: fmt.Sprintf("the summary reaches proposal %d but the run declares %d: the target was undercounted and the rest is unverified",
+				highest, proposals),
+		})
 	}
 	var missing []string
 	for n := 1; n <= proposals; n++ {
@@ -774,6 +787,11 @@ func (r Report) Summary() []string {
 	for _, i := range r.Issues {
 		byCode[i.Code]++
 	}
+	embeddingLine := "no view declared yet (run build first)"
+	if r.Spec.View != "" {
+		embeddingLine = fmt.Sprintf("%d documents embedded, %d references checked, %s",
+			r.Counts.Embedded, r.Counts.Refs, status(byCode[CodeEmbed]))
+	}
 	return []string{
 		fmt.Sprintf("run: %s (%d programmes)", r.Spec.Name, len(r.Spec.Documents)),
 		fmt.Sprintf("  quotes       %d checked, %s", r.Counts.Quotes, status(byCode[CodeQuote])),
@@ -781,8 +799,7 @@ func (r Report) Summary() []string {
 		fmt.Sprintf("  proposals    %d expected, %s", r.Counts.Proposals, status(byCode[CodeCoverage])),
 		fmt.Sprintf("  claims       %d checked, %s", r.Counts.Claims, status(byCode[CodeClaim])),
 		fmt.Sprintf("  sections     %d checked, %s", r.Counts.Sections, status(byCode[CodeSection])),
-		fmt.Sprintf("  embedding    %d documents embedded, %d references checked, %s",
-			r.Counts.Embedded, r.Counts.Refs, status(byCode[CodeEmbed])),
+		"  embedding    " + embeddingLine,
 		fmt.Sprintf("  provenance   %d sources declared, %s", len(r.Spec.Sources), status(byCode[CodeProvenance])),
 		fmt.Sprintf("  scaffold     %s", status(byCode[CodeScaffold])),
 		fmt.Sprintf("  exceptions   %d reviewed (see the run's allow file)", r.Counts.Allowed),

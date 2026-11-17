@@ -15,7 +15,7 @@ RUN ?= runs/29n2026
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify check-run test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
+.PHONY: help check verify check-run view-parity test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -34,6 +34,7 @@ help:
 	  "  make summarize             Write the summary with the configured model and repair it with the gate (RUN= PROG=|-all)." \
 	  "  make build                 Render the single-file view with the documents embedded (RUN=..., OUT=...)." \
 	  "  make process PDF= URL= PROG=  Everything in one go: extract, summarize, validate, build." \
+	  "  make view-parity CURATED= GENERATED=  Compare the generated view with the hand-made one (Playwright)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
@@ -104,6 +105,13 @@ verify: check
 # Offline, no models, no source PDFs; see docs/design/programme-run.md.
 check-run:
 	@go run ./cmd/runcheck -run $(RUN)
+
+# Visual and behavioural parity between the generated view and the hand-made one.
+# Needs Playwright reachable through PLAYWRIGHT_PATH (dev tool, not a dependency).
+view-parity:
+	@test -n "$(GENERATED)" -a -n "$(CURATED)" || { \
+		echo "make view-parity CURATED=<html a mano> GENERATED=<html generado>"; exit 2; }
+	@node scripts/view-parity.mjs "$(CURATED)" "$(GENERATED)"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
 # live models or requiring live official websites.

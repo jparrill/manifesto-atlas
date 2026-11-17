@@ -28,14 +28,18 @@ const TemplatePath = "templates/view.html"
 // PayloadPlaceholder is replaced with the JSON payload.
 const PayloadPlaceholder = "/*__PAYLOAD__*/"
 
-// Card is one proposal or line of a section.
+// Card is one proposal or line of a section. Label is the short title shown
+// collapsed, HTML the rendered body.
 type Card struct {
-	Text string `json:"text"`
+	Label string `json:"label"`
+	Text  string `json:"text"`
+	HTML  string `json:"html"`
 }
 
 // Section is one collapsible block of a summary.
 type Section struct {
 	Title string `json:"title"`
+	Page  string `json:"page"`
 	Cards []Card `json:"cards"`
 }
 
@@ -73,6 +77,7 @@ type ChromeProgramme struct {
 	Meta     string    `json:"meta"`
 	URL      string    `json:"url"`
 	SHA256   string    `json:"sha256"`
+	Badge    string    `json:"badge"`
 	Sections []Section `json:"sections"`
 }
 
@@ -101,9 +106,12 @@ func Sections(md string) []Section {
 			continue
 		case heading.MatchString(t) && strings.HasPrefix(t, "## "):
 			flush()
-			title := strings.TrimSpace(strings.TrimPrefix(t, "## "))
-			current = &Section{Title: title}
+			title, page := splitPage(strings.TrimSpace(strings.TrimPrefix(t, "## ")))
+			current = &Section{Title: title, Page: page}
 		case strings.HasPrefix(t, "<!--"):
+			continue
+		case strings.HasPrefix(t, "|"):
+			// Tables are metadata; the header carries what matters.
 			continue
 		case t == "---":
 			continue
@@ -111,7 +119,7 @@ func Sections(md string) []Section {
 			if current == nil {
 				current = &Section{}
 			}
-			current.Cards = append(current.Cards, Card{Text: t})
+			current.Cards = append(current.Cards, newCard(t))
 		default:
 			if current == nil {
 				current = &Section{}
@@ -120,7 +128,7 @@ func Sections(md string) []Section {
 				current.Title = t
 				continue
 			}
-			current.Cards = append(current.Cards, Card{Text: t})
+			current.Cards = append(current.Cards, newCard(t))
 		}
 	}
 	flush()
@@ -160,6 +168,7 @@ func Build(runDir, outPath, templatePath string, force bool) error {
 			ID:       doc.Programme,
 			Title:    titleOf(doc),
 			Meta:     metaOf(doc, summary),
+			Badge:    badgeOf(doc),
 			Sections: Sections(string(summary)),
 		}
 		for _, src := range spec.Sources {
@@ -230,4 +239,41 @@ func metaOf(doc runmanifest.Document, summary []byte) string {
 		}
 	}
 	return fmt.Sprintf("programa %s", doc.Programme)
+}
+
+// splitPage takes the trailing page reference of a section heading.
+var sectionPage = regexp.MustCompile(`(?i)(pp?\.\s*\d[\d\s,–.\-]*)\s*[\])]?\s*$`)
+
+func splitPage(title string) (string, string) {
+	// Accepts "Título — p. 7", "Título [p. 7]" and "Título (pp. 7-9)".
+	if m := sectionPage.FindStringSubmatch(title); m != nil {
+		rest := strings.TrimSpace(strings.TrimSuffix(title, m[0]))
+		rest = strings.TrimRight(strings.TrimSpace(rest), "—-([")
+		return strings.TrimSpace(rest), strings.TrimSpace(m[1])
+	}
+	return title, ""
+}
+
+// newCard builds the collapsed label and the rendered body of one line.
+var quoted = regexp.MustCompile(`«([^»]{8,140})»`)
+var markdownNoise = regexp.MustCompile(`[*_#>` + "`" + `]`)
+
+func newCard(text string) Card {
+	label := ""
+	if m := quoted.FindStringSubmatch(text); m != nil {
+		label = strings.TrimSpace(m[1])
+	} else {
+		label = strings.TrimSpace(markdownNoise.ReplaceAllString(text, ""))
+	}
+	if r := []rune(label); len(r) > 110 {
+		label = string(r[:110]) + "…"
+	}
+	return Card{Label: label, Text: text, HTML: mdrender.Render(text)}
+}
+
+func badgeOf(doc runmanifest.Document) string {
+	if doc.Scope != "" {
+		return doc.Scope
+	}
+	return "Programa"
 }
