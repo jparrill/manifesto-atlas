@@ -1,25 +1,45 @@
 # Fuentes del run 29-N 2026 — procedencia y huellas
 
-Los tres PDF son **inmutables**: no se copian al repositorio ni se modifican.
-Se registran aquí su ruta original, tamaño y SHA-256 para poder comprobar que el
-texto extraído y los resúmenes corresponden exactamente a esos bytes.
+Los tres PDF son **inmutables**: no se copian al repositorio ni se modifican. Se
+registra su URL oficial, tamaño y SHA-256 para poder comprobar que el texto
+extraído y los resúmenes corresponden exactamente a esos bytes.
 
-| Documento | Partido | Tamaño | SHA-256 |
-|---|---|---|---|
-| `Frente-Obrero-Programa-2026-10.pdf` | Frente Obrero | 1.202.338 B | `7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282` |
-| `Programa-completo-A5-1.pdf` | VOX | 14.536.418 B | `065abf6720be2f7b19b8e911920c2ee2ce5c2059d0ae8bf09770bc790ed11b65` |
-| `PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf` | PP | 12.304.990 B | `ae0c35d7ef3faf540acaa79d47abbe3ae2bf56a3a755c4e78a8f5bf3ea49789c` |
+## Procedencia verificada
 
-Ruta de origen de los tres ficheros:
+Descarga realizada el **2026-11-17** desde las URL oficiales indicadas por el
+mantenedor. En las tres, la huella del fichero descargado coincide byte a byte
+con la del PDF analizado: la procedencia es verificable, no declarativa.
+
+| Partido | URL oficial | Tamaño | SHA-256 | Descarga |
+|---|---|---|---|---|
+| Frente Obrero | https://frenteobrero.es/documentos/programa-frente-obrero.pdf | 1.202.338 B | `7b9f423f2c1ada187b6f42ed8dbf4e025356254d7a6b81830e114b818ef2e282` | 200 · idéntica |
+| VOX | https://www.voxespana.es/wp-content/uploads/2026/11/Programa-completo-A5-1.pdf | 14.536.418 B | `065abf6720be2f7b19b8e911920c2ee2ce5c2059d0ae8bf09770bc790ed11b65` | 200 · idéntica |
+| PP | https://www.pp.es/wp-content/uploads/2026/11/PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf | 12.304.990 B | `ae0c35d7ef3faf540acaa79d47abbe3ae2bf56a3a755c4e78a8f5bf3ea49789c` | 200 · idéntica |
+
+Comprobación reproducible:
+
+```bash
+for u in \
+  "https://frenteobrero.es/documentos/programa-frente-obrero.pdf" \
+  "https://www.voxespana.es/wp-content/uploads/2026/11/Programa-completo-A5-1.pdf" \
+  "https://www.pp.es/wp-content/uploads/2026/11/PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf"; do
+  curl -sSL "$u" | shasum -a 256
+done
+```
+
+Qué significa y qué no:
+
+- **Significa** que los bytes analizados son los que el partido publica hoy en esa
+  URL, y que la huella permite detectar cualquier sustitución posterior.
+- **No significa** certificación de origen por un tercero: es una comprobación
+  puntual del mantenedor, no una firma. Si el partido reemplaza el fichero en la
+  misma ruta, la huella dejará de coincidir y la ejecución quedará invalidada para
+  ese documento.
+
+Ruta original de los ficheros analizados:
 
 ```
 /Users/jparrill/Documents/programas-electorales-opencode-2026-10-30/29N-2026/
-```
-
-Comprobación de la huella:
-
-```bash
-shasum -a 256 /Users/jparrill/Documents/programas-electorales-opencode-2026-10-30/29N-2026/*.pdf
 ```
 
 ## Metadatos declarados por los PDF
