@@ -21,6 +21,23 @@ Para repetir el proceso con modelos y un nuevo directorio de resultados, consult
 el [flujo de macOS](docs/design/macos-preview.md). La regeneración ordinaria de
 la vista almacenada funciona sin conexión ni llamadas a modelos.
 
+## Run 29-N 2026: tres programas, resúmenes y verificación
+
+En [`runs/29n2026/`](runs/29n2026/README.md) está archivada una ejecución completa
+sobre tres programas nacionales del 29 de noviembre de 2026: Frente Obrero (64
+páginas, 133 propuestas), VOX (66 páginas, 115) y PP (64 páginas, 249).
+
+Incluye el texto extraído con marcador de página, un resumen factual por partido
+con la página de origen de cada propuesta, un informe de verificación por resumen
+(literalidad de citas, atribución de página, datos numéricos y cobertura del 100%
+de las propuestas numeradas), una versión imprimible en PDF y una vista HTML con
+bloques y fichas desplegables. Las fuentes no se copian al repositorio: su tamaño
+y SHA-256 están en [`SOURCES.md`](runs/29n2026/SOURCES.md).
+
+También es un **borrador privado**. Los resúmenes no están promovidos al catálogo
+canónico y el mismo proceso que los redactó ejecutó la verificación, tal como se
+advierte en el índice del run.
+
 > Encontrar información fiable, primaria y no editorializada sobre las promesas electorales es innecesariamente doloroso.
 
 Manifesto Atlas es un archivo abierto y versionado de programas electorales y documentos políticos. Transforma las fuentes oficiales publicadas por los partidos en resúmenes breves y verificables, y las conserva en Git como memoria histórica.
