@@ -177,6 +177,7 @@ The generated view must look like the hand-made reference, not a different
 product. Parity is measured, not judged:
 
 ```bash
+make view-parity-setup                     # una vez: Playwright en .cache/ (ignorado por git)
 make view-parity CURATED=runs/29n2026/Programas-electorales-2026.html \
                  GENERATED=runs/mi-run/Programas-electorales.html
 ```
@@ -274,11 +275,15 @@ command exits 1: nothing is published on trust.
 And the whole run in one command, with no human step:
 
 ```bash
-make process PDF=/ruta/programa.pdf \
-             URL=https://partido.example/programa.pdf \
+make process URL=https://partido.example/programa.pdf \
              PROG=pp TITLE="Partido Popular" \
              ENDPOINT=$ATLAS_ENDPOINT MODEL=$ATLAS_MODEL ATTEMPTS=3
 ```
+
+With no `PDF=` path the pipeline downloads the document from the official URL into
+`.cache/sources/<sha256>/<nombre>.pdf` (ignored by git), hashes it while streaming,
+refuses a non-https origin, a non-PDF answer or a body over 120 MB, and reuses the
+same bytes on the next run. Nothing is trusted before it is measured.
 
 `process` chains extract → summarize → validate-content → build and stops at the
 first failing step. What it guarantees and what it does not:

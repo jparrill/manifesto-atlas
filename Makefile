@@ -15,7 +15,7 @@ RUN ?= runs/29n2026
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify check-run view-parity test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
+.PHONY: help check verify check-run view-parity view-parity-setup test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -33,7 +33,7 @@ help:
 	  "  make validate-content      Run the gate and write Verificacion.md (RUN=runs/29n2026)." \
 	  "  make summarize             Write the summary with the configured model and repair it with the gate (RUN= PROG=|-all)." \
 	  "  make build                 Render the single-file view with the documents embedded (RUN=..., OUT=...)." \
-	  "  make process PDF= URL= PROG=  Everything in one go: extract, summarize, validate, build." \
+	  "  make process URL= PROG= [PDF=]  Everything in one go, downloading the PDF if no path is given." \
 	  "  make view-parity CURATED= GENERATED=  Compare the generated view with the hand-made one (Playwright)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
@@ -111,7 +111,17 @@ check-run:
 view-parity:
 	@test -n "$(GENERATED)" -a -n "$(CURATED)" || { \
 		echo "make view-parity CURATED=<html a mano> GENERATED=<html generado>"; exit 2; }
-	@node scripts/view-parity.mjs "$(CURATED)" "$(GENERATED)"
+	@test -f .cache/view-parity/node_modules/playwright/index.js \
+		|| { echo "falta Playwright: ejecuta 'make view-parity-setup'"; exit 2; }
+	@PLAYWRIGHT_PATH="$$PWD/.cache/view-parity/node_modules/playwright/index.js" \
+		PLAYWRIGHT_EXECUTABLE="$(PLAYWRIGHT_EXECUTABLE)" \
+		node scripts/view-parity.mjs "$(CURATED)" "$(GENERATED)"
+
+# One-time download of Playwright into an ignored cache. It is a dev tool: the
+# project itself has no Node dependency.
+view-parity-setup:
+	@npm install --silent --prefix .cache/view-parity playwright@1.65.1 \
+		&& echo "playwright listo en .cache/view-parity (ignorado por git)"
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
 # live models or requiring live official websites.
@@ -198,10 +208,9 @@ summarize:
 		$(if $(ENDPOINT),-endpoint "$(ENDPOINT)",) $(if $(MODEL),-model "$(MODEL)",)
 
 extract:
-	@test -n "$(PDF)" || { echo "make extract: PDF=<ruta al pdf> URL=<url oficial> PROG=<id> [RUN=dir]"; exit 2; }
-	@test -n "$(URL)" || { echo "make extract: falta URL (la procedencia oficial del PDF)"; exit 2; }
+	@test -n "$(URL)" || { echo "make extract: URL=<url oficial> PROG=<id> [PDF=<ruta>] [RUN=dir]"; exit 2; }
 	@test -n "$(PROG)" || { echo "make extract: falta PROG (identificador corto, p. ej. pp)"; exit 2; }
-	@go run ./cmd/manifesto-atlas extract "$(PDF)" -url "$(URL)" -programme "$(PROG)" \
+	@go run ./cmd/manifesto-atlas extract "$(or $(PDF),auto)" -url "$(URL)" -programme "$(PROG)" \
 		-run "$(or $(RUN),runs/$(PROG))" -title "$(or $(TITLE),$(PROG))" -coverage "$(or $(COVERAGE),numbers)"
 validate-extraction:
 	$(call unavailable,validate-extraction,TQ-0030,reject deterministic page/warning blockers)
@@ -216,11 +225,11 @@ validate-site:
 publish-check:
 	$(call unavailable,publish-check,TQ-0050 TQ-0049,verify offline Markdown eligibility first)
 process:
-	@test -n "$(PDF)" -a -n "$(URL)" -a -n "$(PROG)" || { \
-		echo "make process PDF=<ruta> URL=<url oficial> PROG=<id> [TITLE= COVERAGE= RUN= ENDPOINT= MODEL= ATTEMPTS=]"; exit 2; }
+	@test -n "$(URL)" -a -n "$(PROG)" || { \
+		echo "make process URL=<url oficial> PROG=<id> [PDF=<ruta>] [TITLE= COVERAGE= RUN= ENDPOINT= MODEL= ATTEMPTS=]"; exit 2; }
 	@test -n "$(or $(ENDPOINT),$(ATLAS_ENDPOINT))" -a -n "$(or $(MODEL),$(ATLAS_MODEL))" || { \
 		echo "make process: falta ENDPOINT/MODEL (o ATLAS_ENDPOINT y ATLAS_MODEL)"; exit 2; }
-	@go run ./cmd/manifesto-atlas process "$(PDF)" -url "$(URL)" -programme "$(PROG)" \
+	@go run ./cmd/manifesto-atlas process "$(or $(PDF),auto)" -url "$(URL)" -programme "$(PROG)" \
 		-run "$(or $(RUN),runs/$(PROG))" -title "$(or $(TITLE),$(PROG))" -coverage "$(or $(COVERAGE),numbers)" \
 		-attempts "$(or $(ATTEMPTS),3)" $(if $(ENDPOINT),-endpoint "$(ENDPOINT)",) $(if $(MODEL),-model "$(MODEL)",)
 serve:

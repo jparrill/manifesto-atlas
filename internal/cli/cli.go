@@ -92,7 +92,7 @@ func usage(w io.Writer) {
 	fmt.Fprintln(w, "             write the summary with the configured model and repair it with the gate.")
 	fmt.Fprintln(w, "  validate-content <run>")
 	fmt.Fprintln(w, "             run the gate and write Verificacion.md next to the run.")
-	fmt.Fprintln(w, "  process <pdf> -url U -programme ID [flags]")
+	fmt.Fprintln(w, "  process [<pdf>|auto] -url U -programme ID [flags]")
 	fmt.Fprintln(w, "             extract, summarise, verify and render in one go; no human step.")
 	fmt.Fprintln(w, "  build <run> [-out FILE] [-template FILE] [-force]")
 	fmt.Fprintln(w, "             render the single-file view with the documents embedded.")
@@ -146,7 +146,9 @@ func run(args []string, out, errOut io.Writer) int {
 			return exitUsage
 		}
 		pos = append(pos, fs.Args()...)
-		if len(pos) != cmd.positional {
+		if cmd.positional == 0 && len(pos) == 1 {
+			// A command that can fetch its input still accepts an explicit path.
+		} else if len(pos) != cmd.positional {
 			fmt.Fprintf(errOut, "manifesto-atlas %s: expected %s\n", cmd.name, wantArgs(cmd.positional))
 			fmt.Fprintln(errOut, "Run 'manifesto-atlas help' for usage.")
 			return exitUsage

@@ -369,3 +369,21 @@ func TestProcessRunsEverything(t *testing.T) {
 		}
 	}
 }
+
+func TestProcessWithoutArguments(t *testing.T) {
+	t.Run("When process has no URL it should explain the usage", func(t *testing.T) {
+		res := doRun("process", "-programme", "pp")
+		if res.code != 2 || !strings.Contains(res.stdout+res.stderr, "-url") {
+			t.Fatalf("exit=%d out=%s err=%s", res.code, res.stdout, res.stderr)
+		}
+	})
+	t.Run("When process has no model it should refuse before touching the PDF", func(t *testing.T) {
+		t.Setenv("ATLAS_ENDPOINT", "")
+		t.Setenv("ATLAS_MODEL", "")
+		res := doRun("process", "auto", "-url", "https://example.org/p.pdf", "-programme", "pp",
+			"-run", t.TempDir())
+		if res.code != 2 || !strings.Contains(res.stdout+res.stderr, "ATLAS_ENDPOINT") {
+			t.Fatalf("exit=%d stderr=%s", res.code, res.stderr)
+		}
+	})
+}

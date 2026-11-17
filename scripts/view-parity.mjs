@@ -3,10 +3,37 @@
 //   NODE_PATH=/tmp/node_modules node scripts/view-parity.mjs <curado.html> <generado.html>
 // Playwright is a dev tool, not a project dependency: point PLAYWRIGHT_PATH at an
 // installed copy (e.g. PLAYWRIGHT_PATH=/tmp/node_modules/playwright/index.js).
-const mod = await import(process.env.PLAYWRIGHT_PATH || "playwright");
+// Resolve Playwright from the explicit env var, a local cache, or a global install.
+import { existsSync, readdirSync } from "node:fs";
+import { execSync } from "node:child_process";
+
+function candidates() {
+  const list = [];
+  if (process.env.PLAYWRIGHT_PATH) list.push(process.env.PLAYWRIGHT_PATH);
+  list.push("playwright");
+  list.push(new URL("../.cache/view-parity/node_modules/playwright/index.js", import.meta.url).pathname);
+  try {
+    const root = execSync("npm root -g", { encoding: "utf8" }).trim();
+    for (const name of readdirSync(root)) {
+      if (name === "playwright") list.push(`${root}/${name}/index.js`);
+    }
+  } catch { /* npm not available: the explicit paths are enough */ }
+  return list;
+}
+
+let mod;
+for (const candidate of candidates()) {
+  try {
+    if (candidate.endsWith(".js") && !existsSync(candidate)) continue;
+    mod = await import(candidate);
+    break;
+  } catch { /* try the next candidate */ }
+}
 const chromium = mod.chromium || (mod.default && mod.default.chromium);
 if (!chromium) {
-  console.error("playwright not resolvable; set PLAYWRIGHT_PATH=/path/to/playwright/index.js");
+  console.error("Playwright no está disponible. Instálalo con:");
+  console.error("  make view-parity-setup      (queda en .cache/, ignorado por git)");
+  console.error("o exporta PLAYWRIGHT_PATH=/ruta/a/playwright/index.js");
   process.exit(2);
 }
 

@@ -3,3 +3,6 @@
 
 # macOS filesystem metadata
 .DS_Store
+
+# Local tool caches (downloaded sources, Playwright)
+.cache/

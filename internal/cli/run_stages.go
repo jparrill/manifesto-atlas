@@ -66,6 +66,10 @@ func extractCommand() stageCommand {
 		if run == "" {
 			run = filepath.Join("runs", f.programme)
 		}
+		pdf, code := sourcePDF(pdf, run, f.url, w)
+		if code != exitOK {
+			return code
+		}
 		prov, pages, err := runsource.Extract(run, pdf, f.url, runsource.OS())
 		if err != nil {
 			fmt.Fprintf(w, "manifesto-atlas extract: %v\n", err)
@@ -161,6 +165,24 @@ func ensureCheckFiles(run string) error {
 		}
 	}
 	return nil
+}
+
+// sourcePDF returns the local PDF to analyse. With no path it downloads from the
+// official URL into a cache keyed by the hash, so the pipeline needs no manual
+// step and the same bytes are reused across runs.
+func sourcePDF(pdf, run, url string, w io.Writer) (string, int) {
+	if strings.TrimSpace(pdf) != "" && pdf != "auto" {
+		return pdf, exitOK
+	}
+	fmt.Fprintf(w, "  fetching    %s\n", url)
+	cache := filepath.Join(run, "..", "..", ".cache", "sources")
+	path, sum, err := runsource.Fetch(context.Background(), url, cache, nil)
+	if err != nil {
+		fmt.Fprintf(w, "manifesto-atlas extract: %v\n", err)
+		return "", exitFailed
+	}
+	fmt.Fprintf(w, "  downloaded  %s\n  sha256      %s\n", path, sum)
+	return path, exitOK
 }
 
 // summarizeCommand writes the summary of a programme with a configured model and
@@ -296,8 +318,11 @@ func buildCommand() stageCommand {
 // processCommand runs the whole pipeline without human steps: extract, summarise
 // with the configured model, verify and render. Any failing step stops it.
 func processCommand() stageCommand {
-	return stageCommand{name: "process", positional: 1, flags: newStageFlags, run: func(pos []string, f *stageFlags, w io.Writer) int {
-		pdf := pos[0]
+	return stageCommand{name: "process", positional: 0, flags: newStageFlags, run: func(pos []string, f *stageFlags, w io.Writer) int {
+		pdf := "auto"
+		if len(pos) == 1 {
+			pdf = pos[0]
+		}
 		if f.url == "" || f.programme == "" {
 			fmt.Fprintln(w, "manifesto-atlas process: -url and -programme are required")
 			return exitUsage
