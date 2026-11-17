@@ -148,6 +148,13 @@ Automatic continuation never promotes or executes `inbox` proposals, expands a p
 
 A follow-up task may capture optional improvement, but it cannot defer a gate required for the current task's outcome.
 
+## Programme runs
+
+A programme run (three PDFs to a verified summary and a self-contained view) follows
+[`docs/design/programme-run.md`](docs/design/programme-run.md). Run `make check-run`
+before claiming a run is verified: it proves literal quotes, page citations, proposal
+coverage, curated claims, section codes and that the view embeds every document.
+
 ## Project rules
 
 - Canonical programme JSON is the source of truth for public Markdown and HTML.

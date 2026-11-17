@@ -6,7 +6,10 @@ it: the summaries and verification reports as rendered HTML, and the PDFs as
 base64 so the result opens from any location, with or without the original
 files next to it.
 
-    python3 build_standalone.py [--no-pdf] [--out FILE]
+    python3 build_standalone.py [--with-pdf] [--out FILE]
+
+The output is a single file: the summaries and the verification reports travel
+inside it, so it opens from anywhere without the rest of the run.
 """
 import argparse
 import base64
@@ -17,7 +20,7 @@ import sys
 import markdown
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
-BASE = HERE / "Programas-electorales-2026.html"
+BASE = HERE / "tools" / "template.html"
 # The source PDFs are not versioned (immutable, 28 MB). They are looked up in
 # this order; --pdf-dir overrides it for a different checkout.
 PDF_DIRS = [
@@ -104,14 +107,14 @@ def build(embed_pdf: bool, pdf_dir: pathlib.Path | None) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--no-pdf", action="store_true", help="embed only the text documents")
+    ap.add_argument("--with-pdf", action="store_true", help="also embed the PDFs as base64 (38 MB, discouraged)")
     ap.add_argument("--out", default=None)
-    ap.add_argument("--pdf-dir", default=None, help="directory holding the source PDFs")
+    ap.add_argument("--pdf-dir", default=None, help="directory holding the source PDFs (--with-pdf only)")
     args = ap.parse_args()
 
     html = BASE.read_text(encoding="utf-8")
     pdf_dir = pathlib.Path(args.pdf_dir) if args.pdf_dir else None
-    payload = build(embed_pdf=not args.no_pdf, pdf_dir=pdf_dir)
+    payload = build(embed_pdf=args.with_pdf, pdf_dir=pdf_dir)
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     blob = blob.replace("</", "<\\/")  # keep the JSON inert inside <script>
 
@@ -121,9 +124,7 @@ def main() -> int:
         return 1
     html = html.replace(marker, f'<script type="application/json" id="embedded-docs">{blob}</script>')
 
-    default_name = ("Programas-electorales-2026-standalone.html" if not args.no_pdf
-                    else "Programas-electorales-2026-autocontenido.html")
-    out = pathlib.Path(args.out) if args.out else BASE.with_name(default_name)
+    out = pathlib.Path(args.out) if args.out else HERE / "Programas-electorales-2026.html"
     out.write_text(html, encoding="utf-8")
     print(f"{out}  ({out.stat().st_size / 1_000_000:.1f} MB)")
     return 0

@@ -10,7 +10,7 @@ labels:
   - area/rendering
   - agent/developer
 created: 2026-11-17T23:25:18+01:00
-updated: 2026-11-17T23:25:25+01:00
+updated: 2026-11-17T23:33:12+01:00
 ---
 
 ## Outcome
@@ -102,3 +102,5 @@ See `AGENTS.md#closing-tasks-and-continuing-work`.
   - G6: SOURCES.md states it is a point-in-time check, not a third-party certification, and that a replaced file invalidates the run for that document. Payload escapes '</' so no embedded document can close its script tag.
 
   Decisions: rejected the 38 MB all-in-one HTML (base64 of the source PDFs) after measuring it; the portable artifacts are the 192 KB self-contained view (text embedded) and the 45-page compendium PDF. Source PDFs stay out of Git and are identified by official URL + SHA-256.
+- 2026-11-17T23:27:20+01:00 — Fix after owner review: the overlay viewer had no scroll container (.viewer was position:fixed without overflow) while openViewer() sets body overflow hidden, so a long summary could not be scrolled. Added overflow-y:auto with overscroll containment and reset viewer.scrollTop on open. Verified in headless Chrome with an injected probe: overflowY auto, scrollHeight 15454 > clientHeight 713, scrollTop reaches 500, sticky bar stays at top.
+- 2026-11-17T23:33:12+01:00 — Owner review on the PP tab: the view showed four blocks with a flat list, so the document's own 28 subapartados were not visible. Fixed by tagging every PP card with its subapartado (1.1 to 4.10), adding the missing 2.5 card (Parlamento y leyes, p. 29) and moving 'Infraestructuras y agua' from block 04 to block 03, where the document places it (3.3, pp. 36-37). PP now renders 16+5+5+12 = 38 cards, all tagged, in the four document blocks.

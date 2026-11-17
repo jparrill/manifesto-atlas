@@ -27,11 +27,12 @@ copian aquí: su procedencia y huella están en [SOURCES.md](SOURCES.md).
 | 2 · Resumen | `Resumen-PP-2026.md` | Ídem |
 | 2 · Resumen | `Resumen-*.pdf` | Versión imprimible A4 (Chrome headless) |
 | 3 · Verificación | `Verificacion-Resumen-*.md` | Método, resultados, correcciones y límites |
-| 4 · Vista | `Programas-electorales-2026.html` | Tres pestañas, 13 bloques desplegables, 106 fichas con contexto; enlaza los ficheros vecinos |
-| 4 · Vista portátil | `Programas-electorales-2026-autocontenido.html` | La misma vista con los resúmenes y los informes **embebidos** (192 KB): se abre sola, sin los ficheros al lado ni conexión |
+| 4 · Vista | `Programas-electorales-2026.html` | Un solo fichero (195 KB) con tres pestañas, 13 bloques desplegables, 106 fichas con contexto y los resúmenes e informes **embebidos**: se abre sin nada al lado y sin conexión. `tools/template.html` es la plantilla y `tools/build_standalone.py` lo genera |
 | 4 · Portable | `Programas-29N-2026-compendio.pdf` | Compendio A4 de 45 páginas con portada, índice, los tres resúmenes y los tres informes |
 | Soporte | `SOURCES.md` | URL oficial, tamaño y SHA-256 de los PDF, con la comprobación de descarga |
-| Herramientas | `tools/` | Extracción, comprobaciones, PDF de resúmenes, vista autocontenida y compendio |
+| Manifiesto | `run.json` | Programas, modo de cobertura y rutas de datos y de la vista |
+| Datos y excepciones | `checks/claims.tsv`, `checks/allow.tsv` | 69 datos curados y 4 excepciones revisadas, cada una con su motivo |
+| Herramientas | `tools/` | Extracción, PDF de resúmenes, vista autocontenida y compendio |
 
 ## 3. Resultado de la segunda gate
 
@@ -44,6 +45,23 @@ copian aquí: su procedencia y huella están en [SOURCES.md](SOURCES.md).
 Se aplicaron 12 correcciones durante la verificación, todas de literalidad de cita,
 página de origen o inventario de páginas; ninguna cambia el sentido de una medida.
 El detalle está en cada `Verificacion-*.md`.
+
+La segunda gate es determinista y se ejecuta con `make check-run` (implementada en
+`internal/runcheck`, contrato en [`docs/design/programme-run.md`](../../docs/design/programme-run.md)):
+citas literales, atribución de página, cobertura de propuestas, datos curados, códigos
+de sección y comprobación de que la vista embebe todos los documentos sin referencias
+al sistema de ficheros. Salida retenida de la última ejecución:
+
+```
+run: 29-N 2026 (3 programmes)
+  quotes       222 checked, ok
+  page refs    379 checked, ok
+  proposals    497 expected, ok
+  claims       69 checked, ok
+  sections     28 checked, ok
+  embedding    6 documents embedded, 0 references checked, ok
+  exceptions   4 reviewed (see the run's allow file)
+```
 
 ## 4. Reglas aplicadas
 
@@ -81,17 +99,17 @@ huella dejará de coincidir y la ejecución quedará invalidada para ese documen
 
 ```bash
 cd runs/29n2026
-python3 tools/verify.py     # citas literales y atribución de página
-python3 tools/datos.py      # datos numéricos y nombres propios
+make check-run             # segunda gate: citas, páginas, cobertura, claims, sección, embebido
 
 # PDF de los resúmenes (requiere Chrome y el módulo markdown de Python)
 python3 tools/md2pdf.py Resumen-VOX-2026.md
 
-# Vista portátil con los textos embebidos
-python3 tools/build_standalone.py --no-pdf
+# Vista de un solo fichero con los textos embebidos
+python3 tools/build_standalone.py
 
 # Compendio PDF con índice y los seis documentos
 python3 tools/build_compendium.py
 ```
 
-Los dos generadores necesitan el módulo `markdown` de Python y Chrome para imprimir.
+Los generadores de PDF y de la vista necesitan el módulo `markdown` de Python y
+Chrome; la gate no necesita ninguno de los dos, ni los PDF de origen.

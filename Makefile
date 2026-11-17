@@ -8,10 +8,14 @@
 # (owned by TQ-0018); these baseline checks only use Git and Taskqueue.
 
 .DEFAULT_GOAL := help
+
+# Programme run verified by `make check-run`. A run is a directory holding
+# run.json; its contract is docs/design/programme-run.md.
+RUN ?= runs/29n2026
 SHELL := /bin/sh
 
 # Baseline targets (implemented).
-.PHONY: help check verify test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
+.PHONY: help check verify check-run test-cli test-artifacts test-taxonomy test-canonical test-semantic-runner test-fixture-frente test-fixture-vox test-runs smoke-provider test-preview e2e-preview evaluate-preview render-preview
 
 # Pipeline stages (planned): fail until their owning task lands.
 .PHONY: submit verify-source add extract validate-extraction normalize validate-content build validate-site publish-check process serve
@@ -23,7 +27,8 @@ help:
 	  "Baseline (implemented):" \
 	  "  make help                  Show this help." \
 	  "  make check                 Run baseline checks (Git + Taskqueue + Go)." \
-	  "  make verify                Run full verification (check + docs + links + tests)." \
+	  "  make verify                Run full verification (check + docs + links + run gate + tests)." \
+	  "  make check-run             Run the deterministic second gate of a programme run (RUN=runs/29n2026)." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
@@ -66,6 +71,8 @@ check:
 	@echo "check: OK"
 
 verify: check
+	@echo "verify: programme run gate"
+	@$(MAKE) check-run
 	@echo "verify: documentation structure"
 	@$(call docs-check)
 	@echo "verify: relative links"
@@ -87,7 +94,15 @@ verify: check
 	@echo "verify: go test (test-runs)"
 	@$(MAKE) test-runs
 	@$(MAKE) test-preview
+	@echo "verify: go test (test-runcheck)"
+	@go test ./internal/runcheck/...
 	@echo "verify: OK"
+
+# Deterministic second gate of a programme run: literal quotes, page citations,
+# proposal coverage, curated claims, section codes and a self-contained view.
+# Offline, no models, no source PDFs; see docs/design/programme-run.md.
+check-run:
+	@go run ./cmd/runcheck -run $(RUN)
 
 # Focused gate for the Go CLI test suite. Runs the real tests without invoking
 # live models or requiring live official websites.

@@ -1,0 +1,29 @@
+{
+  "name": "29-N 2026",
+  "claims": "checks/claims.tsv",
+  "allow": "checks/allow.tsv",
+  "view": "Programas-electorales-2026.html",
+  "documents": [
+    {
+      "programme": "fo",
+      "source": "frente-obrero.md",
+      "summary": "Resumen-Frente-Obrero-2026.md",
+      "proposals": 133,
+      "coverage": "items"
+    },
+    {
+      "programme": "vox",
+      "source": "vox.md",
+      "summary": "Resumen-VOX-2026.md",
+      "proposals": 115,
+      "coverage": "numbers"
+    },
+    {
+      "programme": "pp",
+      "source": "pp.md",
+      "summary": "Resumen-PP-2026.md",
+      "proposals": 249,
+      "coverage": "numbers"
+    }
+  ]
+}
