@@ -2,7 +2,10 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -333,4 +336,36 @@ func TestRunStagesEndToEnd(t *testing.T) {
 			t.Fatalf("exit = %d, want 2", res.code)
 		}
 	})
+}
+
+func TestProcessRunsEverything(t *testing.T) {
+	pdf := stageEnv(t)
+	runDir := t.TempDir()
+	// A model stub that answers with a citable summary for this fixture.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"model": "stub",
+			"choices": []map[string]any{{"message": map[string]string{"content": "# PP\n\n## 01. Vivienda — p. 1\n\n" +
+				"1. «Construir vivienda pública» y prohibir los pisos turísticos [p. 1]\n" +
+				"2. Texto de la introducción sobre el parque público [p. 2]\n"}}},
+		})
+	}))
+	defer srv.Close()
+
+	res := doRun("process", pdf, "-url", "https://example.org/p.pdf", "-programme", "pp",
+		"-run", runDir, "-title", "PP", "-endpoint", srv.URL, "-model", "stub",
+		"-template", "../../templates/view.html")
+	if res.code != 0 {
+		t.Fatalf("process failed: exit=%d\nstdout=%s\nstderr=%s", res.code, res.stdout, res.stderr)
+	}
+	for _, want := range []string{"process: extract", "process: summarize", "process: validate-content", "process: build", "process: done"} {
+		if !strings.Contains(res.stdout, want) {
+			t.Fatalf("missing %q in:\n%s", want, res.stdout)
+		}
+	}
+	for _, file := range []string{"run.json", "SOURCES.md", "Resumen-PP.md", "Verificacion.md", "Programas-electorales.html"} {
+		if _, err := os.Stat(filepath.Join(runDir, file)); err != nil {
+			t.Fatalf("missing %s: %v", file, err)
+		}
+	}
 }

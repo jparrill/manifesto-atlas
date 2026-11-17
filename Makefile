@@ -31,7 +31,9 @@ help:
 	  "  make check-run             Run the deterministic second gate of a programme run (RUN=runs/29n2026)." \
 	  "  make extract PDF= URL= PROG=  Run stages: provenance, extraction, manifest and summary skeleton." \
 	  "  make validate-content      Run the gate and write Verificacion.md (RUN=runs/29n2026)." \
+	  "  make summarize             Write the summary with the configured model and repair it with the gate (RUN= PROG=|-all)." \
 	  "  make build                 Render the single-file view with the documents embedded (RUN=..., OUT=...)." \
+	  "  make process PDF= URL= PROG=  Everything in one go: extract, summarize, validate, build." \
 	  "  make test-cli              Run the focused Go CLI test suite." \
 	  "  make test-artifacts        Run the focused strict canonical-JSON/hash helper suite." \
 	  "  make test-taxonomy         Run the focused taxonomy/document-scope validation suite." \
@@ -52,7 +54,6 @@ help:
 	  "  make normalize             TQ-0038  Draft canonical programme JSON." \
 	  "  make validate-site         TQ-0049  Site validation gate." \
 	  "  make publish-check         TQ-0050 TQ-0049  Offline Markdown eligibility first." \
-	  "  make process               TQ-0051  Orchestrate programme processing." \
 	  "  make serve                 TQ-0065  Local private preview." \
 	  "" \
 	  "Mapping and integration notes: docs/MAKEFILE.md"
@@ -95,7 +96,7 @@ verify: check
 	@$(MAKE) test-runs
 	@$(MAKE) test-preview
 	@echo "verify: go test (run pipeline)"
-	@go test ./internal/runcheck/... ./internal/runsource/... ./internal/runview/... ./internal/mdrender/...
+	@go test ./internal/runcheck/... ./internal/runsource/... ./internal/runview/... ./internal/mdrender/... ./internal/summarize/...
 	@echo "verify: OK"
 
 # Deterministic second gate of a programme run: literal quotes, page citations,
@@ -183,6 +184,11 @@ verify-source:
 	$(call unavailable,verify-source,TQ-0027,verify local selection evidence and matching bytes)
 add:
 	$(call unavailable,add,TQ-0027,register a verified immutable source)
+summarize:
+	@go run ./cmd/manifesto-atlas summarize "$(or $(RUN),runs/29n2026)" \
+		$(if $(PROG),-programme "$(PROG)",-all) -attempts "$(or $(ATTEMPTS),3)" \
+		$(if $(ENDPOINT),-endpoint "$(ENDPOINT)",) $(if $(MODEL),-model "$(MODEL)",)
+
 extract:
 	@test -n "$(PDF)" || { echo "make extract: PDF=<ruta al pdf> URL=<url oficial> PROG=<id> [RUN=dir]"; exit 2; }
 	@test -n "$(URL)" || { echo "make extract: falta URL (la procedencia oficial del PDF)"; exit 2; }
@@ -202,7 +208,13 @@ validate-site:
 publish-check:
 	$(call unavailable,publish-check,TQ-0050 TQ-0049,verify offline Markdown eligibility first)
 process:
-	$(call unavailable,process,TQ-0051,orchestrate the applicable processing stages)
+	@test -n "$(PDF)" -a -n "$(URL)" -a -n "$(PROG)" || { \
+		echo "make process PDF=<ruta> URL=<url oficial> PROG=<id> [TITLE= COVERAGE= RUN= ENDPOINT= MODEL= ATTEMPTS=]"; exit 2; }
+	@test -n "$(or $(ENDPOINT),$(ATLAS_ENDPOINT))" -a -n "$(or $(MODEL),$(ATLAS_MODEL))" || { \
+		echo "make process: falta ENDPOINT/MODEL (o ATLAS_ENDPOINT y ATLAS_MODEL)"; exit 2; }
+	@go run ./cmd/manifesto-atlas process "$(PDF)" -url "$(URL)" -programme "$(PROG)" \
+		-run "$(or $(RUN),runs/$(PROG))" -title "$(or $(TITLE),$(PROG))" -coverage "$(or $(COVERAGE),numbers)" \
+		-attempts "$(or $(ATTEMPTS),3)" $(if $(ENDPOINT),-endpoint "$(ENDPOINT)",) $(if $(MODEL),-model "$(MODEL)",)
 serve:
 	$(call unavailable,serve,TQ-0065,preview an explicit private generated root locally)
 

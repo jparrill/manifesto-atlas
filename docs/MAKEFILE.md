@@ -29,6 +29,8 @@ twelve declared production pipeline stages.
 | `make check` | Run baseline checks: Git whitespace, Taskqueue integrity, and Go format/build/vet. | `git`, `tq`, `gofmt`, `go` |
 | `make verify` | Run `check`, the programme-run gate, documentation-structure, relative-link, and Go test checks. | `git`, `tq`, `grep`, `dirname`, `test`, `go` |
 | `make extract` | `PDF= URL= PROG= [RUN= TITLE= COVERAGE=]` — record provenance, extract page by page, register the document and write the summary skeleton. Offline, needs `pdfinfo` and `pdftotext`. Contract: `docs/design/programme-run.md`. | `go`, `pdfinfo`, `pdftotext` |
+| `make summarize` | `RUN= PROG=|-all [ATTEMPTS= ENDPOINT= MODEL=]` — write the summary with the configured model, repair it with the gate findings and keep the credential-free trace. | `go`, provider |
+| `make process` | `PDF= URL= PROG= [TITLE= COVERAGE= RUN= ENDPOINT= MODEL= ATTEMPTS=]` — extract, summarize, validate and build in one go, stopping at the first failure. | `go`, `pdfinfo`, `pdftotext`, provider |
 | `make validate-content` | `RUN=` — run the gate and write `Verificacion.md` from the report. | `go` |
 | `make build` | `RUN= [OUT= FORCE=]` — render the single-file view with every document embedded. | `go` |
 | `make check-run` | Verify a programme run deterministically: literal quotes, page citations, proposal coverage, curated claims, section codes and a self-contained view (`RUN=runs/29n2026`). Offline; no models, no source PDFs. Contract: `docs/design/programme-run.md`. | `go` |
@@ -174,6 +176,8 @@ task owns which target.
 | `make extract` | `TQ-0030` | Produce structured page-aware extraction. |
 | `make validate-extraction` | `TQ-0030` | Reject deterministic page/warning blockers without a numeric score. |
 | `make normalize` | `TQ-0038` | Produce draft canonical programme JSON. |
+| `make summarize` | `RUN= PROG=|-all [ATTEMPTS= ENDPOINT= MODEL=]` — write the summary with the configured model, repair it with the gate findings and keep the credential-free trace. | `go`, provider |
+| `make process` | `PDF= URL= PROG= [TITLE= COVERAGE= RUN= ENDPOINT= MODEL= ATTEMPTS=]` — extract, summarize, validate and build in one go, stopping at the first failure. | `go`, `pdfinfo`, `pdftotext`, provider |
 | `make validate-content` | `TQ-0041` | Run claim and coverage validators. |
 | `make build` | `TQ-0043`, `TQ-0044`, `TQ-0049` | Markdown first; supplied-asset private HTML previews; public HTML only after basic checks. |
 | `make validate-site` | `TQ-0049` | Combine basic single-programme parity, keyboard/accessibility and mobile checks. |

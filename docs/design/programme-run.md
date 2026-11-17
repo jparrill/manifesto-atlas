@@ -237,9 +237,49 @@ What each command guarantees:
   directory. It refuses to overwrite a file it did not generate unless `-force` is
   given, so a hand-made view is never clobbered.
 
-The summary itself is the only part no command writes: it needs reading the
-programme. That is the boundary this project keeps between deterministic
-operations and semantic work.
+The summary can also be written by the pipeline, with a model and the gate as the
+only authority:
+
+```bash
+export ATLAS_ENDPOINT=http://127.0.0.1:8787/v1   # OpenAI-compatible root
+export ATLAS_MODEL=<model-id>                     # operator decision, no default
+export ATLAS_API_KEY=<optional>                   # header only, never logged
+
+make summarize RUN=runs/mi-run PROG=pp ATTEMPTS=3
+```
+
+`summarize` sends the page-marked extraction with a fixed contract (one line per
+proposal with `[p. N]`, «» only for literal text, the document's own numbering and
+structure, empty proposals declared), writes the reply as the summary, runs the
+gate, and on failure sends the gate findings back for a bounded number of
+attempts. A summary that never passes is left on disk with its issues and the
+command exits 1: nothing is published on trust.
+
+And the whole run in one command, with no human step:
+
+```bash
+make process PDF=/ruta/programa.pdf \
+             URL=https://partido.example/programa.pdf \
+             PROG=pp TITLE="Partido Popular" \
+             ENDPOINT=$ATLAS_ENDPOINT MODEL=$ATLAS_MODEL ATTEMPTS=3
+```
+
+`process` chains extract → summarize → validate-content → build and stops at the
+first failing step. What it guarantees and what it does not:
+
+- **Guaranteed**: the artifacts exist, the provenance is recorded, the summary is
+  cited and coherent with the document according to the gate, the report matches
+  the gate, and the view embeds every document.
+- **Not guaranteed**: identical wording between two runs. The model is sampled, so
+  the text may differ; only the checks are deterministic. `summarize-<programme>.json`
+  keeps the model, the attempt count and the hash of the accepted summary, and it
+  never contains the prompt, the reply or the key.
+- **Not guaranteed either**: that the interpretation is right. The gate proves
+  literalness, location and coverage, not judgement.
+
+The summary remains the semantic step; the difference is who writes it. If a
+summary must be reproducible byte for byte, keep it in the run after the first
+acceptance and do not re-summarise.
 
 ## 9. Adding a run
 

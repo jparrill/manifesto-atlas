@@ -47,7 +47,6 @@ var stages = []stage{
 	{"normalize", "TQ-0038", "produce draft canonical programme JSON"},
 	{"validate-site", "TQ-0049", "run basic single-programme site quality checks"},
 	{"publish-check", "TQ-0050 TQ-0049", "verify offline Markdown eligibility first"},
-	{"process", "TQ-0051", "orchestrate the applicable processing stages"},
 	{"serve", "TQ-0065", "preview an explicit private generated root locally"},
 }
 
@@ -89,8 +88,12 @@ func usage(w io.Writer) {
 	fmt.Fprintln(w, "Run stages (implemented, deterministic, offline):")
 	fmt.Fprintln(w, "  extract <pdf> -url U -programme ID [-run DIR] [-title NAME] [-coverage numbers|items]")
 	fmt.Fprintln(w, "             provenance + page-marked extraction + manifest + summary skeleton.")
+	fmt.Fprintln(w, "  summarize <run> -programme ID|-all [-endpoint U] [-model M] [-attempts N]")
+	fmt.Fprintln(w, "             write the summary with the configured model and repair it with the gate.")
 	fmt.Fprintln(w, "  validate-content <run>")
 	fmt.Fprintln(w, "             run the gate and write Verificacion.md next to the run.")
+	fmt.Fprintln(w, "  process <pdf> -url U -programme ID [flags]")
+	fmt.Fprintln(w, "             extract, summarise, verify and render in one go; no human step.")
 	fmt.Fprintln(w, "  build <run> [-out FILE] [-template FILE] [-force]")
 	fmt.Fprintln(w, "             render the single-file view with the documents embedded.")
 	fmt.Fprintln(w, "")
@@ -182,6 +185,12 @@ func wantArgs(n int) string {
 	}
 }
 
+// processStage adapts the whole-run orchestrator.
+func processStage() *command { return adapt(processCommand()) }
+
+// summarizeStage adapts the summarisation stage.
+func summarizeStage() *command { return adapt(summarizeCommand()) }
+
 // extractStage, validateStage and buildStage adapt the implemented stages to the
 // plain command shape used by the dispatcher.
 func extractStage() *command  { return adapt(extractCommand()) }
@@ -210,6 +219,10 @@ func lookup(name string) *command {
 	switch name {
 	case "extract":
 		return extractStage()
+	case "summarize":
+		return summarizeStage()
+	case "process":
+		return processStage()
 	case "validate-content":
 		return validateStage()
 	case "build":
